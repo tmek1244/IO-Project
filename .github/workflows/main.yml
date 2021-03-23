@@ -16,9 +16,12 @@ jobs:
       - name: Install dependencies with pipenv
         run: |
           pip install pipenv
+          pipenv --python python
+          pipenv install isort --dev
+          pipenv install flake8
+          pipenv install mypy
           pipenv install --deploy --dev
 
-      - run: pipenv run isort --recursive --diff
-      - run: pipenv run black --check .
-      - run: pipenv run flake8
-      - run: pipenv run mypy
+      - run: pipenv run isort --recursive --diff .
+      - run: pipenv run flake8 .
+      - run: pipenv run mypy .
