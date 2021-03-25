@@ -19,11 +19,11 @@ jobs:
           pip install flake8 mypy isort django-stubs
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      -name: ISort
+      - name: ISort
         run: isort -c --diff .
 
-      -name: Flake8
+      - name: Flake8
         run: flake8 .
 
-      -name: Mypy with django stubs
+      - name: Mypy with django stubs
         run: mypy . --config-file .github/workflows/mypy.ini
