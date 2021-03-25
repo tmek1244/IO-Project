@@ -13,15 +13,17 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Install dependencies with pipenv
+      - name: Install dependencies
         run: |
-          pip install pipenv
-          pipenv --python python
-          pipenv install isort --dev
-          pipenv install flake8
-          pipenv install mypy
-          pipenv install --deploy --dev
+          python -m pip install --upgrade pip
+          pip install flake8 mypy isort django-stubs
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      - run: pipenv run isort --recursive --diff .
-      - run: pipenv run flake8 .
-      - run: pipenv run mypy .
+      -name: ISort
+        run: isort -c --diff .
+
+      -name: Flake8
+        run: flake8 .
+
+      -name: Mypy with django stubs
+        run: mypy . --config-file .github/workflows/mypy.ini
