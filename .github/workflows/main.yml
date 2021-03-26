@@ -1,0 +1,29 @@
+name: PythonCI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flake8 mypy isort django-stubs
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: ISort
+        run: isort -c --diff .
+
+      - name: Flake8
+        run: flake8 .
+
+      - name: Mypy with django stubs
+        run: mypy . --config-file mypy.ini
