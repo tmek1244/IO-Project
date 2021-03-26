@@ -26,5 +26,5 @@ __pycache__/
 db.sqlite3
 
 venv/
-/git_crypt_key.txt
 .idea/
+/git_crypt_key.txt
