@@ -1,9 +1,13 @@
+from typing import Any, List
+
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.state import User
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
-    def validate(self, attrs):
+    def validate(self, attrs: List[str]) -> Any:
         data = super().validate(attrs)
         refresh = self.get_token(self.user)
         data['refresh'] = str(refresh)
@@ -17,7 +21,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return data
 
     @classmethod
-    def get_token(cls, user):
+    def get_token(cls, user: User) -> RefreshToken:
         token = super(CustomTokenObtainPairSerializer, cls).get_token(user)
 
         token['username'] = user.username
