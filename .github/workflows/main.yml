@@ -16,7 +16,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install flake8 mypy isort django-stubs
+          pip install flake8 mypy isort django-stubs djangorestframework-stubs
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: ISort
@@ -26,4 +26,4 @@ jobs:
         run: flake8 .
 
       - name: Mypy with django stubs
-        run: mypy . --config-file mypy.ini
+        run: mypy . --config-file setup.cfg

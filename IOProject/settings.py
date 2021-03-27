@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from typing import List
@@ -21,7 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'o$e+u#2e8k&5^#g2g3(3ko@hhdl%*mwrso73nl+s4_xfj1f81f'
+# SECRET_KEY = 'o$e+u#2e8k&5^#g2g3(3ko@hhdl%*mwrso73nl+s4_xfj1f81f'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 'o$e+u#2e8k&5^#g2g3(3ko@hhdl%*mwrso73nl+s4_xfj1f81f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -80,8 +83,12 @@ WSGI_APPLICATION = 'IOProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('DB_NAME', 'postgresql'),
+        'USER': os.environ.get('DB_USER', 'user1'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'Ky<4`Enqc]8aq\\C}'),
+        'HOST': os.environ.get('DB_HOST', 'localhost'),
+        'PORT': os.environ.get('DB_PORT', 5432),
     }
 }
 
