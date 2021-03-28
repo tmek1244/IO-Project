@@ -1,4 +1,5 @@
 from typing import Dict
+
 from django.contrib.auth import get_user_model
 from django.db.models.base import Model
 from rest_framework import serializers
