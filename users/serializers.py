@@ -1,8 +1,11 @@
-from typing import Any, List
+from typing import Any, List, TypeVar
 
+from rest_framework.serializers import CharField, Serializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.state import User
 from rest_framework_simplejwt.tokens import RefreshToken
+
+T = TypeVar('T')
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -30,3 +33,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['is_staff'] = user.is_staff
         token['is_superuser'] = user.is_superuser
         return token
+
+
+class ChangePasswordSerializer(Serializer[T]):
+    old_password = CharField(required=True)
+    new_password = CharField(required=True)
