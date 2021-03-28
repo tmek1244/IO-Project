@@ -1,26 +1,36 @@
 import React from 'react'
 import { Grid } from '@material-ui/core'
 import AddNewUserPanel from './components/admin/AddNewUserPanel'
+import MainPanel from './components/MainPanel'
 import Header from './components/Header'
-
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route
+} from "react-router-dom";
 
 
 
 const AuthenticatedApp = () => {
 
     return (
-        <Grid container direction='column'>
-            <Grid item>
-                <Header />
-            </Grid>
-            <Grid item container>
-                <Grid item xs={false} sm={2} />
-                <Grid item xs={12} sm={8}>
-                    <AddNewUserPanel />
+        <Router>
+            <Grid container direction='column'>
+                <Grid item>
+                    <Header />
                 </Grid>
-                <Grid item xs={false} sm={2} />
+                <Switch>
+                    <Route exact path='/rejestracja'>
+                        <AddNewUserPanel />
+                    </Route>
+                    <Route path='/'>
+                        <MainPanel />
+                    </Route>
+
+                </Switch>
             </Grid>
-        </Grid>
+        </Router>
+
     );
 }
 
