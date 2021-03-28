@@ -21,5 +21,6 @@ from backend import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', views.api),
-    path('api/register/', include('register.urls', namespace="register"))
+    path('api/register/', include('register.urls', namespace="register")),
+    path('api/user/', include('users.urls', namespace='users'))
 ]

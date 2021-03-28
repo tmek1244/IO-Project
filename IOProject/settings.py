@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'o$e+u#2e8k&5^#g2g3(3ko@hhdl%*mwrso73nl+s4_xfj1f81f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', False)
 
 ALLOWED_HOSTS: List[str] = []
 
@@ -42,8 +42,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
     'backend',
     'register',
+    'users'
 ]
 AUTH_USER_MODEL = "register.EmailUser"
 
@@ -83,7 +85,8 @@ WSGI_APPLICATION = 'IOProject.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': os.environ.get(
+            'ENGINE', 'django.db.backends.postgresql_psycopg2'),
         'NAME': os.environ.get('DB_NAME', 'postgresql'),
         'USER': os.environ.get('DB_USER', 'user1'),
         'PASSWORD': os.environ.get('DB_PASSWORD', 'Ky<4`Enqc]8aq\\C}'),
@@ -114,6 +117,15 @@ AUTH_PASSWORD_VALIDATORS = [
                 '.NumericPasswordValidator',
     },
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend'
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
 
 
 # Internationalization
