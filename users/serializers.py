@@ -1,14 +1,13 @@
-from typing import Any, List, Dict
-
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.state import User
-from rest_framework_simplejwt.tokens import RefreshToken
+from typing import Any, Dict, List
 
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.db.models.base import Model
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.state import User
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -36,6 +35,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['is_staff'] = user.is_staff
         token['is_superuser'] = user.is_superuser
         return token
+
 
 class UserSerializer(serializers.ModelSerializer[Any]):
     class Meta:
@@ -73,4 +73,3 @@ class UserSerializer(serializers.ModelSerializer[Any]):
         )
 
         return user
-
