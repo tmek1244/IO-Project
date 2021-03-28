@@ -12,7 +12,7 @@ class UserSerializer(serializers.ModelSerializer[Any]):
         model = get_user_model()
         fields = ('first_name', 'last_name', 'email', 'faculty', 'is_staff')
 
-    def create(self, validated_data: Dict[Any, Any]) -> Model:
+    def create(self, validated_data: Dict[str, Any]) -> Model:
         user = get_user_model().objects.create(
             username=validated_data['email'],
             first_name=validated_data['first_name'],

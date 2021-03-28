@@ -1,5 +1,3 @@
-from typing import Any
-
 from django.db import models
 
 # Create your models here.
@@ -8,5 +6,5 @@ from django.db import models
 class Faculty(models.Model):
     name = models.CharField(max_length=50)
 
-    def __str__(self) -> Any:
+    def __str__(self) -> str:
         return str(self.name)
