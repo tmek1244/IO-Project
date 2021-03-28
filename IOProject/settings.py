@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'backend',
     'register',
 ]
+AUTH_USER_MODEL = "register.EmailUser"
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
