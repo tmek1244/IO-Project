@@ -6,8 +6,6 @@ from django.db.models.base import Model
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
-from django.core.exceptions import ValidationError
-
 
 class UserSerializer(serializers.ModelSerializer[Any]):
     class Meta:
