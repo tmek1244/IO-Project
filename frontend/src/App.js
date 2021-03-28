@@ -1,17 +1,20 @@
-import './App.css';
-import React, { useEffect, useState } from 'react'
+import React from 'react'
+import { Suspense } from 'react'
+import CircularProgress from '@material-ui/core/CircularProgress'
+
+const AuthenticatedApp = React.lazy(() => import("./AuthenticatedApp"))
+
+
 const App = () => {
-  const [state, setState] = useState('')
-  
-  useEffect(() => {
-    fetch('/api').then(res => res.json())
-    .then(data => setState(data['status']))
-  })
-  
   
   return (
-    <p>{state}</p>
-  );
+    
+    <Suspense fallback={<CircularProgress />}>
+      <AuthenticatedApp />
+    </Suspense>
+
+  )
+  
 }
 
 export default App;
