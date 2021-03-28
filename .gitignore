@@ -30,4 +30,3 @@ venv/
 /git_crypt_key.txt
 
 tmp/email-messages/*
-migrations/*
