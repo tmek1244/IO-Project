@@ -1,17 +1,29 @@
-import './App.css';
+//import './App.css';
 import React, { useEffect, useState } from 'react'
+import { AuthProvider, useAuthState } from './Context'
+import Dashboard from './pages/Dashboard';
+import Login from './pages/Login';
+
+
 const App = () => {
-  const [state, setState] = useState('')
+//   const [state, setState] = useState('')
   
-  useEffect(() => {
-    fetch('/api').then(res => res.json())
-    .then(data => setState(data['status']))
-  })
+//   useEffect(() => {
+//     fetch('/api').then(res => res.json())
+//     .then(data => setState(data['status']))
+//   })
   
-  
+
   return (
-    <p>{state}</p>
+    <AuthProvider>
+      <Home />
+    </AuthProvider>
   );
+}
+
+function Home() {
+  const {user} = useAuthState()
+  return user ? <Dashboard /> : <Login />
 }
 
 export default App;
