@@ -1,5 +1,3 @@
-import LOGIN_URL from '../config/urls';
- 
 export async function loginUser(dispatch, loginPayload) {
   const requestOptions = {
     method: 'POST',
@@ -9,7 +7,7 @@ export async function loginUser(dispatch, loginPayload) {
  
   try {
     dispatch({ type: 'REQUEST_LOGIN' });
-    let response = await fetch(LOGIN_URL, requestOptions);
+    let response = await fetch('/api/login', requestOptions);
     let data = await response.json();
  
     if (data.user) {

@@ -20,7 +20,7 @@ function Login(props) {
         } catch (error) {
             console.log(error)
         }
-    }
+    };
  
     return (
         <div>
@@ -47,4 +47,4 @@ function Login(props) {
     )
 }
  
-export default Login
+export default Login;

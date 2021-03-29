@@ -5,25 +5,31 @@ import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 
 
+import { loginUser, useAuthDispatch } from './Context'
+
+
 const App = () => {
-//   const [state, setState] = useState('')
+  const [state, setState] = useState('')
   
-//   useEffect(() => {
-//     fetch('/api').then(res => res.json())
-//     .then(data => setState(data['status']))
-//   })
+  useEffect(() => {
+    fetch('/api').then(res => res.json())
+    .then(data => setState(data['status']))
+  })
+
   
 
   return (
     <AuthProvider>
-      <Home />
+      <h1>{state}</h1>
+      <Login />
+      {/* <Home /> */}
     </AuthProvider>
   );
 }
 
-function Home() {
-  const {user} = useAuthState()
-  return user ? <Dashboard /> : <Login />
-}
+// function Home() {
+//   const {user} = useAuthState()
+//   return user.token ? <Dashboard /> : <Login />
+// }
 
 export default App;
