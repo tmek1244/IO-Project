@@ -2,7 +2,7 @@ from typing import Any, Dict, List
 
 from rest_framework import status
 from rest_framework.generics import CreateAPIView
-from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -46,20 +46,14 @@ class LogoutAllView(APIView):
 
 class CreateUserView(CreateAPIView):
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUser,)
 
     def post(
             self, request: Request, *args: List[Any],
             **kwargs: Dict[Any, Any]) -> Any:
-        try:
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            print(token)
-            # print(token["is_staff"])
-            if token["is_staff"]:
-                super().post(request, *args, **kwargs)
-            else:
-                return Response(status=status.HTTP_401_UNAUTHORIZED)
-        except Exception:
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.create(serializer.validated_data)
+            return Response(status=status.HTTP_200_OK)
+        else:
             return Response(status=status.HTTP_403_FORBIDDEN)
