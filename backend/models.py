@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 
@@ -19,14 +20,6 @@ class FieldOfStudy(models.Model):
     degree = models.CharField(choices=DEGREE)
 
 
-class Yearbook(models.Model):
-    field_of_study = models.ForeignKey(FieldOfStudy, on_delete=models.CASCADE)
-    begin = models.DateField()
-    end = models.DateField()
-    available_capacity = models.IntegerField()
-    minimal_points = models.FloatField()
-
-
 class Candidate(models.Model):
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
@@ -34,13 +27,37 @@ class Candidate(models.Model):
     gender = models.CharField(max_length=50)
     year_of_exam = models.IntegerField()
     city = models.CharField(max_length=80)
-    school = models.CharField(max_length=150)
 
 
-class Graduate(models.Model):
-    student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    yearbook = models.ForeignKey(Yearbook, on_delete=models.CASCADE)
+class GraduatedSchool(models.Model):
+    SCHOOL_TYPE = (
+        ('T', 'techikum'),
+        ('L', 'liceum'),
+        ('S1L', 'studia 1 st licencjat'),
+        ('S1I', 'studia 1 st inz'),
+        ('S2M', 'studia 2 st'),
+    )
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    school_city = models.CharField(max_length=100)
+    school_type = models.CharField(choices=SCHOOL_TYPE)
+    diploma_date = models.DateField()
+    school_name = models.CharField(max_length=100)
+    faculty = models.CharField(max_length=100, null=True)
+    field_of_study = models.CharField(max_length=100, null=True)
+    # maybe add choices for mode
+    mode = models.CharField(max_length=100, null=True)
+
+
+class Grade(models.Model):
+    school = models.ForeignKey(GraduatedSchool, on_delete=models.CASCADE)
+    subject = models.CharField(max_length=50)
     grade = models.FloatField()
+
+
+class ExamResult(models.Model):
+    candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
+    subject = models.CharField(max_length=50)
+    result = models.FloatField()
 
 
 class Recruitment(models.Model):
@@ -53,19 +70,12 @@ class RecruitmentResult(models.Model):
     POSSIBLE_RESULT = (
         ('+', 'Accepted'),
         ('-', 'Rejected'),
-        ('?', 'Waiting'),
-        ('$', 'Resigned')
+        ('$', 'Signed')
     )
     student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     recruitment = models.ForeignKey(Recruitment, on_delete=models.CASCADE)
     points = models.FloatField()
     result = models.CharField(choices=POSSIBLE_RESULT)
-
-
-class Semester(models.Model):
-    student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
-    yearbook = models.ForeignKey(Yearbook, on_delete=models.CASCADE)
-    semester_type = models.IntegerField()
 
 
 class Payment(models.Model):
