@@ -11,8 +11,8 @@ from rest_framework_simplejwt.token_blacklist.models import (BlacklistedToken,
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from users.serializers import (
-    ChangePasswordSerializer, CustomTokenObtainPairSerializer, UserSerializer)
+from users.serializers import (ChangePasswordSerializer,
+                               CustomTokenObtainPairSerializer, UserSerializer)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
