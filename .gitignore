@@ -28,5 +28,6 @@ db.sqlite3
 venv/
 .idea/
 /git_crypt_key.txt
+tmp/email-messages/*
 .vscode
 .mypy_cache
