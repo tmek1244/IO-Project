@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, TypeVar
 
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
