@@ -1,6 +1,7 @@
 import React from 'react'
 import { Grid } from '@material-ui/core'
 import AddNewUserPanel from './components/admin/AddNewUserPanel'
+import AddDataPanel from './components/AddDataPanel'
 import MainPanel from './components/MainPanel'
 import Header from './components/Header'
 import {
@@ -22,6 +23,9 @@ const AuthenticatedApp = () => {
                 <Switch>
                     <Route exact path='/rejestracja'>
                         <AddNewUserPanel />
+                    </Route>
+                    <Route exact path='/dodajdane'>
+                        <AddDataPanel />
                     </Route>
                     <Route path='/'>
                         <MainPanel />

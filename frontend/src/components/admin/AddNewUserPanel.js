@@ -136,6 +136,7 @@ export default function AddNewUserPanel() {
                                     <InputLabel id="faculty-input-label">Wydział</InputLabel>
                                     <Select
                                         labelId="faculty-input-label"
+                                        label='Wydział'
                                         id="faculty-input"
                                         name='faculty'
                                         onChange={handleInputChange}
@@ -166,6 +167,7 @@ export default function AddNewUserPanel() {
                                     <InputLabel id="role-input-label">Rola</InputLabel>
                                     <Select
                                         labelId="role-input-label"
+                                        label='Rola'
                                         id="role-input"
                                         error={errorForm.is_staff}
                                         name='is_staff'
