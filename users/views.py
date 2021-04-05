@@ -1,9 +1,9 @@
 
 from typing import Any, Dict, List
 
+from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
-from rest_framework import generics, status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView

@@ -80,4 +80,3 @@ class UserSerializer(serializers.ModelSerializer[Any]):
 class ChangePasswordSerializer(Serializer[T]):
     old_password = CharField(required=True)
     new_password = CharField(required=True)
-

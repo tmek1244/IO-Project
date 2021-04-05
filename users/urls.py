@@ -1,9 +1,8 @@
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from .views import (CreateUserView, ChangePasswordView, CustomTokenObtainPairView, LogoutAllView,
-                    LogoutView)
-
+from .views import (ChangePasswordView, CreateUserView,
+                    CustomTokenObtainPairView, LogoutAllView, LogoutView)
 
 app_name = 'users'
 
