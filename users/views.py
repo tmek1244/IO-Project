@@ -1,4 +1,3 @@
-
 from typing import Any, Dict, List
 
 from rest_framework import generics, status
@@ -12,8 +11,8 @@ from rest_framework_simplejwt.token_blacklist.models import (BlacklistedToken,
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 
-from .serializers import (ChangePasswordSerializer,
-                          CustomTokenObtainPairSerializer, UserSerializer)
+from users.serializers import (
+    ChangePasswordSerializer, CustomTokenObtainPairSerializer, UserSerializer)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
@@ -59,6 +58,7 @@ class CreateUserView(CreateAPIView):
             return Response(status=status.HTTP_200_OK)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
+
 
 class ChangePasswordView(generics.UpdateAPIView):
     permission_classes = (IsAuthenticated,)
