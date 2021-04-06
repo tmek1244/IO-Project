@@ -25,10 +25,6 @@ class UploadView(CreateAPIView):
 
     def post(self, request: Request, *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
         serializer = UploadSerializer(data=request.data, context={'request': request})
-        file1 = request.FILES.get("file1")
-        print(file1)
-        print(request.FILES)
-        print(type(file1))
         if serializer.is_valid():
             serializer.create(serializer.validated_data)
             return Response(status=status.HTTP_200_OK)
