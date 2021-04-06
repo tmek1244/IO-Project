@@ -19,6 +19,7 @@ const App = () => {
 
 const Home = () => {
   const user = useAuthState().user;
+
   let debugMode = false;
   const debugPage = <AuthenticatedApp />;
   if(debugMode) return debugPage;
