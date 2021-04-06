@@ -8,10 +8,7 @@ export async function loginUser(dispatch, payload) {
             headers: { 'Content-Type': 'application/json' },
 		    body: JSON.stringify(payload),
         });
-
         let data = await response.json();
-
-        console.log(Object.keys(data));
 
         if(data.user) {
             dispatch({type: 'LOGIN_SUCCESS', payload: data});
