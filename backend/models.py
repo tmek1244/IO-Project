@@ -4,7 +4,9 @@ from django.db import models
 
 
 class Faculty(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150)  
+    def __str__(self) -> str:
+        return str(self.name)
 
 
 class FieldOfStudy(models.Model):
@@ -82,3 +84,4 @@ class Payment(models.Model):
     payment = models.FloatField()
     description = models.TextField()
     time = models.DateTimeField()
+
