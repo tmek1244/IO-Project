@@ -7,9 +7,18 @@
 // 	? JSON.parse(localStorage.getItem('currentUser')).auth_token
 // 	: '';
 
+// export const initialState = {
+//     user: '', // || user
+//     token: '', // || token
+//     loading: false,
+//     errorMessage: null,
+// };
 export const initialState = {
-    user: '', // || user
-    token: '', // || token
+    access: '',
+    username: '', // || user
+    password: '',
+    is_staff:false,
+
     loading: false,
     errorMessage: null,
 };
@@ -24,15 +33,20 @@ export const AuthReducer = (initialState, action) => {
     case 'LOGIN_SUCCESS':
         return {
             ...initialState,
-            user: action.payload.user,
-            token: action.payload.auth_token,
+            access: action.payload.access,
+            username: action.payload.username,
+            password: action.payload.password,
+            is_staff: action.payload.is_staff,
+
             loading: false,
         }
     case 'LOGOUT':
         return {
             ...initialState,
-            user: '',
-            token: ''
+            access: '',
+            username: '',
+            password: '',
+            is_staff:false,
         }
     case 'LOGIN_ERROR':
         return {

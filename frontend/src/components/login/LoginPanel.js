@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {useAuthDispatch} from '../../context/AuthContext'
+import {useAuthDispatch} from '../../context/AuthContext';
 import { loginUser } from '../../context/UserActions';
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -11,15 +11,17 @@ import { Button, Card, CardContent, CardHeader, Typography } from '@material-ui/
 function LoginPanel(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
+    // const [rememberMe, setRememberMe] = useState(false); TODO: add
     
     const dispatch = useAuthDispatch();
+
     const handleLogin = async (e) => {
         e.preventDefault();
         
         try {
-            let response = await loginUser(dispatch, {email, password});
-            if(!response.user) return;
+            let response = await loginUser(dispatch, {username:email, password});
+            if(!response.access) return;
+
             
         } catch (error) {
             console.log(error);
@@ -27,7 +29,6 @@ function LoginPanel(props) {
     }
     
 
-    const [resetPassword, setResetPasswrd] = useState(false);
     const useStyles = makeStyles((theme) => ({
         root: {
             width: '100%',
@@ -88,6 +89,7 @@ function LoginPanel(props) {
                                 <Grid item xs={1}/>
 
                             </Grid>
+                            <button onClick={handleLogin} disabled={false}>login</button>
                         </CardContent>
                     </Card>
                 </Grid>
@@ -98,28 +100,3 @@ function LoginPanel(props) {
 }
 
 export default LoginPanel;
-
-
-
-// return (
-//     <div>
-//         <div className={{ width: 200 }}>
-            
-//             {/* {userDetails.errorMessage ? <p>{userDetails.errorMessage}</p> : null} */}
-
-//             <form >
-//                 <div>
-//                     <div>
-//                         <label htmlFor="email">Username</label>
-//                         <input type="text" id='email' value={email} onChange={(e) => setEmail(e.target.value)} disabled={false} />
-//                     </div>
-//                     <div>
-//                         <label htmlFor="password">Password</label>
-//                         <input type="password" id='password' value={password} onChange={(e) => setPassword(e.target.value)} disabled={false} />
-//                     </div>
-//                 </div>
-//                 <button onClick={handleLogin} disabled={false}>login</button>
-//             </form>
-//         </div>
-//     </div>
-// )
