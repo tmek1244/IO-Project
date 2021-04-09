@@ -31,3 +31,5 @@ venv/
 tmp/email-messages/*
 .vscode
 .mypy_cache
+
+*.csv

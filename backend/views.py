@@ -26,7 +26,8 @@ class UploadView(CreateAPIView):
     def post(self, request: Request, *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
         serializer = UploadSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
-            serializer.create(serializer.validated_data)
-            return Response(status=status.HTTP_200_OK)
+            if serializer.create(serializer.validated_data):
+                return Response(status=status.HTTP_200_OK)
+            else: return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
