@@ -27,3 +27,10 @@ jobs:
 
       - name: Mypy with django stubs
         run: mypy . --config-file setup.cfg
+
+      - name: Eslint
+        run: |
+          cd frontend/
+          npm install eslint --save-dev
+          npm install -D typescript
+          ./node_modules/.bin/eslint .

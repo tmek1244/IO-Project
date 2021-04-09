@@ -17,6 +17,9 @@ class UploadRequest(models.Model):
     user = ForeignKey(get_user_model(), on_delete=DO_NOTHING, null=True, blank=True)
     name = models.CharField(max_length=150)
 
+    def __str__(self) -> str:
+        return str(self.name)
+
 
 class FieldOfStudy(models.Model):
     DEGREE = (
@@ -27,7 +30,7 @@ class FieldOfStudy(models.Model):
     )
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
-    degree = models.CharField(choices=DEGREE)
+    degree = models.CharField(choices=DEGREE, max_length=10)
 
 
 class Candidate(models.Model):
@@ -50,7 +53,7 @@ class GraduatedSchool(models.Model):
     )
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     school_city = models.CharField(max_length=100)
-    school_type = models.CharField(choices=SCHOOL_TYPE)
+    school_type = models.CharField(choices=SCHOOL_TYPE, max_length=10)
     diploma_date = models.DateField()
     school_name = models.CharField(max_length=100)
     faculty = models.CharField(max_length=100, null=True)
@@ -86,7 +89,7 @@ class RecruitmentResult(models.Model):
     student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     recruitment = models.ForeignKey(Recruitment, on_delete=models.CASCADE)
     points = models.FloatField()
-    result = models.CharField(choices=POSSIBLE_RESULT)
+    result = models.CharField(choices=POSSIBLE_RESULT, max_length=10)
 
 
 class Payment(models.Model):

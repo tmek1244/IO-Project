@@ -23,7 +23,7 @@ COPY . .
 # Tini allows us to avoid several Docker edge cases,
 # see https://github.com/krallin/tini.
 ENTRYPOINT ["/sbin/tini", "--", "python"]
-
+CMD ["manage.py", "makemigrations"]
 # Use the non-root user to run our application
 USER nonroot
-CMD ["manage.py", "runserver", "127.0.0.1:8000"]
+CMD ["manage.py", "runserver", "0.0.0.0:8000"]

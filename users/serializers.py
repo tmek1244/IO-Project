@@ -1,13 +1,16 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, TypeVar
 
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
 from django.db.models.base import Model
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
+from rest_framework.serializers import CharField, Serializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.state import User
 from rest_framework_simplejwt.tokens import RefreshToken
+
+T = TypeVar('T')
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -73,3 +76,8 @@ class UserSerializer(serializers.ModelSerializer[Any]):
         )
 
         return user
+
+
+class ChangePasswordSerializer(Serializer[T]):
+    old_password = CharField(required=True)
+    new_password = CharField(required=True)
