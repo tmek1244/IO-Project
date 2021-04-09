@@ -1,6 +1,8 @@
 from django.contrib import admin
 
-from .models import *
+from .models import (Candidate, ExamResult, Faculty, FieldOfStudy, Grade,
+                     GraduatedSchool, Payment, Recruitment, RecruitmentResult,
+                     UploadRequest)
 
 # Register your models here.
 

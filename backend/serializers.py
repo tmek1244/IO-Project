@@ -1,10 +1,11 @@
-from rest_framework.request import Request
-from backend.models import *
-from typing import Any, Dict, List
+from typing import Any, Dict
 
-from django.contrib.auth import get_user_model
-from django.db.models.base import Model
 from rest_framework import serializers
+
+from backend.models import (Candidate, ExamResult, FieldOfStudy, Grade,
+                            GraduatedSchool, Recruitment, RecruitmentResult,
+                            UploadRequest)
+
 
 class UploadSerializer(serializers.ModelSerializer[Any]):
     file = serializers.FileField()
@@ -13,20 +14,24 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         model = UploadRequest
         fields = ('file',)
 
-    def create(self, validated_data: Dict[str, Any]) -> Model:
+    def create(self, validated_data: Dict[str, Any]) -> Any:
 
         request = self.context.get("request")
-        upload_request = UploadRequest.objects.create(user = request.user)
+        if not request:
+            return None
+        upload_request = UploadRequest.objects.create(user=request.user)
         upload_request.save()
 
         try:
 
             for line in validated_data["file"]:
 
-                (first_name,last_name,date_of_birth,gender,year_of_exam,city,
-                school_city,school_type,school_name,graduade_faculty,graduade_field_of_study,mode,
-                grade_IT,grade_math,grade_english,points_IT,points_math,points_english,
-                year,round,field_of_study_name,points,result) = line.decode("utf-8").strip().split(",")
+                (first_name, last_name, date_of_birth, gender, year_of_exam,
+                 city, school_city, school_type, school_name,
+                 graduade_faculty, graduade_field_of_study, mode,
+                 grade_IT, grade_math, grade_english, points_IT, points_math,
+                 points_english, year, round, field_of_study_name, points,
+                 result) = line.decode("utf-8").strip().split(",")
 
                 candidate, created = Candidate.objects.get_or_create(
                     first_name=first_name,
@@ -40,15 +45,16 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
                     candidate.upload_request = upload_request
                     candidate.save()
 
-                graduated_school, created = GraduatedSchool.objects.get_or_create(
-                    candidate=candidate,
-                    school_city=school_city,
-                    school_type=school_type,
-                    school_name=school_name,
-                    faculty=graduade_faculty,
-                    field_of_study=graduade_field_of_study,
-                    mode=mode
-                )
+                graduated_school, created = \
+                    GraduatedSchool.objects.get_or_create(
+                        candidate=candidate,
+                        school_city=school_city,
+                        school_type=school_type,
+                        school_name=school_name,
+                        faculty=graduade_faculty,
+                        field_of_study=graduade_field_of_study,
+                        mode=mode
+                    )
                 if created:
                     graduated_school.upload_request = upload_request
                     graduated_school.save()
@@ -123,17 +129,18 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
                     recruitment.upload_request = upload_request
                     recruitment.save()
 
-                recruitment_result, created = RecruitmentResult.objects.get_or_create(
-                    student=candidate,
-                    recruitment=recruitment,
-                    points=points,
-                    result=result
-                )
+                recruitment_result, created = \
+                    RecruitmentResult.objects.get_or_create(
+                        student=candidate,
+                        recruitment=recruitment,
+                        points=points,
+                        result=result
+                    )
                 if created:
                     recruitment_result.upload_request = upload_request
                     recruitment_result.save()
 
-        except Exception as e:
+        except Exception:
             upload_request.delete()
             return None
 

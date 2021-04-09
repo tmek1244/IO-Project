@@ -1,7 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.db.models.deletion import DO_NOTHING, CASCADE
-from django.db import models
+from django.db.models.deletion import CASCADE, DO_NOTHING
 
 # Create your models here.
 
@@ -12,8 +11,10 @@ class Faculty(models.Model):
     def __str__(self) -> str:
         return str(self.name)
 
+
 class UploadRequest(models.Model):
-    user = models.ForeignKey(get_user_model(), on_delete=DO_NOTHING, null=True, blank=True)
+    user = models.ForeignKey(get_user_model(), on_delete=DO_NOTHING,
+                             null=True, blank=True)
 
 
 class FieldOfStudy(models.Model):
@@ -23,14 +24,18 @@ class FieldOfStudy(models.Model):
         ("3", "3 terms II"),
         ("4", "4 terms II")
     )
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE, null=True, blank=True)
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE, null=True, blank=True)
+    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
+                                       null=True, blank=True)
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE,
+                                null=True, blank=True)
     name = models.CharField(max_length=150)
-    degree = models.CharField(choices=DEGREE, max_length=10, null=True, blank=True)
+    degree = models.CharField(choices=DEGREE, max_length=10,
+                              null=True, blank=True)
 
 
 class Candidate(models.Model):
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE, null=True, blank=True)
+    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
+                                       null=True, blank=True)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     date_of_birth = models.DateField()
@@ -47,7 +52,8 @@ class GraduatedSchool(models.Model):
         ('S1I', 'studia 1 st inz'),
         ('S2M', 'studia 2 st'),
     )
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE, null=True, blank=True)
+    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
+                                       null=True, blank=True)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     school_city = models.CharField(max_length=100)
     school_type = models.CharField(choices=SCHOOL_TYPE, max_length=10)
@@ -60,21 +66,24 @@ class GraduatedSchool(models.Model):
 
 
 class Grade(models.Model):
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE, null=True, blank=True)
+    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
+                                       null=True, blank=True)
     school = models.ForeignKey(GraduatedSchool, on_delete=models.CASCADE)
     subject = models.CharField(max_length=50)
     grade = models.FloatField()
 
 
 class ExamResult(models.Model):
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE, null=True, blank=True)
+    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
+                                       null=True, blank=True)
     candidate = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     subject = models.CharField(max_length=50)
     result = models.FloatField()
 
 
 class Recruitment(models.Model):
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE, null=True, blank=True)
+    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
+                                       null=True, blank=True)
     field_of_study = models.ForeignKey(FieldOfStudy, on_delete=models.CASCADE)
     year = models.IntegerField()
     round = models.IntegerField()
@@ -86,7 +95,8 @@ class RecruitmentResult(models.Model):
         ('-', 'Rejected'),
         ('$', 'Signed')
     )
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE, null=True, blank=True)
+    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
+                                       null=True, blank=True)
     student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     recruitment = models.ForeignKey(Recruitment, on_delete=models.CASCADE)
     points = models.FloatField()
@@ -94,7 +104,8 @@ class RecruitmentResult(models.Model):
 
 
 class Payment(models.Model):
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE, null=True, blank=True)
+    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
+                                       null=True, blank=True)
     student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     payment = models.FloatField()
     description = models.TextField()

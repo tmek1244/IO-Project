@@ -1,9 +1,8 @@
 import random
 import datetime
-
-from faker import Faker
 from typing import Dict, Union
 
+from faker import Faker
 
 fake = Faker()
 
@@ -25,8 +24,9 @@ class Candidate:
         self.data_of_birth = fake.date_between(
             start_date='-30y', end_date='-19y')
         self.gender = random.choice(['kobieta', 'mezczyzna'])
+        sth = datetime.datetime.now().year - self.data_of_birth.year - 18
         self.year_of_exam = fake.date_between(
-            start_date=f'-{datetime.datetime.now().year - self.data_of_birth.year - 18}y '
+            start_date=f'-{sth}y '
         ).year
         self.city = fake.city()
 
