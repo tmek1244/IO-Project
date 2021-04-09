@@ -15,6 +15,24 @@ function LoginPanel(props) {
     
     const dispatch = useAuthDispatch();
 
+    const validateEmail = () => {
+        if(!email) {
+            return false;
+        }
+        var pattern = new RegExp(/^(("[\w-\s]+")|([\w-]+(?:\.[\w-]+)*)|("[\w-\s]+")([\w-]+(?:\.[\w-]+)*))(@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$)|(@\[?((25[0-5]\.|2[0-4][0-9]\.|1[0-9]{2}\.|[0-9]{1,2}\.))((25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\.){2}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[0-9]{1,2})\]?$)/i);
+        if (!pattern.test(email)) {
+          return false;
+        }
+        return true;
+    }
+
+    const validatePassword = () => {
+        if(!password) {
+            return false;
+        }
+        return true;
+    }
+
     const handleLogin = async (e) => {
         e.preventDefault();
         
@@ -38,6 +56,14 @@ function LoginPanel(props) {
         control: {
             padding: theme.spacing(2),
         },
+        margin: {
+            margin: theme.spacing(1),
+        },
+        typography: {
+            info1: {
+                fontSize: 100,
+            },
+        },
     }));
     const classes = useStyles();
 
@@ -51,19 +77,13 @@ function LoginPanel(props) {
                 <Grid item xs={1} sm={3} lg={4} />
                 <Grid item xs={10} sm={6} lg={4} >
                     <Card>
-                        <CardHeader
-                            title={<Typography variant='h5'> Logowanie </Typography>}
+                        <CardHeader 
+                            title={<Typography variant='h5' > Logowanie </Typography>}
                             style={{ 'backgroundColor': '#fafafa'}}
                         />
-                        <CardContent>
+                        <CardContent >
                             <Grid container>
-                                <Grid item xs={12}>
-                                    <Typography wrap="nowrap">{info}</Typography>
-                                </Grid>
-                                {/* <Grid item xs={0}/> */}
-
-                                <Grid item xs={1}/>
-                                <Grid item xs={10}>
+                                <Grid item xs={12} item className={classes.margin}>
                                     <TextField
                                         id="email"
                                         name="email"
@@ -73,10 +93,10 @@ function LoginPanel(props) {
                                         fullWidth={true}
                                     />
                                 </Grid>
-                                <Grid item xs={1}/>
-                                
-                                <Grid item xs={1}/>
-                                <Grid item xs={10}>
+
+                                {validateEmail() ? null : <p> Podaj dobry adres</p>}
+
+                                <Grid item xs={12} item className={classes.margin}>
                                     <TextField
                                         id="password"
                                         name="password"
@@ -86,10 +106,21 @@ function LoginPanel(props) {
                                         fullWidth={true}
                                     />
                                 </Grid>
-                                <Grid item xs={1}/>
+
+                                <Button item className={classes.margin}
+                                    variant="contained" 
+                                    color="primary" 
+                                    onClick={handleLogin} 
+                                    disabled={false}>
+                                        login
+                                 </Button>
+
+                                <Grid item xs={12}>
+                                    <Typography wrap="nowrap" variant='caption'>{info}</Typography>
+                                </Grid>
 
                             </Grid>
-                            <button onClick={handleLogin} disabled={false}>login</button>
+                            
                         </CardContent>
                     </Card>
                 </Grid>

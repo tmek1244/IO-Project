@@ -1,5 +1,3 @@
-import {useAuthState, useAuthDispatch} from './AuthContext';
-
 const ROOT_URL = '/api/user';
 
 export async function loginUser(dispatch, payload) {
