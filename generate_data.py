@@ -1,6 +1,6 @@
 import random
 import datetime
-from typing import Dict, Union
+from typing import Any, Dict, Union
 
 from faker import Faker
 
@@ -18,7 +18,7 @@ def convert_to_str(dictionary: Dict[str, Union[str, datetime.date]]) -> str:
 
 
 class Candidate:
-    def __init__(self):
+    def __init__(self) -> None:
         self.first_name = fake.first_name()
         self.last_name = fake.last_name()
         self.data_of_birth = fake.date_between(
@@ -30,7 +30,7 @@ class Candidate:
         ).year
         self.city = fake.city()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return convert_to_str(vars(self))
 
 
@@ -111,21 +111,21 @@ UNIVERSITY = [
 
 
 class Grade:
-    def __init__(self):
+    def __init__(self) -> None:
         self.IT = random.randint(2, 6)
         self.math = random.randint(2, 6)
         self.english = random.randint(2, 6)
 
 
 class ExamResult:
-    def __init__(self):
+    def __init__(self) -> None:
         self.IT = random.randint(30, 100)
         self.math = random.randint(30, 100)
         self.english = random.randint(30, 100)
 
 
 class Recruitment:
-    def __init__(self, round_nr):
+    def __init__(self, round_nr: Any) -> None:
         self.year = random.randint(2016, 2021)
         self.round = round_nr
         self.field_of_study = random.choice(
@@ -135,7 +135,7 @@ class Recruitment:
             ["Accepted", "Rejected", "Signed"])
 
 
-def main(persons, file_name):
+def main(persons: Any, file_name: Any) -> Any:
     with open(file_name, 'w') as file:
         record = [vars(Candidate()), random.choice(HIGH_SCHOOL),
                   vars(Grade()), vars(ExamResult()), vars(Recruitment(1))]
