@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework.request import Request
-from backend.models import UploadRequest
+from backend.models import *
 from typing import Any, Dict, List
 
 from django.contrib.auth import get_user_model
@@ -26,6 +26,8 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         upload_request.save()
 
         reader = csv.reader(validated_data["file1"], 'utf-8')
-        print(*reader)
+        for line in reader:
+            candidate = Candidate.objects.create(upload_request,*line)
+            candidate.save()
 
         return upload_request

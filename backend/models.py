@@ -31,6 +31,7 @@ class FieldOfStudy(models.Model):
 
 
 class Candidate(models.Model):
+    upload_request = models.ForeignKey(UploadRequest, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     date_of_birth = models.DateField()
