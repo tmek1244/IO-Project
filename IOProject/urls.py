@@ -21,5 +21,6 @@ from backend import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', views.api),
-    path('api/user/', include('users.urls', namespace='users'))
+    path('api/user/', include('users.urls', namespace='users')),
+    path('api/backend/', include('backend.urls', namespace='backend'))
 ]
