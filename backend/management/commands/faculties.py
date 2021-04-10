@@ -1,8 +1,8 @@
-from typing import List, Any, Dict, Tuple
+from typing import Any, Dict, List, Tuple
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
+
 from backend.models import Faculty, FieldOfStudy
-
 
 FACULTIES: Dict[str, List[Tuple[str, str]]] = {
     'WIET': [('Informatyka', '7'), ('Elektornika', '7')],
