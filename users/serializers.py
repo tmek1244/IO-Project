@@ -60,20 +60,21 @@ class UserSerializer(serializers.ModelSerializer):
         user.save()
 
         # until final release check tmp/email-messages/ to see emails
-        send_mail(
-            subject="Rejestracja na CHAŁKA",
-            message=f"""Witaj,\n
-            Dodano Cię do bazy użytkowników CHAŁKA, z następującymi danymi:
-                imię: {validated_data['first_name']}
-                nazwisko: {validated_data['last_name']}
-                email: {validated_data['email']}
-                HASŁO: {password}\n
-            Pozdrawiamy :)
-            """,
-            from_email="no-reply@nie.wiem",
-            recipient_list=[validated_data['email']],
-            fail_silently=False
-        )
+        # send_mail(
+        #     subject="Rejestracja na CHAŁKA",
+        #     message=f"""Witaj,\n
+        #     Dodano Cię do bazy użytkowników CHAŁKA, z następującymi danymi:
+        #         imię: {validated_data['first_name']}
+        #         nazwisko: {validated_data['last_name']}
+        #         email: {validated_data['email']}
+        #         HASŁO: {password}\n
+        #     Pozdrawiamy :)
+        #     """,
+        #     from_email="no-reply@nie.wiem",
+        #     recipient_list=[validated_data['email']],
+        #     fail_silently=False
+        # )
+        print(password)
 
         return user
 

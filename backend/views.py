@@ -8,6 +8,9 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Faculty
+from .models import FieldOfStudy
 
 from .serializers import UploadSerializer
 
@@ -34,3 +37,22 @@ class UploadView(CreateAPIView):
                 return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
+
+class GetFacultiesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request) -> Response:
+        return Response(list([f.name for f in Faculty.objects.all()]), status=status.HTTP_200_OK)
+
+
+class GetFieldsOfStudy(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request) -> Response:
+        result: Dict[str, List[str]] = {}
+        for field in FieldOfStudy.objects.all():
+            if field.faculty.name in result:
+                result[field.faculty.name].append(field.name)
+            else:
+                result[field.faculty.name] = [field.name]
+        return Response(result, status=status.HTTP_200_OK)

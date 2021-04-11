@@ -1,5 +1,6 @@
 import React from 'react';
 import MUIDataTable from 'mui-datatables'
+import { useAuthState } from '../../context/AuthContext'
 
 import PageTitle from '../../components/PageTitle/PageTitle';
 
@@ -58,7 +59,22 @@ const TableRaportPanel = () => {
 
     const [state, dispatch] = React.useReducer(reducer, initialFormState)
     const [data, setData] = React.useState([])
+    const authState = useAuthState()
 
+    const [faculties, setFaculties] = React.useState([])
+
+    React.useEffect(() => {
+        fetch('api/backend/faculties', {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authState.access}`,
+            },
+        })
+        .then(response => response.json())
+        .then(json => setFaculties(json))
+        .catch(e => console.log(e))
+    })
 
 
     const handleInputChange = (e, type) => {
@@ -70,17 +86,17 @@ const TableRaportPanel = () => {
     const handleSubmit = (event) => {
         event.preventDefault()
 
-        fetch("/api/backend/recruitment-result/", {
+        fetch("/api/backend/recruitment-result-overview/", {
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authState.access}`,
             },
             body: JSON.stringify(state)
         })
             .then(response => response.json())
             .then(json => setData(json))
             .catch(e => console.log(e))
-
     }
 
     return (
@@ -148,8 +164,10 @@ const TableRaportPanel = () => {
                                         name='faculty'
                                         onChange={e => { handleInputChange(e, actionType.FACULTY) }}
                                     >
-                                        <MenuItem key={1} value="WIET">WIET</MenuItem>
-                                        <MenuItem key={2} value="WIEAIB">WIEAIB</MenuItem>
+                                        {faculties.map((name) => (
+                                                <MenuItem key={name} value={name}>{name}</MenuItem>
+                                            ))}
+
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -235,7 +253,7 @@ const TableRaportPanel = () => {
             </Card>
 
             {
-                fakeData.length !== 0 && <div style={{ "marginTop": "1vw" }}>
+                data.length !== 0 && <div style={{ "marginTop": "1vw" }}>
                     <MUIDataTable
                         title="Wyniki rekrutacji"
                         data={fakeData}

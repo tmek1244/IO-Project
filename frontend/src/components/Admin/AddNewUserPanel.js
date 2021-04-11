@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -8,27 +8,9 @@ import Grid from '@material-ui/core/Grid';
 import { Button, Card, CardContent, CardHeader, MenuItem, Select, Typography } from '@material-ui/core';
 import PageTitle from '../PageTitle/PageTitle'
 
-import { useAuthState, useAuthDispatch } from '../../context/AuthContext'
+import { useAuthState } from '../../context/AuthContext'
 
 
-const faculties = [
-    'Wydział Górnictwa i Geoinżynierii',
-    'Wydział Inżynierii Metali i Informatyki Przemysłowej',
-    'Wydział Elektrotechniki, Automatyki, Informatyki i Inżynierii Biomedycznej',
-    'Wydział Informatyki, Elektroniki i Telekomunikacji',
-    'Wydział Inżynierii Mechanicznej i Robotyki',
-    'Wydział Geologii, Geofizyki i Ochrony Środowiska',
-    'Wydział Geodezji Górniczej i Inżynierii Środowiska',
-    'Wydział Inżynierii Materiałowej i Ceramiki',
-    'Wydział Odlewnictwa',
-    'Wydział Metali Nieżelaznych',
-    'Wydział Wiertnictwa, Nafty i Gazu',
-    'Wydział Zarządzania',
-    'Wydział Energetyki i Paliw',
-    'Wydział Fizyki i Informatyki Stosowanej',
-    'Wydział Matematyki Stosowanej',
-    'Wydział Humanistyczny'
-]
 
 const useStyles = makeStyles((theme) => ({
     margin: {
@@ -50,6 +32,21 @@ export default function AddNewUserPanel() {
         'faculty': false,
         'email': false,
         'is_staff': false
+    })
+
+    const [faculties, setFaculties] = useState([])
+
+    useEffect(() => {
+        fetch('api/backend/faculties', {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authState.access}`,
+            },
+        })
+        .then(response => response.json())
+        .then(json => setFaculties(json))
+        .catch(e => console.log(e))
     })
 
     const classes = useStyles();
@@ -85,17 +82,18 @@ export default function AddNewUserPanel() {
         event.preventDefault()
         if (validateInput()) {
 
-            const body = { ...newUserData }
+            const body = { ...newUserData, faculty: null }
             body.is_staff = newUserData.is_staff === 'admin' ? true : false
             
             console.log(authState.access)
 
             console.log(body)
+
             fetch('api/user/register/', {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${authState.access}`
+                    'Authorization': `Bearer ${authState.access}`,
                 },
                 body: JSON.stringify(body)
             })

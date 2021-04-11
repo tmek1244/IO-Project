@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import { Button, Card, CardContent, CardHeader, Typography, FormControl, Select, MenuItem, InputLabel } from '@material-ui/core';
 import MomentUtils from '@date-io/moment';
 import PageTitle from '../../components/PageTitle/PageTitle';
+import { useAuthState } from '../../context/AuthContext'
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,9 +21,10 @@ const cycles = [1, 2, 3, 4, 5, 6]
 const AddDataPanel = () => {
     const classes = useStyles();
 
+    const authState = useAuthState()
 
-    const [year, setYear] = useState(new Date())
-    const [cycle, setCycle] = useState(cycles[0])
+    // const [year, setYear] = useState(new Date())
+    // const [cycle, setCycle] = useState(cycles[0])
     const [file, setFile] = useState(null)
     const [fileError, setFileError] = useState(false);
     const [responseOk, setResponseOk] = useState(false);
@@ -41,25 +43,23 @@ const AddDataPanel = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-        console.log("submit")
-        console.log(validateInput())
+
         if (validateInput()) {
             const formData = new FormData()
-            formData.append('year', year)
-            formData.append('cycle', cycle)
             formData.append('file', file)
 
-            fetch('/api/newdata/', {
+
+
+            fetch('/api/backend/upload/', {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'multipart/form-data'
+                    'Authorization': `Bearer ${authState.access}`,
                 },
                 body: formData
             })
                 .then(response => {
                     if (response.ok) {
                         setFile(null)
-                        setCycle(cycles[0])
                         setResponseOk(true)
                     }
                     else {
@@ -89,36 +89,6 @@ const AddDataPanel = () => {
                             <CardContent>
                                 <Grid container>
 
-                                    <Grid item className={classes.margin} style={{ 'marginLeft': '22%' }}>
-
-                                        <DatePicker
-                                            views={["year"]}
-                                            disableFuture
-                                            inputVariant="outlined"
-                                            label="Rok rekrutacji"
-                                            value={year}
-                                            onChange={setYear}
-                                        />
-                                    </Grid>
-                                    <Grid item className={classes.margin}>
-
-                                        <FormControl variant="outlined" >
-                                            <InputLabel id="cycle-input-label" >Cykl</InputLabel>
-                                            <Select
-                                                labelId="cycle-input-label"
-                                                label='Cykl'
-                                                id="cycle-input"
-                                                name='cycle'
-                                                onChange={e => { setCycle(e.target.value) }}
-                                                value={cycle}
-                                            >
-                                                {cycles.map((cycle) => (
-                                                    <MenuItem key={cycle} value={cycle}>{cycle}</MenuItem>
-                                                ))}
-
-                                            </Select>
-                                        </FormControl>
-                                    </Grid>
                                     <Grid item className={classes.margin} style={{ "marginLeft": '35%' }}>
 
                                         <input
