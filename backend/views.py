@@ -11,12 +11,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-
-from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.filters import RecruitmentResultListFilters
+from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
-
 
 from .serializers import UploadSerializer
 
