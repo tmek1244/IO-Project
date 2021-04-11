@@ -1,5 +1,7 @@
 import { makeStyles } from "@material-ui/styles";
 
+
+
 export default makeStyles(theme => ({
   root: {
     display: "flex",
@@ -18,5 +20,10 @@ export default makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen,
     }),
+  },
+  circularProgress: {
+    display: 'flex',
+    marginLeft: '50%',
+    marginTop: "23%",
   }
 }));

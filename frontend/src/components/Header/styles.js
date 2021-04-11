@@ -1,6 +1,4 @@
 import { makeStyles } from "@material-ui/styles";
-import { fade } from "@material-ui/core/styles/colorManipulator";
-
 
 // const useStyles = makeStyles({
 //     toolbar: {
@@ -37,9 +35,6 @@ export default makeStyles(theme => ({
     },
     hide: {
         display: "none",
-    },
-    grow: {
-        flexGrow: 1,
     },
     headerMenuButton: {
         marginLeft: theme.spacing(2),

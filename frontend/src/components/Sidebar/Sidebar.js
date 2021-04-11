@@ -2,13 +2,14 @@ import React from 'react'
 import { Drawer, List } from "@material-ui/core"
 import {
     useLayoutState,
-    useSidebarToggle
 } from '../../context/LayoutContext'
 import { withRouter } from 'react-router'
 
 import {
     Home as HomeIcon,
-    PersonAdd as PersonAddIcon
+    PersonAdd as PersonAddIcon,
+    AddBox as AddBoxIcon,
+    TableChart as TableChartIcon,
 } from '@material-ui/icons'
 
 import SidebarLink from './components/SidebarLink'
@@ -18,8 +19,9 @@ import useStyles from './styles'
 
 const links = [
     { id: 0, label: "Dashboard", link: '/', icon: <HomeIcon /> },
-    { id: 1, label: "Dodaj użytkownika", link: '/rejestracja', icon: <PersonAddIcon /> }
-
+    { id: 1, label: "Dodaj dane", link: '/dodajDane', icon: <AddBoxIcon /> },
+    { id: 2, label: "Podsumowanie", link: '/podsumowanie', icon: <TableChartIcon /> },
+    { id: 3, label: "Dodaj użytkownika", link: '/rejestracja', icon: <PersonAddIcon /> },
 ]
 
 
@@ -30,7 +32,6 @@ const Sidebar = ({location}) => {
     const classes = useStyles()
 
     const sidebarState = useLayoutState()
-    const sidebarToggle = useSidebarToggle()
 
 
     return (

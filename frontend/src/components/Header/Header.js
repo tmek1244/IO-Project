@@ -1,6 +1,5 @@
 import React from 'react'
 import { AppBar, IconButton, Toolbar, Typography } from '@material-ui/core'
-import { makeStyles } from '@material-ui/styles'
 import { ReactComponent as Logo } from '../../static/logo/logo.svg'
 // import HeaderDropdownMenu from './HeaderDropdownMenu'
 import { Link, withRouter } from 'react-router-dom'

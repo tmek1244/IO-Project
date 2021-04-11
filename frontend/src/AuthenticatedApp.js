@@ -1,12 +1,6 @@
 import React from 'react'
-import { Grid } from '@material-ui/core'
-<<<<<<< HEAD
-import AddNewUserPanel from './components/admin/AddNewUserPanel'
-import AddDataPanel from './components/AddDataPanel'
-=======
+import AddDataPanel from './pages/AddData/AddDataPanel'
 import AddNewUserPanel from './components/Admin/AddNewUserPanel'
->>>>>>> CHA-15 poprawki w layoutcie
-import MainPanel from './components/MainPanel'
 import Header from './components/Header/Header'
 import Sidebar from './components/Sidebar/Sidebar'
 
@@ -20,6 +14,8 @@ import useStyles from './styles/styles'
 import classNames from 'classnames'
 
 import { useLayoutState } from './context/LayoutContext'
+import Dashboard from './pages/Dashboard/Dashboard'
+import TableRaportPanel from './pages/TableRaport/TableRaportPanel'
 
 
 const AuthenticatedApp = () => {
@@ -38,14 +34,17 @@ const AuthenticatedApp = () => {
 
 
                     <Switch>
-                        <Route exact path='/rejestracja'>
-                            <AddNewUserPanel />
+                        <Route exact path='/podsumowanie'>
+                            <TableRaportPanel />
                         </Route>
                         <Route exact path='/dodajdane'>
                             <AddDataPanel />
                         </Route>
+                        <Route exact path='/rejestracja'>
+                            <AddNewUserPanel />
+                        </Route>
                         <Route path='/'>
-                            <MainPanel />
+                            <Dashboard />
                         </Route>
 
                     </Switch>
