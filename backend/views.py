@@ -1,3 +1,5 @@
+from typing import Any
+
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Manager
 from django.http import JsonResponse
@@ -6,7 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 
 from backend.filters import RecruitmentResultListFilters
 from backend.models import RecruitmentResult
-from backend.serializers import RecruitmentResultSerializer
+from backend.serializers import (RecruitmentResultOverviewSerializer,
+                                 RecruitmentResultSerializer)
 
 # Create your views here.
 # from django.shortcuts import render
@@ -18,7 +21,7 @@ def api(request: WSGIRequest) -> JsonResponse:
 
 class RecruitmentResultListView(generics.ListAPIView):
     queryset = RecruitmentResult.objects.all()
-    serializer_class = RecruitmentResultSerializer
+    serializer_class: Any = RecruitmentResultSerializer
 
     permission_classes = (IsAuthenticated,)
 
@@ -28,3 +31,7 @@ class RecruitmentResultListView(generics.ListAPIView):
 
         return RecruitmentResult.objects.filter(**filters) \
             if len(filters) > 0 else RecruitmentResult.objects.all()
+
+
+class RecruitmentResultOverviewListView(RecruitmentResultListView):
+    serializer_class = RecruitmentResultOverviewSerializer
