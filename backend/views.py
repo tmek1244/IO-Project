@@ -1,4 +1,4 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, cast
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
@@ -6,17 +6,13 @@ from rest_framework import status
 from rest_framework.generics import CreateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
-
-from .serializers import UploadSerializer
-
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.models import Faculty, FieldOfStudy
 
-
-# Create your views here.
+from .serializers import UploadSerializer
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -50,8 +46,11 @@ class GetFieldsOfStudy(APIView):
     def post(self, request: Request) -> Response:
         result: Dict[str, List[str]] = {}
         for field in FieldOfStudy.objects.all():
-            if field.faculty.name in result:
-                result[field.faculty.name].append(field.name)
+            if field.faculty is None:
+                result['others'] += [field.name]
             else:
-                result[field.faculty.name] = [field.name]
+                if field.faculty.name in result:
+                    result[field.faculty.name].append(field.name)
+                else:
+                    result[field.faculty.name] = [field.name]
         return Response(result, status=status.HTTP_200_OK)

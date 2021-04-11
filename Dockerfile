@@ -29,5 +29,5 @@ CMD ["manage.py", "makemigrations"]
 CMD ["manage.py", "migrate"]
 
 # Use the non-root user to run our application
-USER nonroot
+#USER nonroot
 CMD ["manage.py", "runserver", "0.0.0.0:8000"]
