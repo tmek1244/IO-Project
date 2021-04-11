@@ -10,6 +10,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import MenuIcon from '@material-ui/icons/Menu';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
+import {logoutUser} from '../context/UserActions';
+import {useAuthDispatch} from '../context/AuthContext';
+
 const useStyles = makeStyles((theme) => ({
   root: {
     marginLeft: '30%'
@@ -24,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function HeaderDropdownMenu() {
+  const dispath = useAuthDispatch();
+
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
@@ -36,7 +41,8 @@ export default function HeaderDropdownMenu() {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
-
+    
+    logoutUser(dispath);
     setOpen(false);
   };
 

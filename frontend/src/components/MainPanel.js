@@ -3,6 +3,7 @@ import { makeStyles } from '@material-ui/styles'
 import { Grid, Card, CardContent, CardHeader, Typography } from '@material-ui/core';
 import { Link } from 'react-router-dom';
 import VerticalBar from '../demos/VerticalBar'
+import AddDataPanel from './AddDataPanel'
 
 const useStyles = makeStyles((theme) => ({
     margin: {
@@ -27,9 +28,21 @@ const MainPanel = () => {
                         </CardContent>
                     </Card>
                 </Link>
-
             </Grid>
             <Grid item xs={12} sm={4} className={classes.margin}>
+                <Link to='/dodajdane' style={{ 'textDecoration': 'none' }}>
+                    <Card >
+                        <CardHeader
+                            title={<Typography variant='h5'> Dodaj dane o kolejnym cyklu rekrutacji  </Typography>}
+                        />
+                        <CardContent>
+                            Kliknij aby przejść do panelu dodawania danych
+                        </CardContent>
+                    </Card>
+                </Link>
+            </Grid>
+            <Grid item sm={2} />
+            <Grid item xs={12} sm={8} className={classes.margin}>
                 <Link to='/' style={{ 'textDecoration': 'none' }}>
                     <Card >
                         <CardHeader
@@ -40,7 +53,6 @@ const MainPanel = () => {
                         </CardContent>
                     </Card>
                 </Link>
-
             </Grid>
             <Grid item xs={false} sm={2} />
         </Grid>
