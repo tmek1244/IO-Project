@@ -1,19 +1,24 @@
 import React, {useState} from 'react';
-import {useAuthDispatch} from '../../context/AuthContext';
+import {useAuthDispatch, useAuthState} from '../../context/AuthContext';
 import { loginUser } from '../../context/UserActions';
 
-import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
 import { Button, Card, CardContent, CardHeader, Typography } from '@material-ui/core';
+import useStyles from "./styles";
 
 function LoginPanel(props) {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    // const [rememberMe, setRememberMe] = useState(false); TODO: add
+    const classes = useStyles();
+    
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [emailCheck, setEmailCheck] = useState(false);
+    const [passwordCheck, setPasswordCheck] = useState(false);
     
     const dispatch = useAuthDispatch();
+    const { loading, errorMessage } = useAuthState();
+
 
     const validateEmail = () => {
         if(!email) {
@@ -27,7 +32,7 @@ function LoginPanel(props) {
     }
 
     const validatePassword = () => {
-        if(!password) {
+        if(password.length < 4) {
             return false;
         }
         return true;
@@ -35,37 +40,13 @@ function LoginPanel(props) {
 
     const handleLogin = async (e) => {
         e.preventDefault();
-        
         try {
             let response = await loginUser(dispatch, {username:email, password});
             if(!response.access) return;
-
-            
         } catch (error) {
             console.log(error);
-        }
+        } 
     }
-    
-
-    const useStyles = makeStyles((theme) => ({
-        root: {
-            width: '100%',
-            height: '100%',
-            flexGrow: 1,
-        },
-        control: {
-            padding: theme.spacing(2),
-        },
-        margin: {
-            margin: theme.spacing(1),
-        },
-        typography: {
-            info1: {
-                fontSize: 100,
-            },
-        },
-    }));
-    const classes = useStyles();
 
     const info = "Strona AGH do analizy danych rekrutacyjnych. " + 
                 "Jeśli jesteś pracownikiem AGH oraz nie masz jeszcze konta, " +
@@ -73,9 +54,9 @@ function LoginPanel(props) {
 
     return (
         <div className={classes.root}>
-            <Grid container alignItems="center">
-                <Grid item xs={1} sm={3} lg={4} />
-                <Grid item xs={10} sm={6} lg={4} >
+            <Grid container className={classes.container}>
+                <Grid item xs={1} sm={2} lg={4} />
+                <Grid item xs={10} sm={8} lg={4} >
                     <Card>
                         <CardHeader 
                             title={<Typography variant='h5' > Logowanie </Typography>}
@@ -83,48 +64,66 @@ function LoginPanel(props) {
                         />
                         <CardContent >
                             <Grid container>
-                                <Grid item xs={12} item className={classes.margin}>
+                                <Grid item xs={12} className={(classes.margin, classes.center)}>
+                                        <Typography
+                                            variant='body1'
+                                            color='error'
+                                            align="center"
+                                        >
+                                            {errorMessage ? 
+                                            "Nie udało się zalogować. Sprawdź email i hasło." :
+                                            null
+                                            }
+                                        </Typography>
+                                </Grid> 
+                                <Grid item xs={12} className={classes.margin}>
                                     <TextField
+                                        error={!validateEmail() && emailCheck}
                                         id="email"
                                         name="email"
                                         label="Email"
                                         variant="outlined"
                                         onChange={(e)=>setEmail(e.target.value)}
+                                        onFocus={(e) => setEmailCheck(false)}
+                                        onBlur={(e) => setEmailCheck(true)}
                                         fullWidth={true}
+                                        helperText={validateEmail()?null:"Podaj dobry email"}
                                     />
                                 </Grid>
-
-                                {validateEmail() ? null : <p> Podaj dobry adres</p>}
-
-                                <Grid item xs={12} item className={classes.margin}>
+                                <Grid item xs={12} className={classes.margin}>
                                     <TextField
+                                        error={!validatePassword() && passwordCheck}
                                         id="password"
                                         name="password"
+                                        type="password"
                                         label="Hasło"
-                                        variant="outlined"
                                         onChange={(e)=>setPassword(e.target.value)}
+                                        onFocus={(e)=> setPasswordCheck(false)}
+                                        onBlur={(e)=> setPasswordCheck(true)}
+                                        helperText={validatePassword()?null:"Hasło musi mieć przynajmniej 4 znaki"}
+                                        variant="outlined"
                                         fullWidth={true}
                                     />
                                 </Grid>
-
-                                <Button item className={classes.margin}
-                                    variant="contained" 
-                                    color="primary" 
-                                    onClick={handleLogin} 
-                                    disabled={false}>
+                                <Grid item container xs={12} className={classes.button}>
+                                    <Button 
+                                        className={classes.margin}
+                                        variant="contained" 
+                                        color="primary" 
+                                        onClick={handleLogin} 
+                                        disabled={!(validateEmail() && validatePassword()) || loading}  //comment this line out to be able to login via non-email usernames
+                                    >
                                         login
-                                 </Button>
-
-                                <Grid item xs={12}>
-                                    <Typography wrap="nowrap" variant='caption'>{info}</Typography>
+                                    </Button>
                                 </Grid>
-
+                                <Grid item xs={12}>
+                                    <Typography wrap="nowrap" variant='body2'>{info}</Typography>
+                                </Grid>
                             </Grid>
-                            
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={1} sm={3} lg={4} />
+                <Grid item xs={1} sm={2} lg={4} />
             </Grid>
         </div>
     )

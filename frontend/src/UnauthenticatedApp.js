@@ -1,9 +1,33 @@
 import React from 'react';
-import LoginPanel from './components/login/LoginPanel'
+import { Grid } from '@material-ui/core'
 
-function UnauthenticatedApp(props) {
+import LoginPanel from './components/login/LoginPanel'
+import Header from './components/Header'
+
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route
+} from "react-router-dom";
+
+
+const UnauthenticatedApp = () => {
     return (
-        <LoginPanel />
+        <Router>
+            <Grid container direction='column'>
+                <Grid item>
+                    <Header />
+                </Grid>
+                <Switch>
+                    <Route path='/'>
+                        <LoginPanel />
+                    </Route>
+
+                </Switch>
+            </Grid>
+
+            
+        </Router>
     )
 }
 
