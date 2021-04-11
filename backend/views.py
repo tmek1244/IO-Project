@@ -1,13 +1,9 @@
-from typing import Any
-
 from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Manager
 from django.http import JsonResponse
-from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
+from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
@@ -18,6 +14,7 @@ from backend.filters import RecruitmentResultListFilters
 from backend.models import RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
+
 from .serializers import UploadSerializer
 
 # Create your views here.

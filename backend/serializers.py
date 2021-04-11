@@ -1,17 +1,11 @@
-from typing import Any
-
-from rest_framework import serializers
-
-from .models import (Candidate, Faculty, FieldOfStudy, Recruitment,
-                     RecruitmentResult)
-
 from typing import Any, Dict
 
 from django.db.models import Model
+from rest_framework import serializers
 
-from backend.models import (Candidate, ExamResult, FieldOfStudy, Grade,
-                            GraduatedSchool, Recruitment, RecruitmentResult,
-                            UploadRequest)
+from .models import (Candidate, ExamResult, Faculty, FieldOfStudy, Grade,
+                     GraduatedSchool, Recruitment, RecruitmentResult,
+                     UploadRequest)
 
 
 class CandidateSerializer(serializers.ModelSerializer[Any]):

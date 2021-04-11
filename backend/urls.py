@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import RecruitmentResultListView, RecruitmentResultOverviewListView
-from .views import UploadView
+from .views import (RecruitmentResultListView,
+                    RecruitmentResultOverviewListView, UploadView)
 
 app_name = 'backend'
 
