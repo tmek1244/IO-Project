@@ -71,10 +71,20 @@ const TableRaportPanel = () => {
                 'Authorization': `Bearer ${authState.access}`,
             },
         })
-        .then(response => response.json())
-        .then(json => setFaculties(json))
-        .catch(e => console.log(e))
-    })
+            .then(response => {
+                if (response.ok) {
+                    console.log("ok")
+                    return response.json()
+                }
+                else throw new Error("nie")
+            })
+            .then(json => {
+                console.log(json)
+                setFaculties(json)
+            }
+            )
+            .catch(e => console.log(e))
+    }, [])
 
 
     const handleInputChange = (e, type) => {
@@ -85,7 +95,7 @@ const TableRaportPanel = () => {
 
     const handleSubmit = (event) => {
         event.preventDefault()
-
+        console.log(authState.access)
         fetch("/api/backend/recruitment-result-overview/", {
             method: "POST",
             headers: {
@@ -94,8 +104,15 @@ const TableRaportPanel = () => {
             },
             body: JSON.stringify(state)
         })
-            .then(response => response.json())
-            .then(json => setData(json))
+            .then(response => {
+                if (response.ok) return response.json()
+                else throw new Error("Couldn't fetch data")
+            })
+            .then(json => {
+
+                setData(json)
+                console.log(json)
+            })
             .catch(e => console.log(e))
     }
 
@@ -164,9 +181,9 @@ const TableRaportPanel = () => {
                                         name='faculty'
                                         onChange={e => { handleInputChange(e, actionType.FACULTY) }}
                                     >
-                                        {faculties.map((name) => (
-                                                <MenuItem key={name} value={name}>{name}</MenuItem>
-                                            ))}
+                                        { faculties.map((name) => (
+                                            <MenuItem key={name} value={name}>{name}</MenuItem>
+                                        ))}
 
                                     </Select>
                                 </FormControl>
@@ -256,7 +273,7 @@ const TableRaportPanel = () => {
                 data.length !== 0 && <div style={{ "marginTop": "1vw" }}>
                     <MUIDataTable
                         title="Wyniki rekrutacji"
-                        data={fakeData}
+                        data={data}
                         columns={columns}
                         options={options}
                     />

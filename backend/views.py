@@ -40,6 +40,8 @@ class RecruitmentResultListView(generics.ListAPIView):
         return RecruitmentResult.objects.filter(**filters) \
             if len(filters) > 0 else RecruitmentResult.objects.all()
 
+    def post(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
 class RecruitmentResultOverviewListView(RecruitmentResultListView):
     serializer_class = RecruitmentResultOverviewSerializer
