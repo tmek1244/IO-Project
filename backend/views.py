@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, cast
+from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import JsonResponse
