@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'o$e+u#2e8k&5^#g2g3(3ko@hhdl%*mwrso73nl+s4_xfj1f81f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DJANGO_DEBUG', False)
+DEBUG = os.environ.get('DJANGO_DEBUG', True)
 
 ALLOWED_HOSTS: List[str] = os.environ.get(
     'ALLOWED_HOST', "localhost,127.0.0.1").split(",")
@@ -86,11 +86,11 @@ DATABASES = {
     'default': {
         'ENGINE': os.environ.get(
             'ENGINE', 'django.db.backends.postgresql_psycopg2'),
-        'NAME': os.environ.get('DB_NAME', 'postgresql'),
+        'NAME': os.environ.get('DB_NAME', 'postgresDB'),
         'USER': os.environ.get('DB_USER', 'user1'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', 'Ky<4`Enqc]8aq\\C}'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', 'B{UgXD*m-\\3T?b65'),
         'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', 5432),
+        'PORT': os.environ.get('DB_PORT', 5433),
     }
 }
 

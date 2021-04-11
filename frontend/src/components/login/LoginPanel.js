@@ -111,7 +111,7 @@ function LoginPanel(props) {
                                         variant="contained" 
                                         color="primary" 
                                         onClick={handleLogin} 
-                                        disabled={!(validateEmail() && validatePassword()) || loading}  //comment this line out to be able to login via non-email usernames
+                                        // disabled={!(validateEmail() && validatePassword()) || loading}  //comment this line out to be able to login via non-email usernames
                                     >
                                         login
                                     </Button>

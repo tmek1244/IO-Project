@@ -8,7 +8,7 @@ from backend.models import (Candidate, ExamResult, FieldOfStudy, Grade,
                             UploadRequest)
 
 
-class UploadSerializer(serializers.ModelSerializer[Any]):
+class UploadSerializer(serializers.ModelSerializer):
     file = serializers.FileField()
 
     class Meta:

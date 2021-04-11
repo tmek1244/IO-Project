@@ -3,7 +3,6 @@ import { Suspense } from 'react'
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 import useStyles from './styles/styles'
-const AuthenticatedApp = React.lazy(() => import("./AuthenticatedApp"))
 import { useAuthState } from './context/AuthContext'
 
 const AuthenticatedApp = React.lazy(() => import("./AuthenticatedApp"))

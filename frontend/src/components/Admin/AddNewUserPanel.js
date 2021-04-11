@@ -8,6 +8,9 @@ import Grid from '@material-ui/core/Grid';
 import { Button, Card, CardContent, CardHeader, MenuItem, Select, Typography } from '@material-ui/core';
 import PageTitle from '../PageTitle/PageTitle'
 
+import { useAuthState, useAuthDispatch } from '../../context/AuthContext'
+
+
 const faculties = [
     'Wydział Górnictwa i Geoinżynierii',
     'Wydział Inżynierii Metali i Informatyki Przemysłowej',
@@ -51,6 +54,8 @@ export default function AddNewUserPanel() {
 
     const classes = useStyles();
 
+    const authState = useAuthState()
+
     const handleInputChange = (e) => {
         const { name, value } = e.target
         setNewUserData({
@@ -82,11 +87,15 @@ export default function AddNewUserPanel() {
 
             const body = { ...newUserData }
             body.is_staff = newUserData.is_staff === 'admin' ? true : false
+            
+            console.log(authState.access)
 
-            fetch('/register/', {
+            console.log(body)
+            fetch('api/user/register/', {
                 method: "POST",
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${authState.access}`
                 },
                 body: JSON.stringify(body)
             })
@@ -98,7 +107,7 @@ export default function AddNewUserPanel() {
 
     return (
         <>
-            <PageTitle title="Dodaj użytkownika"/>
+            <PageTitle title="Dodaj użytkownika" />
 
             <Grid item container>
                 <Grid item xs={false} sm={2} />
@@ -187,7 +196,7 @@ export default function AddNewUserPanel() {
                                 </Grid>
                                 <Grid item sm={2} />
                                 <Grid item sm={12}>
-                                <Button
+                                    <Button
                                         variant="contained"
                                         color="primary"
                                         onClick={handleSubmit}

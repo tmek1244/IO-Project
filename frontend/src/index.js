@@ -1,13 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-<<<<<<< HEAD
 import { CssBaseline, ThemeProvider } from '@material-ui/core';
-=======
-import reportWebVitals from './reportWebVitals';
-import {AuthProvider} from './context/AuthContext';
-import { ThemeProvider } from '@material-ui/core';
->>>>>>> master
+import { AuthProvider } from './context/AuthContext';
 import { theme } from './styles/theme'
 import { LayoutProvider } from './context/LayoutContext'
 
