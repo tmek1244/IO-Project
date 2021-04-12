@@ -1,5 +1,5 @@
-import random
 import datetime
+import random
 from typing import Any, Dict, Union
 
 from faker import Faker

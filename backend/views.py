@@ -10,14 +10,13 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import Faculty
-from .models import FieldOfStudy
 
 from backend.filters import RecruitmentResultListFilters
 from backend.models import RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
+from .models import Faculty, FieldOfStudy
 from .serializers import UploadSerializer
 
 # Create your views here.
