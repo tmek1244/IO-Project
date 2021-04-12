@@ -2,6 +2,8 @@ import React from 'react'
 import { AppBar, IconButton, Toolbar, Typography } from '@material-ui/core'
 import { ReactComponent as Logo } from '../../static/logo/logo.svg'
 // import HeaderDropdownMenu from './HeaderDropdownMenu'
+import { useAuthDispatch } from '../../context/AuthContext.js';
+import { logoutUser } from '../../context/UserActions.js';
 import { Link, withRouter } from 'react-router-dom'
 import {
     Menu as MenuIcon,
@@ -23,6 +25,7 @@ const Header = () => {
     const sidebarState = useLayoutState()
     const sidebarToggle = useSidebarToggle()
 
+    const dispatch = useAuthDispatch();
 
 
     return (
@@ -60,7 +63,7 @@ const Header = () => {
 
                 <IconButton
                     color="inherit"
-                    onClick={() => console.log("dodaj wylogowanie proszę :)")}
+                    onClick={() => logoutUser(dispatch)}
                     classes={{
                         root: classNames(
                             classes.headerIcon

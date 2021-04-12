@@ -31,6 +31,7 @@ export async function loginUser(dispatch, payload) {
 export async function logoutUser(dispatch) {
     dispatch({type: 'LOGOUT'});
     localStorage.removeItem('currentUser');
+    //TODO: add send info to server about logging out
 }
 
 export async function refreshAccess(dispatch, authState) {
