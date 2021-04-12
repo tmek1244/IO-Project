@@ -42,6 +42,7 @@ class RecruitmentResultListView(generics.ListAPIView):
     def post(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
 
+
 class RecruitmentResultOverviewListView(RecruitmentResultListView):
     serializer_class = RecruitmentResultOverviewSerializer
 
@@ -63,11 +64,15 @@ class UploadView(CreateAPIView):
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
+
 class GetFacultiesView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request) -> Response:
-        return Response(list([f.name for f in Faculty.objects.all()]), status=status.HTTP_200_OK)
+        return Response(
+            list([f.name for f in Faculty.objects.all()]),
+            status=status.HTTP_200_OK
+        )
 
 
 class GetFieldsOfStudy(APIView):

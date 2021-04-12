@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, TypeVar
 
 from django.contrib.auth import get_user_model
-from django.core.mail import send_mail
+# from django.core.mail import send_mail
 from django.db.models.base import Model
 from django.utils.crypto import get_random_string
 from rest_framework import serializers
