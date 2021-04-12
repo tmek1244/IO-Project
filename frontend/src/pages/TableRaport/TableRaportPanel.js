@@ -6,9 +6,9 @@ import PageTitle from '../../components/PageTitle/PageTitle';
 
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import { Button, Card, CardContent, CardHeader, Grid, MenuItem, Select, Typography } from '@material-ui/core';
+import { Button, Card, CardContent, Grid, MenuItem, Select } from '@material-ui/core';
 
-import { options, columns, fakeData } from './tableConfig'
+import { options, columns } from './tableConfig'
 
 const initialFormState = {
     cycle: 1,
@@ -181,7 +181,7 @@ const TableRaportPanel = () => {
                                         name='faculty'
                                         onChange={e => { handleInputChange(e, actionType.FACULTY) }}
                                     >
-                                        { faculties.map((name) => (
+                                        {faculties.map((name) => (
                                             <MenuItem key={name} value={name}>{name}</MenuItem>
                                         ))}
 

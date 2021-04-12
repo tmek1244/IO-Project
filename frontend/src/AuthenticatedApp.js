@@ -16,11 +16,13 @@ import classNames from 'classnames'
 import { useLayoutState } from './context/LayoutContext'
 import Dashboard from './pages/Dashboard/Dashboard'
 import TableRaportPanel from './pages/TableRaport/TableRaportPanel'
+import { useAuthState } from './context/AuthContext'
 
 
 const AuthenticatedApp = () => {
     const classes = useStyles()
     const isSidebarOpened = useLayoutState()
+    const authState = useAuthState()
 
     return (
         <Router>
@@ -40,9 +42,12 @@ const AuthenticatedApp = () => {
                         <Route exact path='/dodajdane'>
                             <AddDataPanel />
                         </Route>
-                        <Route exact path='/rejestracja'>
-                            <AddNewUserPanel />
-                        </Route>
+                        {
+                            authState.is_staff &&
+                            <Route exact path='/rejestracja'>
+                                <AddNewUserPanel />
+                            </Route>
+                        }
                         <Route path='/'>
                             <Dashboard />
                         </Route>

@@ -16,6 +16,7 @@ import SidebarLink from './components/SidebarLink'
 import classNames from 'classnames'
 
 import useStyles from './styles'
+import { useAuthState } from '../../context/AuthContext'
 
 const links = [
     { id: 0, label: "Dashboard", link: '/', icon: <HomeIcon /> },
@@ -32,7 +33,15 @@ const Sidebar = ({location}) => {
     const classes = useStyles()
 
     const sidebarState = useLayoutState()
+    const authState = useAuthState()
 
+    const links = [
+        { id: 0, label: "Dashboard", link: '/', icon: <HomeIcon /> },
+        { id: 1, label: "Dodaj dane", link: '/dodajDane', icon: <AddBoxIcon /> },
+        { id: 2, label: "Podsumowanie", link: '/podsumowanie', icon: <TableChartIcon /> },
+        authState.is_staff && { id: 3, label: "Dodaj użytkownika", link: '/rejestracja', icon: <PersonAddIcon /> },
+    ]
+    
 
     return (
         <Drawer

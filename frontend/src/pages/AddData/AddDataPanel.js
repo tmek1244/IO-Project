@@ -28,7 +28,7 @@ const AddDataPanel = () => {
     const [file, setFile] = useState(null)
     const [fileError, setFileError] = useState(false);
     const [responseOk, setResponseOk] = useState(false);
-
+    
     const onFileChange = event => {
         setFile(event.target.files[0])
     }

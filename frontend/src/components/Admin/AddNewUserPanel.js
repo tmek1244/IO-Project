@@ -34,6 +34,8 @@ export default function AddNewUserPanel() {
         'is_staff': false
     })
 
+    const [userCreated, setUserCreated] = useState(null)
+
     const [faculties, setFaculties] = useState([])
 
     useEffect(() => {
@@ -44,10 +46,10 @@ export default function AddNewUserPanel() {
                 'Authorization': `Bearer ${authState.access}`,
             },
         })
-        .then(response => response.json())
-        .then(json => setFaculties(json))
-        .catch(e => console.log(e))
-    })
+            .then(response => response.json())
+            .then(json => setFaculties(json))
+            .catch(e => console.log(e))
+    }, [])
 
     const classes = useStyles();
 
@@ -82,9 +84,9 @@ export default function AddNewUserPanel() {
         event.preventDefault()
         if (validateInput()) {
 
-            const body = { ...newUserData, faculty: null }
+            const body = { ...newUserData, faculty: null } // TODO usunąć to bo to jest hack na prezentację i powinno być zdelegalizowane
             body.is_staff = newUserData.is_staff === 'admin' ? true : false
-            
+
             console.log(authState.access)
 
             console.log(body)
@@ -97,8 +99,14 @@ export default function AddNewUserPanel() {
                 },
                 body: JSON.stringify(body)
             })
-                .then(response => response.json())
-                .then(json => console.log(json))
+                .then(response => {
+                    if (response.ok) setUserCreated(true)
+                    else {
+                        setUserCreated(false)
+                        throw new Error("Coulnd't create user")
+                    }
+                }
+                )
                 .catch(e => console.log(e))
         }
     }
@@ -202,6 +210,9 @@ export default function AddNewUserPanel() {
                                     >
                                         Dodaj użytkownika
                          </Button>
+                         {userCreated && <p style={{'color': 'green'}}>Stworzono użytkownika</p>}
+                         {userCreated === false && <p style={{'color': 'red'}}>Stworzono użytkownika</p>}
+                         
                                 </Grid>
                             </Grid>
                         </CardContent>
