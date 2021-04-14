@@ -12,14 +12,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import RecruitmentResult
+from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
 from .models import Faculty, FieldOfStudy
 from .serializers import UploadSerializer
-
-# Create your views here.
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -66,23 +64,19 @@ class UploadView(CreateAPIView):
 
 
 class GetFacultiesView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request: Request) -> Response:
-        return Response(
-            list([f.name for f in Faculty.objects.all()]),
-            status=status.HTTP_200_OK
-        )
+    def post(self, request: Request) -> Response:
+        return Response(list(Faculty.objects.all()), status=status.HTTP_200_OK)
 
 
 class GetFieldsOfStudy(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request: Request) -> Response:
+    def post(self, request: Request) -> Response:
         result: Dict[str, List[str]] = {}
         for field in FieldOfStudy.objects.all():
-            if field.faculty.name in result:
-                result[field.faculty.name].append(field.name)
+            if field.faculty is None:
+                result['others'] += [field.name]
             else:
-                result[field.faculty.name] = [field.name]
+                if field.faculty.name in result:
+                    result[field.faculty.name].append(field.name)
+                else:
+                    result[field.faculty.name] = [field.name]
         return Response(result, status=status.HTTP_200_OK)
