@@ -16,7 +16,6 @@ from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
-from .models import Faculty, FieldOfStudy
 from .serializers import UploadSerializer
 
 
@@ -37,7 +36,8 @@ class RecruitmentResultListView(generics.ListAPIView):
         return RecruitmentResult.objects.filter(**filters) \
             if len(filters) > 0 else RecruitmentResult.objects.all()
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
         return self.list(request, *args, **kwargs)
 
 

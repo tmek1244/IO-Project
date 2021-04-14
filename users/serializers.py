@@ -40,7 +40,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer[Any]):
     class Meta:
         model = get_user_model()
         fields = ('first_name', 'last_name', 'email', 'faculty', 'is_staff')
@@ -79,6 +79,6 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 
-class ChangePasswordSerializer(Serializer):
+class ChangePasswordSerializer(Serializer[T]):
     old_password = CharField(required=True)
     new_password = CharField(required=True)

@@ -69,7 +69,7 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
                   'gender')
 
 
-class UploadSerializer(serializers.ModelSerializer):
+class UploadSerializer(serializers.ModelSerializer[Any]):
     file = serializers.FileField()
 
     class Meta:
