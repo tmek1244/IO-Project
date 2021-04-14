@@ -9,15 +9,14 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import RecruitmentResult
+from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
 from .serializers import UploadSerializer
-
-# Create your views here.
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -36,6 +35,10 @@ class RecruitmentResultListView(generics.ListAPIView):
 
         return RecruitmentResult.objects.filter(**filters) \
             if len(filters) > 0 else RecruitmentResult.objects.all()
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
 
 
 class RecruitmentResultOverviewListView(RecruitmentResultListView):
@@ -58,3 +61,22 @@ class UploadView(CreateAPIView):
                 return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class GetFacultiesView(APIView):
+    def post(self, request: Request) -> Response:
+        return Response(list(Faculty.objects.all()), status=status.HTTP_200_OK)
+
+
+class GetFieldsOfStudy(APIView):
+    def post(self, request: Request) -> Response:
+        result: Dict[str, List[str]] = {}
+        for field in FieldOfStudy.objects.all():
+            if field.faculty is None:
+                result['others'] += [field.name]
+            else:
+                if field.faculty.name in result:
+                    result[field.faculty.name].append(field.name)
+                else:
+                    result[field.faculty.name] = [field.name]
+        return Response(result, status=status.HTTP_200_OK)
