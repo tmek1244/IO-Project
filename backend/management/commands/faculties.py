@@ -16,8 +16,6 @@ class Command(BaseCommand):
     help = 'Closes the specified poll for voting'
 
     def handle(self, *args: Any, **kwargs: Any) -> None:
-        self.stdout.write("DZIALA")
-
         for faculty_name, fields in FACULTIES.items():
             faculty, created = Faculty.objects.get_or_create(
                 name=faculty_name

@@ -30,8 +30,8 @@ class RecruitmentResultListView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self) -> Manager[RecruitmentResult]:
-        filters = RecruitmentResultListFilters(self.request.data) \
-            .get_all_arguments()
+        filters = RecruitmentResultListFilters(
+            self.request.data).get_all_arguments()
 
         return RecruitmentResult.objects.filter(**filters) \
             if len(filters) > 0 else RecruitmentResult.objects.all()

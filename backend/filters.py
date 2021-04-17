@@ -44,8 +44,7 @@ class RecruitmentResultListFilters:
             self.get_second_degree_student_filters()
         self.result_filter = data.get("status")
 
-    def get_recruitment_filters(self) \
-            -> Dict[str, Any]:
+    def get_recruitment_filters(self) -> Dict[str, Any]:
         field_of_study_filters = \
             FieldOfStudyListFilters(self.data).get_all_arguments()
 
@@ -67,8 +66,7 @@ class RecruitmentResultListFilters:
     def get_second_degree_student_filters(self) -> Dict[str, Any]:
         student_filters = {}
 
-        first_cycle_faculty = \
-            self.data.get("first_cycle_faculty")
+        first_cycle_faculty = self.data.get("first_cycle_faculty")
 
         student_field_of_study_filters: Dict[str, Any] = {}
         if first_cycle_faculty is not None:
@@ -96,7 +94,6 @@ class RecruitmentResultListFilters:
         return student_filters
 
     def get_all_arguments(self) -> Dict[str, Manager[Recruitment]]:
-
         filters: Dict[str, Any] = {}
 
         if len(self.recruitment_filters) > 0:

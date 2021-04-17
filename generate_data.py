@@ -144,7 +144,7 @@ def main(persons: Any, file_name: Any) -> Any:
             for x in rec.keys():
                 dictionary.append(x)
 
-        print(','.join(dictionary))
+        print(','.join(dictionary), file=file)
         for i in range(persons):
             record = [vars(Candidate()), random.choice(HIGH_SCHOOL),
                       vars(Grade()), vars(ExamResult())]
