@@ -1,6 +1,8 @@
 from typing import Any, Dict
 
 from django.db.models import Model
+from django.db.models import fields
+from django.db.models.fields import CharField
 from rest_framework import serializers
 
 from .models import (Candidate, ExamResult, Faculty, FieldOfStudy, Grade,
@@ -19,13 +21,32 @@ class FacultySerializer(serializers.ModelSerializer[Any]):
         model = Faculty
         fields = '__all__'
 
-    def create(self, validated_data: Dict[str, Any]) -> Model:
+    def create(self, validated_data: Dict[str, Any]) -> bool:
         faculty, created = Faculty.objects.get_or_create(
             name = validated_data["name"]
         )
         faculty.save()
 
-        return faculty
+        return created
+
+class FakeFieldOfStudySerializer(serializers.ModelSerializer[Any]):
+    faculty = serializers.CharField(required=True)
+
+    class Meta:
+        model = FieldOfStudy
+        fields = ('faculty', 'name', 'degree')
+
+    def create(self, validated_data: Dict[str, Any]) -> bool:
+        try:
+            fof, created = FieldOfStudy.objects.get_or_create(
+                faculty = Faculty.objects.get(name=validated_data['faculty']),
+                name = validated_data["name"],
+                degree = validated_data['degree']
+            )
+            fof.save()
+        except:
+            return False
+        return True
 
 
 class FieldOfStudySerializer(serializers.ModelSerializer[Any]):
@@ -208,12 +229,9 @@ def create_exam_result(upload_request: Any, candidate: Model, subject: str,
 
 def create_field_of_study(upload_request: Any,
                           field_of_study_name: str) -> Any:
-    field_of_study, created = FieldOfStudy.objects.get_or_create(
+    field_of_study = FieldOfStudy.objects.get(
         name=field_of_study_name
     )
-    if created:
-        field_of_study.upload_request = upload_request
-        field_of_study.save()
     return field_of_study
 
 

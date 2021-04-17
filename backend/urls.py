@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import (AddFacultyView, GetFacultiesView, GetFieldsOfStudy,
+from .views import (AddFacultyView, AddFieldOfStudy, GetFacultiesView, GetFieldsOfStudy,
                     RecruitmentResultListView,
                     RecruitmentResultOverviewListView, UploadView)
 
@@ -17,5 +17,6 @@ urlpatterns = [
     path('fields_of_studies/',
          GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
-    path('add/faculty', AddFacultyView.as_view(), name='add_faculty')
+    path('add/faculty', AddFacultyView.as_view(), name='add_faculty'),
+    path('add/field-of-study', AddFieldOfStudy.as_view(), name='add_fof'),
 ]

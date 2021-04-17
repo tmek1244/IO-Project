@@ -16,7 +16,7 @@ from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
-from .serializers import UploadSerializer, FacultySerializer
+from .serializers import FakeFieldOfStudySerializer, UploadSerializer, FacultySerializer
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -88,7 +88,25 @@ class AddFacultyView(CreateAPIView):
     def post(self, request: Request, *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
         serializer = FacultySerializer(data=request.data)
         if serializer.is_valid():
-            serializer.create(serializer.validated_data)
-            return Response(status=status.HTTP_200_OK)
+            created = serializer.create(serializer.validated_data)
+            if created:
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_208_ALREADY_REPORTED)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+class AddFieldOfStudy(CreateAPIView):
+    serializer_class = FakeFieldOfStudySerializer
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request: Request, *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
+        serializer = FakeFieldOfStudySerializer(data=request.data)
+        if serializer.is_valid():
+            created = serializer.create(serializer.validated_data)
+            if created:
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)

@@ -6,7 +6,7 @@ from django.db.models.deletion import CASCADE, DO_NOTHING
 
 
 class Faculty(models.Model):
-    name = models.CharField(max_length=150)
+    name = models.CharField(max_length=150, unique=True)
 
     def __str__(self) -> str:
         return str(self.name)
@@ -24,10 +24,7 @@ class FieldOfStudy(models.Model):
         ("3", "3 terms II"),
         ("4", "4 terms II")
     )
-    upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
-                                       null=True, blank=True)
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE,
-                                null=True, blank=True)
+    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     degree = models.CharField(choices=DEGREE, max_length=10,
                               null=True, blank=True)
