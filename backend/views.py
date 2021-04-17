@@ -80,3 +80,16 @@ class GetFieldsOfStudy(APIView):
                 else:
                     result[field.faculty.name] = [field.name]
         return Response(result, status=status.HTTP_200_OK)
+
+
+def get_basic_data(request: Request, match = None) -> JsonResponse:
+    if match is None:
+        params = ["faculty", "field-of-study", "year", "cycle"]
+    else:
+        params = match.split("+")
+
+    result = {}
+    if "faculty" in params:
+        result["faculty"] = [faculty.name for faculty in Faculty.objects.all()]
+
+    return JsonResponse(result)

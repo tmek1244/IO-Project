@@ -1,8 +1,9 @@
 from django.urls import path
+from django.urls.conf import re_path
 
 from .views import (GetFacultiesView, GetFieldsOfStudy,
                     RecruitmentResultListView,
-                    RecruitmentResultOverviewListView, UploadView)
+                    RecruitmentResultOverviewListView, UploadView, get_basic_data)
 
 app_name = 'backend'
 
@@ -17,4 +18,6 @@ urlpatterns = [
     path('fields_of_studies/',
          GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
+    path('basic-data/', get_basic_data, name='get_basic_data'),
+    re_path(r'^basic-data/(?P<match>.+)/$', get_basic_data, name='get_basic_data'),
 ]
