@@ -19,6 +19,14 @@ class FacultySerializer(serializers.ModelSerializer[Any]):
         model = Faculty
         fields = '__all__'
 
+    def create(self, validated_data: Dict[str, Any]) -> Model:
+        faculty, created = Faculty.objects.get_or_create(
+            name = validated_data["name"]
+        )
+        faculty.save()
+
+        return faculty
+
 
 class FieldOfStudySerializer(serializers.ModelSerializer[Any]):
     faculty = FacultySerializer(read_only=True)

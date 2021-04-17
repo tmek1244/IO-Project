@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -16,7 +16,7 @@ from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
-from .serializers import UploadSerializer
+from .serializers import UploadSerializer, FacultySerializer
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -80,3 +80,15 @@ class GetFieldsOfStudy(APIView):
                 else:
                     result[field.faculty.name] = [field.name]
         return Response(result, status=status.HTTP_200_OK)
+
+class AddFacultyView(CreateAPIView):
+    serializer_class = FacultySerializer
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request: Request, *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
+        serializer = FacultySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.create(serializer.validated_data)
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)

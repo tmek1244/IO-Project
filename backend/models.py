@@ -6,7 +6,7 @@ from django.db.models.deletion import CASCADE, DO_NOTHING
 
 
 class Faculty(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=150)
 
     def __str__(self) -> str:
         return str(self.name)
