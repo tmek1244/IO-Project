@@ -14,9 +14,7 @@ from rest_framework.views import APIView
 from backend.filters import RecruitmentResultListFilters
 from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultOverviewSerializer,
-                                 RecruitmentResultSerializer)
-
-from .serializers import UploadSerializer
+                                 RecruitmentResultSerializer, UploadSerializer)
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -33,8 +31,8 @@ class RecruitmentResultListView(generics.ListAPIView):
         filters = RecruitmentResultListFilters(
             self.request.data).get_all_arguments()
 
-        return RecruitmentResult.objects.filter(**filters) \
-            if len(filters) > 0 else RecruitmentResult.objects.all()
+        return (RecruitmentResult.objects.filter(**filters)
+                if len(filters) > 0 else RecruitmentResult.objects.all())
 
     def post(self, request: Request,
              *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
@@ -52,8 +50,8 @@ class UploadView(CreateAPIView):
 
     def post(self, request: Request,
              *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
-        serializer = UploadSerializer(data=request.data,
-                                      context={'request': request})
+        serializer = UploadSerializer(
+            data=request.data, context={'request': request})
         if serializer.is_valid():
             if serializer.create(serializer.validated_data):
                 return Response(status=status.HTTP_200_OK)

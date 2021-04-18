@@ -1,8 +1,8 @@
 from django.urls import path
 
-from .views import (GetFacultiesView, GetFieldsOfStudy,
-                    RecruitmentResultListView,
-                    RecruitmentResultOverviewListView, UploadView)
+from backend.views import (GetFacultiesView, GetFieldsOfStudy,
+                           RecruitmentResultListView,
+                           RecruitmentResultOverviewListView, UploadView)
 
 app_name = 'backend'
 
@@ -14,7 +14,6 @@ urlpatterns = [
          name='recruitment_result_overview_list'),
     path('upload/', UploadView.as_view(), name='upload_data'),
     path('faculties/', GetFacultiesView.as_view(), name='faculties'),
-    path('fields_of_studies/',
-         GetFieldsOfStudy.as_view(),
+    path('fields_of_studies/', GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
 ]

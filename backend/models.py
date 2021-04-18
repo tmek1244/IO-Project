@@ -26,11 +26,11 @@ class FieldOfStudy(models.Model):
     )
     upload_request = models.ForeignKey(
         UploadRequest, on_delete=CASCADE, null=True, blank=True)
-    faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE,
-                                null=True, blank=True)
+    faculty = models.ForeignKey(
+        Faculty, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=150)
-    degree = models.CharField(choices=DEGREE, max_length=10,
-                              null=True, blank=True)
+    degree = models.CharField(
+        choices=DEGREE, max_length=10, null=True, blank=True)
 
 
 class Candidate(models.Model):

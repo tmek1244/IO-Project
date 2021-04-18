@@ -3,9 +3,9 @@ from typing import Any, Dict, Optional
 from django.db.models import Model
 from rest_framework import serializers
 
-from backend.models import (
-    Candidate, ExamResult, Faculty, FieldOfStudy, Grade, GraduatedSchool,
-    Recruitment, RecruitmentResult, UploadRequest)
+from backend.models import (Candidate, ExamResult, Faculty, FieldOfStudy,
+                            Grade, GraduatedSchool, Recruitment,
+                            RecruitmentResult, UploadRequest)
 
 
 class CandidateSerializer(serializers.ModelSerializer[Any]):
@@ -133,7 +133,8 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         return upload_request
 
 #
-# def create_object(object_typ: Model, upload_request: Any, **attributes) -> Model:
+# def create_object(
+# object_typ: Model, upload_request: Any, **attributes) -> Model:
 #     object_returned, created = object_typ.objects.get_or_create(**attributes)
 #     if created:
 #         object_returned.upload_request = upload_request
@@ -190,8 +191,9 @@ def create_grade(upload_request: Any, graduated_school: Model, subject: str,
     return grade
 
 
-def create_exam_result(upload_request: Any, candidate: Model, subject: str,
-                       result_subject: str) -> Any:
+def create_exam_result(
+        upload_request: Any, candidate: Model, subject: str,
+        result_subject: str) -> Any:
     exam_result, created = ExamResult.objects.get_or_create(
         candidate=candidate,
         subject=subject,
@@ -214,8 +216,9 @@ def create_field_of_study(
     return field_of_study
 
 
-def create_recruitment(upload_request: Any, field_of_study: Model, year: str,
-                       round: str) -> Any:
+def create_recruitment(
+        upload_request: Any, field_of_study: Model, year: str,
+        round: str) -> Any:
     recruitment, created = Recruitment.objects.get_or_create(
         field_of_study=field_of_study,
         year=year,
@@ -227,9 +230,9 @@ def create_recruitment(upload_request: Any, field_of_study: Model, year: str,
     return recruitment
 
 
-def create_recruitment_result(upload_request: Any, candidate: Model,
-                              recruitment: Model, points: str,
-                              result: str) -> Any:
+def create_recruitment_result(
+        upload_request: Any, candidate: Model, recruitment: Model, points: str,
+        result: str) -> Any:
     recruitment_result, created = RecruitmentResult.objects.get_or_create(
         student=candidate,
         recruitment=recruitment,

@@ -64,8 +64,9 @@ class ChangePasswordView(generics.UpdateAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = ChangePasswordSerializer
 
-    def update(self, request: Request,
-               *args: List[str], **kwargs: List[str]) -> Response:
+    def update(
+            self, request: Request, *args: List[str],
+            **kwargs: List[str]) -> Response:
         user = self.request.user
         serializer = self.get_serializer(data=request.data)
 
