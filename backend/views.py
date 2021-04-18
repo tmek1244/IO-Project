@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Manager, Max
+from django.db.models import Manager, Max, Min
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -96,7 +96,7 @@ class GetThresholdOnField(APIView):
                 recruitment__in=recruitment, result='Signed')
             if recruitment_results:
                 result = list(recruitment_results.values(
-                    'recruitment__year').annotate(max_points=Max('points')))
+                    'recruitment__year').annotate(max_points=Min('points')))
 
             return Response(result)
         except Exception as e:
