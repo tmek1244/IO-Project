@@ -1,4 +1,3 @@
-from os import execv
 from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
@@ -13,7 +12,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import Faculty, FieldOfStudy, Recruitment, RecruitmentResult
+from backend.models import (Faculty, FieldOfStudy, Recruitment,
+                            RecruitmentResult)
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
@@ -86,31 +86,36 @@ class GetFieldsOfStudy(APIView):
 class GetBasicData(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, string: str = "faculty+field-of-study+year+round") -> Response:
+    def get(self, request: Request,
+            string: str = "faculty+field-of-study+year+round") -> Response:
         try:
             params = string.split("+")
-            result = {}
+            result: Dict[str, Any] = {}
 
             if "faculty" in params:
-                result["faculty"] = [faculty.name for faculty in Faculty.objects.all()]
+                result["faculty"] = [faculty.name for faculty in
+                                     Faculty.objects.all()]
 
             if "field-of-study" in params:
-                result["field-of-study"] = {faculty.name:[] for faculty in Faculty.objects.all()}
+                result["field-of-study"] = {faculty.name: [] for faculty in
+                                            Faculty.objects.all()}
                 result["field-of-study"]["all"] = []
 
                 for fof in FieldOfStudy.objects.all():
                     if fof.faculty:
-                        result["field-of-study"][fof.faculty.name].append(fof.name)
+                        result["field-of-study"][fof.faculty.name]\
+                                                        .append(fof.name)
                     result["field-of-study"]["all"].append(fof.name)
 
             if "year" in params:
-                result["year"] = list(set(recruitment.year for recruitment in Recruitment.objects.all()))
+                result["year"] = list(set(recruitment.year for recruitment in
+                                          Recruitment.objects.all()))
 
             if "round" in params:
-                result["round"] = list(set(recruitment.round for recruitment in Recruitment.objects.all()))
+                result["round"] = list(set(recruitment.round for recruitment in
+                                           Recruitment.objects.all()))
 
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-

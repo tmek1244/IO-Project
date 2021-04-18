@@ -19,5 +19,6 @@ urlpatterns = [
          GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
     path('basic-data/', GetBasicData.as_view(), name='get_basic_data'),
-    re_path(r'^basic-data/(?P<string>.+)/$', GetBasicData.as_view(), name='get_basic_data'),
+    re_path(r'^basic-data/(?P<string>.+)/$', GetBasicData.as_view(),
+            name='get_basic_data'),
 ]
