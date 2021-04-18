@@ -1,8 +1,6 @@
 from typing import Any, Dict
 
 from django.db.models import Model
-from django.db.models import fields
-from django.db.models.fields import CharField
 from rest_framework import serializers
 
 from .models import (Candidate, ExamResult, Faculty, FieldOfStudy, Grade,
@@ -23,11 +21,12 @@ class FacultySerializer(serializers.ModelSerializer[Any]):
 
     def create(self, validated_data: Dict[str, Any]) -> bool:
         faculty, created = Faculty.objects.get_or_create(
-            name = validated_data["name"]
+            name=validated_data["name"]
         )
         faculty.save()
 
         return created
+
 
 class FakeFieldOfStudySerializer(serializers.ModelSerializer[Any]):
     faculty = serializers.CharField(required=True)
@@ -39,12 +38,12 @@ class FakeFieldOfStudySerializer(serializers.ModelSerializer[Any]):
     def create(self, validated_data: Dict[str, Any]) -> bool:
         try:
             fof, created = FieldOfStudy.objects.get_or_create(
-                faculty = Faculty.objects.get(name=validated_data['faculty']),
-                name = validated_data["name"],
-                degree = validated_data['degree']
+                faculty=Faculty.objects.get(name=validated_data['faculty']),
+                name=validated_data["name"],
+                degree=validated_data['degree']
             )
             fof.save()
-        except:
+        except Exception:
             return False
         return True
 
@@ -118,11 +117,11 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
             for line in validated_data["file"]:
 
                 (first_name, last_name, date_of_birth, gender, year_of_exam,
-                 city, school_city, school_type, school_name,
-                 graduade_faculty, graduade_field_of_study, mode,
-                 grade_IT, grade_math, grade_english, points_IT, points_math,
-                 points_english, year, round, faculty_name, field_of_study_name, points,
-                 result) = line.decode("utf-8").strip().split(",")
+                 city, school_city, school_type, school_name, graduade_faculty,
+                 graduade_field_of_study, mode, grade_IT, grade_math,
+                 grade_english, points_IT, points_math, points_english,
+                 year, round, faculty_name, field_of_study_name,
+                 points, result) = line.decode("utf-8").strip().split(",")
 
                 candidate = create_candidate(upload_request, first_name,
                                              last_name, date_of_birth, gender,
@@ -234,7 +233,7 @@ def create_field_of_study(upload_request: Any,
                           field_of_study_name: str) -> Any:
     faculty = Faculty.objects.get(name=faculty_name)
     field_of_study = FieldOfStudy.objects.get(
-        faculty = faculty,
+        faculty=faculty,
         name=field_of_study_name
     )
     return field_of_study
