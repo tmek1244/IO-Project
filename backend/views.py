@@ -64,12 +64,12 @@ class UploadView(CreateAPIView):
 
 
 class GetFacultiesView(APIView):
-    def post(self, request: Request) -> Response:
+    def get(self, request: Request) -> Response:
         return Response(list(Faculty.objects.all()), status=status.HTTP_200_OK)
 
 
 class GetFieldsOfStudy(APIView):
-    def post(self, request: Request) -> Response:
+    def get(self, request: Request) -> Response:
         result: Dict[str, List[str]] = {}
         for field in FieldOfStudy.objects.all():
             if field.faculty is None:

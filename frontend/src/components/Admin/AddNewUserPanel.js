@@ -46,8 +46,14 @@ export default function AddNewUserPanel() {
                 'Authorization': `Bearer ${authState.access}`,
             },
         })
-            .then(response => response.json())
-            .then(json => setFaculties(json))
+            .then(response => {
+                //TODO lepiej obsługiwać błędy
+                if(response.ok) return response.json()
+                else throw new Error(response.status)
+            })
+            .then(json => {
+                setFaculties(json)
+            })
             .catch(e => console.log(e))
     }, [])
 
