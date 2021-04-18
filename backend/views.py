@@ -13,7 +13,8 @@ from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
 from backend.models import Faculty, FieldOfStudy, RecruitmentResult
-from backend.serializers import (RecruitmentResultOverviewSerializer,
+from backend.serializers import (RecruitmentResultFacultiesSerializer,
+                                 RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
 from .serializers import UploadSerializer
@@ -43,6 +44,22 @@ class RecruitmentResultListView(generics.ListAPIView):
 
 class RecruitmentResultOverviewListView(RecruitmentResultListView):
     serializer_class = RecruitmentResultOverviewSerializer
+
+
+class RecruitmentResultFacultiesListView(generics.ListAPIView):
+    queryset = Faculty.objects.all()
+    serializer_class = RecruitmentResultFacultiesSerializer
+
+    def get_queryset(self) -> Manager[Faculty]:
+        number = None
+        if 'number' in self.request.data:
+            number = self.request.data['number']
+        return Faculty.objects.all()[:number] \
+            if number is not None else Faculty.objects.all()
+
+
+class RecruitmentResultFieldsOfStudyListView(generics.ListAPIView):
+    pass  # TODO
 
 
 class UploadView(CreateAPIView):
