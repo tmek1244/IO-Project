@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from backend.filters import RecruitmentResultListFilters
 from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultFacultiesSerializer,
+                                 RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
@@ -47,19 +48,38 @@ class RecruitmentResultOverviewListView(RecruitmentResultListView):
 
 
 class RecruitmentResultFacultiesListView(generics.ListAPIView):
-    queryset = Faculty.objects.all()
-    serializer_class = RecruitmentResultFacultiesSerializer
+    serializer_class: Any = RecruitmentResultFacultiesSerializer
 
-    def get_queryset(self) -> Manager[Faculty]:
-        number = None
+    def get_queryset(self) -> Manager[Any]:
+        queryset = Faculty.objects.all()
+        return queryset
+
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        key: Any = lambda k: k['candidates_count']
+        serializer_data = sorted(
+            serializer.data,
+            key=key,
+            reverse=True
+        )
         if 'number' in self.request.data:
-            number = self.request.data['number']
-        return Faculty.objects.all()[:number] \
-            if number is not None else Faculty.objects.all()
+            serializer_data = serializer_data[:self.request.data['number']]
+        return Response(serializer_data)
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
 
 
-class RecruitmentResultFieldsOfStudyListView(generics.ListAPIView):
-    pass  # TODO
+class RecruitmentResultFieldsOfStudyListView(
+    RecruitmentResultFacultiesListView
+):
+    serializer_class = RecruitmentResultFieldsOfStudySerializer
+
+    def get_queryset(self) -> Manager[FieldOfStudy]:
+        queryset = FieldOfStudy.objects.all()
+        return queryset
 
 
 class UploadView(CreateAPIView):

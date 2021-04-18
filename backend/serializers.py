@@ -51,7 +51,7 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
     year = serializers.ReadOnlyField(source='recruitment.year')
     recruitment_round = serializers.ReadOnlyField(source='recruitment.round')
     faculty = serializers. \
-        ReadOnlyField(source='recruitment.field_of_study.degree.faculty.name')
+        ReadOnlyField(source='recruitment.field_of_study.faculty.name')
     field_of_study = serializers. \
         ReadOnlyField(source='recruitment.field_of_study.name')
     first_name = serializers.ReadOnlyField(source='student.first_name')
@@ -77,7 +77,6 @@ class RecruitmentResultFacultiesSerializer(serializers.ModelSerializer[Any]):
     class Meta:
         model = Faculty
         fields = ('name', 'candidates_count')
-        ordering = '-candidates_count'
 
     def get_candidates_count(self, obj: Faculty) -> int:
         field_of_studies_filters = {'faculty': obj}
@@ -87,6 +86,27 @@ class RecruitmentResultFacultiesSerializer(serializers.ModelSerializer[Any]):
         field_of_studies = \
             FieldOfStudy.objects.filter(**field_of_studies_filters)
         recruitments_filters = {'field_of_study__in': field_of_studies}
+        if 'year' in self.context['request'].data:
+            recruitments_filters['year'] = self.context['request'].data['year']
+        recruitments = Recruitment.objects.filter(**recruitments_filters)
+        return RecruitmentResult.objects\
+            .filter(recruitment__in=recruitments).count()
+
+
+class RecruitmentResultFieldsOfStudySerializer(
+    serializers.ModelSerializer[Any]
+):
+    faculty = serializers.ReadOnlyField(source='faculty.name')
+    candidates_count = serializers.SerializerMethodField()
+
+    # TODO: each cycle points threshold
+
+    class Meta:
+        model = FieldOfStudy
+        fields = ('name', 'faculty', 'degree', 'candidates_count')
+
+    def get_candidates_count(self, obj: FieldOfStudy) -> int:
+        recruitments_filters = {'field_of_study': obj}
         if 'year' in self.context['request'].data:
             recruitments_filters['year'] = self.context['request'].data['year']
         recruitments = Recruitment.objects.filter(**recruitments_filters)
