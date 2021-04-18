@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Manager
+from django.db.models import Manager, Max
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -12,11 +12,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import Faculty, FieldOfStudy, RecruitmentResult
+from backend.models import (Faculty, FieldOfStudy, Recruitment,
+                            RecruitmentResult)
 from backend.serializers import (RecruitmentResultOverviewSerializer,
-                                 RecruitmentResultSerializer)
-
-from .serializers import UploadSerializer
+                                 RecruitmentResultSerializer, UploadSerializer)
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -80,3 +79,26 @@ class GetFieldsOfStudy(APIView):
                 else:
                     result[field.faculty.name] = [field.name]
         return Response(result, status=status.HTTP_200_OK)
+
+
+class GetThresholdOnField(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, string: str = "faculty+field") -> Response:
+        try:
+            result: List[Dict[str, Any]] = []
+            faculty, field = string.split('+')
+            faculty_obj = Faculty.objects.get(name=faculty)
+            field_obj = FieldOfStudy.objects.get(name=field,
+                                                 faculty=faculty_obj)
+            recruitment = Recruitment.objects.filter(field_of_study=field_obj)
+            recruitment_results = RecruitmentResult.objects.filter(
+                recruitment__in=recruitment, result='Signed')
+            if recruitment_results:
+                result = list(recruitment_results.values(
+                    'recruitment__year').annotate(max_points=Max('points')))
+
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)

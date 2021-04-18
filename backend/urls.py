@@ -1,8 +1,8 @@
-from django.urls import path
+from django.urls import path, re_path
 
-from .views import (GetFacultiesView, GetFieldsOfStudy,
-                    RecruitmentResultListView,
-                    RecruitmentResultOverviewListView, UploadView)
+from backend.views import (GetFacultiesView, GetFieldsOfStudy,
+                           GetThresholdOnField, RecruitmentResultListView,
+                           RecruitmentResultOverviewListView, UploadView)
 
 app_name = 'backend'
 
@@ -17,4 +17,7 @@ urlpatterns = [
     path('fields_of_studies/',
          GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
+    path('threshold/', GetThresholdOnField.as_view(), name='threshold'),
+    re_path(r'^threshold/(?P<string>.+)/$', GetThresholdOnField.as_view(),
+            name='get_basic_data')
 ]
