@@ -78,7 +78,9 @@ class RecruitmentResultFieldsOfStudyListView(
     serializer_class = RecruitmentResultFieldsOfStudySerializer
 
     def get_queryset(self) -> Manager[FieldOfStudy]:
-        queryset = FieldOfStudy.objects.all()
+        queryset = FieldOfStudy.objects.\
+            filter(degree=self.request.data['degree'])\
+            if 'degree' in self.request.data else FieldOfStudy.objects.all()
         return queryset
 
 
