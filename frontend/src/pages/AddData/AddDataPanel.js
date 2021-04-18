@@ -1,9 +1,9 @@
 import React from 'react';
 import { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
-import { DatePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import Grid from '@material-ui/core/Grid';
-import { Button, Card, CardContent, CardHeader, Typography, FormControl, Select, MenuItem, InputLabel } from '@material-ui/core';
+import { Button, Card, CardContent, CardHeader, Typography } from '@material-ui/core';
 import MomentUtils from '@date-io/moment';
 import PageTitle from '../../components/PageTitle/PageTitle';
 import { useAuthState } from '../../context/AuthContext'
@@ -14,8 +14,6 @@ const useStyles = makeStyles((theme) => ({
         margin: theme.spacing(1),
     },
 }));
-
-const cycles = [1, 2, 3, 4, 5, 6]
 
 
 const AddDataPanel = () => {
