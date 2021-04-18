@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Manager, Max, Min
+from django.db.models import Manager, Min
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
