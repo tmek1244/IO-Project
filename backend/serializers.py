@@ -70,18 +70,54 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
                   'gender')
 
 
-class RecruitmentResultFacultiesSerializer(serializers.ModelSerializer[Any]):
+class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
     candidates_count = serializers.SerializerMethodField()
     first_cycle_threshold = serializers.SerializerMethodField()
     second_cycle_threshold = serializers.SerializerMethodField()
     third_cycle_threshold = serializers.SerializerMethodField()
 
+    def get_recruitments_filters(self, obj: Any) -> Any:
+        pass
+
+    def get_candidates_count(self, obj: Any) -> int:
+        recruitments = Recruitment.objects.\
+            filter(**self.get_recruitments_filters(obj))
+        return RecruitmentResult.objects\
+            .filter(recruitment__in=recruitments).count()
+
+    def get_cycle_threshold(self, obj: Any, cycle: int) -> Any:
+        recruitments_filters = self.get_recruitments_filters(obj)
+        recruitments_filters['round'] = cycle
+        recruitments = Recruitment.objects.filter(**recruitments_filters)
+        recruitment_results = RecruitmentResult.objects.filter(
+            recruitment__in=recruitments, result='Signed'
+        )
+        if recruitment_results:
+            result = recruitment_results.aggregate(Min('points')).\
+                get('points__min')
+            print(result)
+            return result
+        return None
+
+    def get_first_cycle_threshold(self, obj: Any) -> Any:
+        return self.get_cycle_threshold(obj, 1)
+
+    def get_second_cycle_threshold(self, obj: Any) -> Any:
+        return self.get_cycle_threshold(obj, 2)
+
+    def get_third_cycle_threshold(self, obj: Any) -> Any:
+        return self.get_cycle_threshold(obj, 3)
+
+
+class RecruitmentResultFacultiesSerializer(
+    RecruitmentResultAggregateSerializer
+):
     class Meta:
         model = Faculty
         fields = ('name', 'candidates_count', 'first_cycle_threshold',
                   'second_cycle_threshold', 'third_cycle_threshold')
 
-    def get_candidates_count(self, obj: Faculty) -> int:
+    def get_recruitments_filters(self, obj: Faculty) -> Dict[str, Any]:
         field_of_studies_filters = {'faculty': obj}
         if 'degree' in self.context['request'].data:
             field_of_studies_filters['degree'] = \
@@ -91,51 +127,13 @@ class RecruitmentResultFacultiesSerializer(serializers.ModelSerializer[Any]):
         recruitments_filters = {'field_of_study__in': field_of_studies}
         if 'year' in self.context['request'].data:
             recruitments_filters['year'] = self.context['request'].data['year']
-        recruitments = Recruitment.objects.filter(**recruitments_filters)
-        return RecruitmentResult.objects\
-            .filter(recruitment__in=recruitments).count()
-
-    def get_cycle_threshold(self, obj: Faculty, cycle: int) -> Any:
-        field_of_studies_filters = {'faculty': obj}
-        if 'degree' in self.context['request'].data:
-            field_of_studies_filters['degree'] = \
-                self.context['request'].data['degree']
-        field_of_studies = \
-            FieldOfStudy.objects.filter(**field_of_studies_filters)
-        recruitments_filters = {'field_of_study__in': field_of_studies,
-                                "round": cycle}
-        if 'year' in self.context['request'].data:
-            recruitments_filters['year'] = \
-                self.context['request'].data['year']
-        recruitments = Recruitment.objects.filter(**recruitments_filters)
-        recruitment_results = RecruitmentResult.objects.filter(
-            recruitment__in=recruitments, result='Signed'
-        )
-        if recruitment_results:
-            result = recruitment_results.aggregate(Min('points')).\
-                get('points__min')
-            print(result)
-            return result
-        return None
-
-    def get_first_cycle_threshold(self, obj: Faculty) -> Any:
-        return self.get_cycle_threshold(obj, 1)
-
-    def get_second_cycle_threshold(self, obj: Faculty) -> Any:
-        return self.get_cycle_threshold(obj, 2)
-
-    def get_third_cycle_threshold(self, obj: Faculty) -> Any:
-        return self.get_cycle_threshold(obj, 3)
+        return recruitments_filters
 
 
 class RecruitmentResultFieldsOfStudySerializer(
-    serializers.ModelSerializer[Any]
+    RecruitmentResultAggregateSerializer
 ):
     faculty = serializers.ReadOnlyField(source='faculty.name')
-    candidates_count = serializers.SerializerMethodField()
-    first_cycle_threshold = serializers.SerializerMethodField()
-    second_cycle_threshold = serializers.SerializerMethodField()
-    third_cycle_threshold = serializers.SerializerMethodField()
 
     class Meta:
         model = FieldOfStudy
@@ -143,37 +141,11 @@ class RecruitmentResultFieldsOfStudySerializer(
                   'first_cycle_threshold', 'second_cycle_threshold',
                   'third_cycle_threshold')
 
-    def get_candidates_count(self, obj: FieldOfStudy) -> int:
+    def get_recruitments_filters(self, obj: FieldOfStudy) -> Dict[str, Any]:
         recruitments_filters = {'field_of_study': obj}
         if 'year' in self.context['request'].data:
             recruitments_filters['year'] = self.context['request'].data['year']
-        recruitments = Recruitment.objects.filter(**recruitments_filters)
-        return RecruitmentResult.objects\
-            .filter(recruitment__in=recruitments).count()
-
-    def get_cycle_threshold(self, obj: FieldOfStudy, cycle: int) -> Any:
-        recruitments_filters = {'field_of_study': obj, "round": cycle}
-        if 'year' in self.context['request'].data:
-            recruitments_filters['year'] = self.context['request'].data['year']
-        recruitments = Recruitment.objects.filter(**recruitments_filters)
-        recruitment_results = RecruitmentResult.objects.filter(
-            recruitment__in=recruitments, result='Signed'
-        )
-        if recruitment_results:
-            result = recruitment_results.aggregate(Min('points')).\
-                get('points__min')
-            print(result)
-            return result
-        return None
-
-    def get_first_cycle_threshold(self, obj: FieldOfStudy) -> Any:
-        return self.get_cycle_threshold(obj, 1)
-
-    def get_second_cycle_threshold(self, obj: FieldOfStudy) -> Any:
-        return self.get_cycle_threshold(obj, 2)
-
-    def get_third_cycle_threshold(self, obj: FieldOfStudy) -> Any:
-        return self.get_cycle_threshold(obj, 3)
+        return recruitments_filters
 
 
 class UploadSerializer(serializers.ModelSerializer[Any]):
