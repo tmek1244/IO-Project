@@ -49,6 +49,7 @@ class RecruitmentResultOverviewListView(RecruitmentResultListView):
 
 class RecruitmentResultFacultiesListView(generics.ListAPIView):
     serializer_class: Any = RecruitmentResultFacultiesSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self) -> Manager[Any]:
         queryset = Faculty.objects.all()
