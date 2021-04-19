@@ -1,6 +1,7 @@
 import React from 'react'
 import AddDataPanel from './pages/AddData/AddDataPanel'
 import AddNewUserPanel from './components/Admin/AddNewUserPanel'
+import ChangePasswordPanel from './pages/ChangePassword/ChangePasswordPanel'
 import Header from './components/Header/Header'
 import Sidebar from './components/Sidebar/Sidebar'
 
@@ -41,6 +42,9 @@ const AuthenticatedApp = () => {
                         </Route>
                         <Route exact path='/dodajdane'>
                             <AddDataPanel />
+                        </Route>
+                        <Route exact path='/haslo'>
+                            <ChangePasswordPanel />
                         </Route>
                         {
                             authState.is_staff &&
