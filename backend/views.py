@@ -87,35 +87,48 @@ class GetBasicData(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request,
-            string: str = "faculty+field-of-study+year+round") -> Response:
+            string: str) -> Response:
         try:
-            params = string.split("+")
             result: Dict[str, Any] = {}
 
-            if "faculty" in params:
-                result["faculty"] = [faculty.name for faculty in
+            if "faculty" == string:
+                result["all"] = [faculty.name for faculty in
                                      Faculty.objects.all()]
+                return Response(result, status=status.HTTP_200_OK)
 
-            if "field-of-study" in params:
-                result["field-of-study"] = {faculty.name: [] for faculty in
-                                            Faculty.objects.all()}
-                result["field-of-study"]["all"] = []
+            elif "field-of-study" == string:
+                for faculty in Faculty.objects.all():
+                    result[faculty.name] = []
+                result["all"] = []
 
                 for fof in FieldOfStudy.objects.all():
                     if fof.faculty:
-                        result["field-of-study"][fof.faculty.name]\
-                                                        .append(fof.name)
-                    result["field-of-study"]["all"].append(fof.name)
+                        result[fof.faculty.name].append(fof.name)
+                    result["all"].append(fof.name)
+                return Response(result, status=status.HTTP_200_OK)
 
-            if "year" in params:
-                result["year"] = list(set(recruitment.year for recruitment in
-                                          Recruitment.objects.all()))
+            elif "year" == string:
+                result["all"] = list(sorted(set(recruitment.year for recruitment in
+                                          Recruitment.objects.all())))
+                return Response(result, status=status.HTTP_200_OK)
 
-            if "round" in params:
-                result["round"] = list(set(recruitment.round for recruitment in
-                                           Recruitment.objects.all()))
+            elif "round" == string:
+                for recruitment in Recruitment.objects.all():
+                    result[recruitment.year] = set()
+                result["all"] = set()
+                
+                for recruitment in Recruitment.objects.all():
+                    result[recruitment.year].add(recruitment.round)
+                    result["all"].add(recruitment.round)
 
-            return Response(result, status=status.HTTP_200_OK)
+                for key in result.keys():
+                    result[key] = list(sorted(result[key]))
+
+                return Response(result, status=status.HTTP_200_OK)
+
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
