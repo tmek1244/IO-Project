@@ -121,7 +121,7 @@ class GetBasicData(APIView):
     def get(self, request: Request,
             string: str) -> Response:
         try:
-            result: Dict[str, Any] = {}
+            result: Dict[Any, Any] = {}
 
             if "faculty" == string:
                 result["all"] = [faculty.name for faculty in
