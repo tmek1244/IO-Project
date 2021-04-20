@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
 from rest_framework.parsers import FormParser, MultiPartParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -17,7 +17,8 @@ from backend.models import (Faculty, FieldOfStudy, Recruitment,
 from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
-from .serializers import UploadSerializer
+from .serializers import (FacultySerializer, FakeFieldOfStudySerializer,
+                          UploadSerializer)
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -73,14 +74,45 @@ class GetFieldsOfStudy(APIView):
     def post(self, request: Request) -> Response:
         result: Dict[str, List[str]] = {}
         for field in FieldOfStudy.objects.all():
-            if field.faculty is None:
-                result['others'] += [field.name]
+            if field.faculty.name in result:
+                result[field.faculty.name].append(field.name)
             else:
-                if field.faculty.name in result:
-                    result[field.faculty.name].append(field.name)
-                else:
-                    result[field.faculty.name] = [field.name]
+                result[field.faculty.name] = [field.name]
         return Response(result, status=status.HTTP_200_OK)
+
+
+class AddFacultyView(CreateAPIView):
+    serializer_class = FacultySerializer
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request: Request, *args: List[Any],
+             **kwargs: Dict[Any, Any]) -> Any:
+        serializer = FacultySerializer(data=request.data)
+        if serializer.is_valid():
+            created = serializer.create(serializer.validated_data)
+            if created:
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_208_ALREADY_REPORTED)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class AddFieldOfStudy(CreateAPIView):
+    serializer_class = FakeFieldOfStudySerializer
+    permission_classes = (IsAdminUser,)
+
+    def post(self, request: Request, *args: List[Any],
+             **kwargs: Dict[Any, Any]) -> Any:
+        serializer = FakeFieldOfStudySerializer(data=request.data)
+        if serializer.is_valid():
+            created = serializer.create(serializer.validated_data)
+            if created:
+                return Response(status=status.HTTP_201_CREATED)
+            else:
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
 
 
 class GetBasicData(APIView):

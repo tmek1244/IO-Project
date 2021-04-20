@@ -1,7 +1,8 @@
 from django.urls import path
 from django.urls.conf import re_path
 
-from .views import (GetBasicData, GetFacultiesView, GetFieldsOfStudy,
+from .views import (GetBasicData, AddFacultyView, AddFieldOfStudy,
+                    GetFacultiesView, GetFieldsOfStudy,
                     RecruitmentResultListView,
                     RecruitmentResultOverviewListView, UploadView)
 
@@ -18,6 +19,8 @@ urlpatterns = [
     path('fields_of_studies/',
          GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
+    path('add/faculty', AddFacultyView.as_view(), name='add_faculty'),
+    path('add/field-of-study', AddFieldOfStudy.as_view(), name='add_fof'),
     path('basic-data/<string>/', GetBasicData.as_view(),
             name='get_basic_data'),
 ]
