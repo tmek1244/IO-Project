@@ -125,7 +125,7 @@ class GetBasicData(APIView):
 
             if "faculty" == string:
                 result["all"] = [faculty.name for faculty in
-                                     Faculty.objects.all()]
+                                 Faculty.objects.all()]
                 return Response(result, status=status.HTTP_200_OK)
 
             elif "field-of-study" == string:
@@ -140,15 +140,16 @@ class GetBasicData(APIView):
                 return Response(result, status=status.HTTP_200_OK)
 
             elif "year" == string:
-                result["all"] = list(sorted(set(recruitment.year for recruitment in
-                                          Recruitment.objects.all())))
+                result["all"] = list(sorted(set(
+                            recruitment.year for recruitment in
+                            Recruitment.objects.all())))
                 return Response(result, status=status.HTTP_200_OK)
 
             elif "round" == string:
                 for recruitment in Recruitment.objects.all():
                     result[recruitment.year] = set()
                 result["all"] = set()
-                
+
                 for recruitment in Recruitment.objects.all():
                     result[recruitment.year].add(recruitment.round)
                     result["all"].add(recruitment.round)
