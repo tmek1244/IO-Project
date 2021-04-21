@@ -37,6 +37,7 @@ class FieldOfStudy(models.Model):
 class Candidate(models.Model):
     upload_request = models.ForeignKey(UploadRequest, on_delete=models.CASCADE,
                                        null=True, blank=True)
+    pesel = models.CharField(max_length=50, null=True, blank=True)
     first_name = models.CharField(max_length=50, null=True, blank=True)
     last_name = models.CharField(max_length=50, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
@@ -49,8 +50,7 @@ class GraduatedSchool(models.Model):
     SCHOOL_TYPE = (
         ('T', 'techikum'),
         ('L', 'liceum'),
-        ('B', 'Bachelor'),
-        ('M', 'Master')
+        ('B', 'Bachelor')
     )
     upload_request = models.ForeignKey(UploadRequest, on_delete=models.CASCADE,
                                        null=True, blank=True)
@@ -61,8 +61,6 @@ class GraduatedSchool(models.Model):
     school_name = models.CharField(max_length=100, null=True, blank=True)
     faculty = models.CharField(max_length=100, null=True, blank=True)
     field_of_study = models.CharField(max_length=100, null=True, blank=True)
-    # maybe add choices for mode
-    mode = models.CharField(max_length=100, null=True, blank=True)
 
 
 class Grade(models.Model):
