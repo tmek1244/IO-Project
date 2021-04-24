@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Manager, Min
+from django.db.models import Avg, Manager, Max, Min
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -90,25 +90,32 @@ class CompareFields(APIView):
         try:
             result: List[Dict[str, Any]] = []
             split_request = string.split('+')
-            assert len(split_request) % 3 == 0
+            assert len(split_request) % 4 == 0
 
-            for i in range(len(split_request) // 3):
-                print(split_request[3*i])
-                faculty_obj = Faculty.objects.get(name=split_request[3*i])
+            for i in range(len(split_request) // 4):
+                print(split_request[4*i])
+                faculty_obj = Faculty.objects.get(name=split_request[4*i])
                 field_obj = FieldOfStudy.objects.get(
-                    name=split_request[3*i + 1], faculty=faculty_obj)
+                    name=split_request[4*i + 1], faculty=faculty_obj)
                 recruitment = Recruitment.objects.filter(
-                    field_of_study=field_obj, year=split_request[3*i + 2])
+                    field_of_study=field_obj, year=split_request[4*i + 2])
                 recruitment_results = RecruitmentResult.objects.filter(
                     recruitment__in=recruitment, result='Signed')
-                if recruitment_results:
+                fun_to_apply = {
+                    'MAX': Max,
+                    'MIN': Min,
+                    'AVG': Avg
+                }[split_request[4*i+3]]
+
+                if recruitment_results and fun_to_apply:
                     result.append({
-                        'faculty': split_request[3*i],
-                        'field': split_request[3*i + 1],
-                        'year': split_request[3*i + 2],
-                        'threshold': recruitment_results.values(
+                        'faculty': split_request[4*i],
+                        'field': split_request[4*i + 1],
+                        'year': split_request[4*i + 2],
+                        'function': split_request[4*i + 3],
+                        'result': recruitment_results.values(
                             'recruitment__year').annotate(
-                            min_points=Min('points'))[0]['min_points']
+                            result=fun_to_apply('points'))[0]['result']
                     })
 
             return Response(result)
