@@ -132,15 +132,6 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
 
         return upload_request
 
-#
-# def create_object(
-# object_typ: Model, upload_request: Any, **attributes) -> Model:
-#     object_returned, created = object_typ.objects.get_or_create(**attributes)
-#     if created:
-#         object_returned.upload_request = upload_request
-#         object_returned.save()
-#     return object_returned
-
 
 def create_candidate(
         upload_request: Any, first_name: str, last_name: str,
