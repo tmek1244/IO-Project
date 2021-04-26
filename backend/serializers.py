@@ -1,7 +1,7 @@
 from typing import Any, Dict
 
 from django.db.models import Model
-from django.db.models.aggregates import Min
+from django.db.models.aggregates import Max, Min
 from rest_framework import serializers
 
 from .models import (Candidate, ExamResult, Faculty, FieldOfStudy, Grade,
@@ -71,10 +71,12 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
 
 
 class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
+
     candidates_count = serializers.SerializerMethodField()
     first_cycle_threshold = serializers.SerializerMethodField()
     second_cycle_threshold = serializers.SerializerMethodField()
     third_cycle_threshold = serializers.SerializerMethodField()
+    thresholds = serializers.SerializerMethodField()
 
     def get_recruitments_filters(self, obj: Any) -> Any:
         pass
@@ -97,18 +99,22 @@ class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
         if recruitment_results:
             result = recruitment_results.aggregate(Min('points')).\
                 get('points__min')
-            print(result)
             return result
         return None
 
-    def get_first_cycle_threshold(self, obj: Any) -> Any:
-        return self.get_cycle_threshold(obj, 1)
-
-    def get_second_cycle_threshold(self, obj: Any) -> Any:
-        return self.get_cycle_threshold(obj, 2)
-
-    def get_third_cycle_threshold(self, obj: Any) -> Any:
-        return self.get_cycle_threshold(obj, 3)
+    def get_thresholds(self, obj: Any) -> Any:
+        result = {}
+        recruitments = Recruitment.objects\
+            .filter(**self.get_recruitments_filters(obj))
+        number_of_cycles = recruitments\
+            .aggregate(Max('round')).get('round__max')
+        if number_of_cycles is not None:
+            for cycle in range(1, number_of_cycles):
+                cycle_threshold = self.get_cycle_threshold(obj, cycle)
+                if cycle_threshold is not None:
+                    result[cycle] = self.get_cycle_threshold(obj, cycle)
+            return result
+        return None
 
 
 class RecruitmentResultFacultiesSerializer(
@@ -116,8 +122,7 @@ class RecruitmentResultFacultiesSerializer(
 ):
     class Meta:
         model = Faculty
-        fields = ('name', 'candidates_count', 'first_cycle_threshold',
-                  'second_cycle_threshold', 'third_cycle_threshold')
+        fields = ('name', 'candidates_count', 'thresholds')
 
     def get_recruitments_filters(self, obj: Faculty) -> Dict[str, Any]:
         field_of_studies_filters = {'faculty': obj}
@@ -140,8 +145,7 @@ class RecruitmentResultFieldsOfStudySerializer(
     class Meta:
         model = FieldOfStudy
         fields = ('name', 'faculty', 'degree', 'candidates_count',
-                  'first_cycle_threshold', 'second_cycle_threshold',
-                  'third_cycle_threshold')
+                  'thresholds')
 
     def get_recruitments_filters(self, obj: FieldOfStudy) -> Dict[str, Any]:
         recruitments_filters = {'field_of_study': obj}
