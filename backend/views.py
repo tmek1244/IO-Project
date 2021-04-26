@@ -1,7 +1,7 @@
 from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Manager
+from django.db.models import Avg, Manager, Max, Min
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -16,6 +16,9 @@ from backend.models import Faculty, FieldOfStudy, RecruitmentResult
 from backend.serializers import (RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
+from backend.models import (Faculty, FieldOfStudy, Recruitment,
+                            RecruitmentResult)
+from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
 from .serializers import UploadSerializer
@@ -104,12 +107,12 @@ class UploadView(CreateAPIView):
 
 
 class GetFacultiesView(APIView):
-    def post(self, request: Request) -> Response:
+    def get(self, request: Request) -> Response:
         return Response(list(Faculty.objects.all()), status=status.HTTP_200_OK)
 
 
 class GetFieldsOfStudy(APIView):
-    def post(self, request: Request) -> Response:
+    def get(self, request: Request) -> Response:
         result: Dict[str, List[str]] = {}
         for field in FieldOfStudy.objects.all():
             if field.faculty is None:
@@ -120,3 +123,44 @@ class GetFieldsOfStudy(APIView):
                 else:
                     result[field.faculty.name] = [field.name]
         return Response(result, status=status.HTTP_200_OK)
+
+
+class CompareFields(APIView):
+    # permission_classes = (IsAuthenticated, )
+
+    def get(self, request: Request, string: str) -> Response:
+        try:
+            result: List[Dict[str, Any]] = []
+            split_request = string.split('+')
+            assert len(split_request) % 4 == 0
+
+            for i in range(len(split_request) // 4):
+                print(split_request[4*i])
+                faculty_obj = Faculty.objects.get(name=split_request[4*i])
+                field_obj = FieldOfStudy.objects.get(
+                    name=split_request[4*i + 1], faculty=faculty_obj)
+                recruitment = Recruitment.objects.filter(
+                    field_of_study=field_obj, year=split_request[4*i + 2])
+                recruitment_results = RecruitmentResult.objects.filter(
+                    recruitment__in=recruitment, result='Signed')
+                fun_to_apply = {
+                    'MAX': Max,
+                    'MIN': Min,
+                    'AVG': Avg
+                }[split_request[4*i+3]]
+
+                if recruitment_results and fun_to_apply:
+                    result.append({
+                        'faculty': split_request[4*i],
+                        'field': split_request[4*i + 1],
+                        'year': split_request[4*i + 2],
+                        'function': split_request[4*i + 3],
+                        'result': recruitment_results.values(
+                            'recruitment__year').annotate(
+                            result=fun_to_apply('points'))[0]['result']
+                    })
+
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useState } from 'react'
 import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -9,8 +9,7 @@ import { Button, Card, CardContent, CardHeader, MenuItem, Select, Typography } f
 import PageTitle from '../PageTitle/PageTitle'
 
 import { useAuthState } from '../../context/AuthContext'
-
-
+import useFetch from '../../hooks/useFetch'
 
 const useStyles = makeStyles((theme) => ({
     margin: {
@@ -36,20 +35,9 @@ export default function AddNewUserPanel() {
 
     const [userCreated, setUserCreated] = useState(null)
 
-    const [faculties, setFaculties] = useState([])
 
-    useEffect(() => {
-        fetch('api/backend/faculties', {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authState.access}`,
-            },
-        })
-            .then(response => response.json())
-            .then(json => setFaculties(json))
-            .catch(e => console.log(e))
-    }, [])
+    const [faculties, loading, error] = useFetch('api/backend/faculties', [])
+
 
     const classes = useStyles();
 
@@ -84,7 +72,7 @@ export default function AddNewUserPanel() {
         event.preventDefault()
         if (validateInput()) {
 
-            const body = { ...newUserData, faculty: null } // TODO usunąć to bo to jest hack na prezentację i powinno być zdelegalizowane
+            const body = { ...newUserData } 
             body.is_staff = newUserData.is_staff === 'admin' ? true : false
 
             console.log(authState.access)

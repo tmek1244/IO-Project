@@ -9,6 +9,7 @@ import FormControl from '@material-ui/core/FormControl';
 import { Button, Card, CardContent, Grid, MenuItem, Select } from '@material-ui/core';
 
 import { options, columns } from './tableConfig'
+import useFetch from '../../hooks/useFetch'
 
 const initialFormState = {
     cycle: 1,
@@ -61,31 +62,7 @@ const TableRaportPanel = () => {
     const [data, setData] = React.useState([])
     const authState = useAuthState()
 
-    const [faculties, setFaculties] = React.useState([])
-
-    React.useEffect(() => {
-        fetch('api/backend/faculties', {
-            method: "GET",
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${authState.access}`,
-            },
-        })
-            .then(response => {
-                if (response.ok) {
-                    console.log("ok")
-                    return response.json()
-                }
-                else throw new Error("nie")
-            })
-            .then(json => {
-                console.log(json)
-                setFaculties(json)
-            }
-            )
-            .catch(e => console.log(e))
-    }, [])
-
+    const [faculties, loading, error] = useFetch('api/backend/faculties', [])
 
     const handleInputChange = (e, type) => {
         e.preventDefault()
