@@ -1,9 +1,7 @@
 from django.urls import path, re_path
 
 from .views import (FieldOfStudyContestLaureatesCountView, GetFacultiesView,
-                    GetFieldsOfStudy, RecruitmentResultListView)
-from .views import (GetFacultiesView, GetFieldsOfStudy,
-                    RecruitmentResultFacultiesListView,
+                    GetFieldsOfStudy, RecruitmentResultFacultiesListView,
                     RecruitmentResultFieldsOfStudyListView,
                     RecruitmentResultListView,
                     RecruitmentResultOverviewListView, UploadView)

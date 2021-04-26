@@ -2,7 +2,6 @@ from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Avg, Manager, Max, Min
-from django.db.models import Manager
 from django.db.models.aggregates import Count
 from django.http import JsonResponse
 from rest_framework import generics, status
@@ -14,14 +13,11 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import (Faculty, FieldOfStudy, Recruitment,
+from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
-from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
-                            RecruitmentResult)
-from backend.serializers import (RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
 from .serializers import UploadSerializer
