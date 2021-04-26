@@ -46,36 +46,9 @@ class RecruitmentResultSerializer(serializers.ModelSerializer[Any]):
         fields = '__all__'
 
 
-class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
-    cycle = serializers. \
-        ReadOnlyField(source='recruitment.field_of_study.degree')
-    year = serializers.ReadOnlyField(source='recruitment.year')
-    recruitment_round = serializers.ReadOnlyField(source='recruitment.round')
-    faculty = serializers. \
-        ReadOnlyField(source='recruitment.field_of_study.faculty.name')
-    field_of_study = serializers. \
-        ReadOnlyField(source='recruitment.field_of_study.name')
-    first_name = serializers.ReadOnlyField(source='student.first_name')
-    last_name = serializers.ReadOnlyField(source='student.last_name')
-    year_of_exam = serializers.ReadOnlyField(source='student.year_of_exam')
-    city = serializers.ReadOnlyField(source='student.city')
-    date_of_birth = serializers.ReadOnlyField(source='student.date_of_birth')
-    gender = serializers.ReadOnlyField(source='student.gender')
-
-    class Meta:
-        model = RecruitmentResult
-        fields = ('cycle', 'year', 'recruitment_round', 'faculty',
-                  'field_of_study', 'result', 'points', 'first_name',
-                  'last_name', 'year_of_exam', 'city', 'date_of_birth',
-                  'gender')
-
-
 class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
 
     candidates_count = serializers.SerializerMethodField()
-    first_cycle_threshold = serializers.SerializerMethodField()
-    second_cycle_threshold = serializers.SerializerMethodField()
-    third_cycle_threshold = serializers.SerializerMethodField()
     thresholds = serializers.SerializerMethodField()
 
     def get_recruitments_filters(self, obj: Any) -> Any:
@@ -152,6 +125,49 @@ class RecruitmentResultFieldsOfStudySerializer(
         if 'year' in self.context['request'].data:
             recruitments_filters['year'] = self.context['request'].data['year']
         return recruitments_filters
+
+
+class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
+    degree = serializers.SerializerMethodField()
+    faculty = serializers. \
+        ReadOnlyField(source='field_of_study.faculty.name')
+    field_of_study = serializers. \
+        ReadOnlyField(source='field_of_study.name')
+    candidates_count = serializers.SerializerMethodField()
+    signed_candidates_count = serializers.SerializerMethodField()
+    contest_laureates_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Recruitment
+        fields = ('degree', 'year', 'round', 'faculty',
+                  'field_of_study', 'candidates_count',
+                  'signed_candidates_count',
+                  'contest_laureates_count')
+
+    def get_degree(self, obj: Recruitment) -> int:
+        degree = obj.field_of_study.degree
+        return 1 if degree == 6 or 7 else 2
+
+    def get_candidates_count(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects\
+            .filter(recruitment=obj)\
+            .values_list('student', flat=True)\
+            .distinct().count()
+
+    def get_signed_candidates_count(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects \
+            .filter(recruitment=obj, result='Signed') \
+            .values_list('student', flat=True) \
+            .distinct().count()
+
+    def get_contest_laureates_count(self, obj: Recruitment) -> int:
+        candidates = Candidate.objects\
+                .exclude(contest__isnull=True)\
+                .exclude(contest__exact='')
+        return RecruitmentResult.objects \
+            .filter(recruitment=obj, student__in=candidates) \
+            .values_list('student', flat=True) \
+            .distinct().count()
 
 
 class UploadSerializer(serializers.ModelSerializer[Any]):

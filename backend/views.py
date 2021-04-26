@@ -44,8 +44,22 @@ class RecruitmentResultListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class RecruitmentResultOverviewListView(RecruitmentResultListView):
+class RecruitmentResultOverviewListView(generics.ListAPIView):
+    queryset = Recruitment.objects.all()
     serializer_class = RecruitmentResultOverviewSerializer
+
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self) -> Manager[Recruitment]:
+        filters = RecruitmentResultListFilters(self.request.data) \
+            .get_recruitment_filters()
+
+        return Recruitment.objects.filter(**filters) \
+            if len(filters) > 0 else Recruitment.objects.all()
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
 
 
 class RecruitmentResultFacultiesListView(generics.ListAPIView):

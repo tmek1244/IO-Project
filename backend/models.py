@@ -42,6 +42,7 @@ class Candidate(models.Model):
     gender = models.CharField(max_length=50)
     year_of_exam = models.IntegerField()
     city = models.CharField(max_length=80)
+    contest = models.CharField(max_length=80, null=True)
 
 
 class GraduatedSchool(models.Model):
