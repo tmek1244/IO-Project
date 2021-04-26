@@ -1,8 +1,8 @@
-from django.urls import path
+from django.urls import path, re_path
 
-from .views import (GetFacultiesView, GetFieldsOfStudy,
-                    RecruitmentResultListView,
-                    RecruitmentResultOverviewListView, UploadView)
+from backend.views import (CompareFields, GetFacultiesView, GetFieldsOfStudy,
+                           RecruitmentResultListView,
+                           RecruitmentResultOverviewListView, UploadView)
 
 app_name = 'backend'
 
@@ -17,4 +17,7 @@ urlpatterns = [
     path('fields_of_studies/',
          GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
+    path('compere/', CompareFields.as_view(), name='compare'),
+    re_path(r'^compare/(?P<string>.+)/$', CompareFields.as_view(),
+            name='compare_fields')
 ]
