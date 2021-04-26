@@ -62,17 +62,16 @@ class FieldOfStudyContestLaureatesCountView(APIView):
                 .exclude(contest__isnull=True)\
                 .exclude(contest__exact='')
             print(candidates)
-            recruitment_results = RecruitmentResult.objects.filter(
-                recruitment__in=recruitment, student__in=candidates)
+            recruitment_results = RecruitmentResult.objects\
+                .order_by('-recruitment__year')\
+                .filter(recruitment__in=recruitment, student__in=candidates)
             if recruitment_results:
-                result = list(recruitment_results.values(
-                    'recruitment__year')
+                result = list(recruitment_results.values('recruitment__year')
                               .annotate(contest_laureates=Count('student')))
 
             return Response(result)
-        except Exception as e:
-            print(e)
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UploadView(CreateAPIView):
