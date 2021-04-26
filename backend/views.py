@@ -14,7 +14,9 @@ from rest_framework.views import APIView
 from backend.filters import RecruitmentResultListFilters
 from backend.models import (Faculty, FieldOfStudy, Recruitment,
                             RecruitmentResult)
-from backend.serializers import (RecruitmentResultOverviewSerializer,
+from backend.serializers import (RecruitmentResultFacultiesSerializer,
+                                 RecruitmentResultFieldsOfStudySerializer,
+                                 RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer)
 
 from .serializers import UploadSerializer
@@ -44,6 +46,44 @@ class RecruitmentResultListView(generics.ListAPIView):
 
 class RecruitmentResultOverviewListView(RecruitmentResultListView):
     serializer_class = RecruitmentResultOverviewSerializer
+
+
+class RecruitmentResultFacultiesListView(generics.ListAPIView):
+    serializer_class: Any = RecruitmentResultFacultiesSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self) -> Manager[Any]:
+        queryset = Faculty.objects.all()
+        return queryset
+
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        key: Any = lambda k: k['candidates_count']
+        serializer_data = sorted(
+            serializer.data,
+            key=key,
+            reverse=True
+        )
+        if 'number' in self.request.data:
+            serializer_data = serializer_data[:self.request.data['number']]
+        return Response(serializer_data)
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
+
+
+class RecruitmentResultFieldsOfStudyListView(
+    RecruitmentResultFacultiesListView
+):
+    serializer_class = RecruitmentResultFieldsOfStudySerializer
+
+    def get_queryset(self) -> Manager[FieldOfStudy]:
+        queryset = FieldOfStudy.objects.\
+            filter(degree=self.request.data['degree'])\
+            if 'degree' in self.request.data else FieldOfStudy.objects.all()
+        return queryset
 
 
 class UploadView(CreateAPIView):
