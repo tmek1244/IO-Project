@@ -2,6 +2,7 @@ from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Avg, Manager, Max, Min
+from django.db.models.aggregates import Count
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -12,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import (Faculty, FieldOfStudy, Recruitment,
+from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
@@ -84,6 +85,33 @@ class RecruitmentResultFieldsOfStudyListView(
             filter(degree=self.request.data['degree'])\
             if 'degree' in self.request.data else FieldOfStudy.objects.all()
         return queryset
+
+
+class FieldOfStudyContestLaureatesCountView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, string: str = "faculty+field") -> Response:
+        try:
+            result: List[Dict[str, Any]] = []
+            faculty, field = string.split('+')
+            faculty_obj = Faculty.objects.get(name=faculty)
+            field_obj = FieldOfStudy.objects.get(name=field,
+                                                 faculty=faculty_obj)
+            recruitment = Recruitment.objects.filter(field_of_study=field_obj)
+            candidates = Candidate.objects\
+                .exclude(contest__isnull=True)\
+                .exclude(contest__exact='')
+            print(candidates)
+            recruitment_results = RecruitmentResult.objects\
+                .order_by('-recruitment__year')\
+                .filter(recruitment__in=recruitment, student__in=candidates)
+            if recruitment_results:
+                result = list(recruitment_results.values('recruitment__year')
+                              .annotate(contest_laureates=Count('student')))
+
+            return Response(result)
+        except Exception:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UploadView(CreateAPIView):
