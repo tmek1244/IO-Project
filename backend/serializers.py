@@ -83,7 +83,9 @@ class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
         recruitments = Recruitment.objects.\
             filter(**self.get_recruitments_filters(obj))
         return RecruitmentResult.objects\
-            .filter(recruitment__in=recruitments).count()
+            .filter(recruitment__in=recruitments)\
+            .values_list('student', flat=True)\
+            .distinct().count()
 
     def get_cycle_threshold(self, obj: Any, cycle: int) -> Any:
         recruitments_filters = self.get_recruitments_filters(obj)
