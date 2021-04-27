@@ -139,8 +139,8 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
 
     class Meta:
         model = Recruitment
-        fields = ('degree', 'year', 'round', 'faculty',
-                  'field_of_study', 'candidates_count',
+        fields = ('field_of_study', 'faculty', 'degree',
+                  'year', 'round', 'candidates_count',
                   'signed_candidates_count',
                   'contest_laureates_count')
 

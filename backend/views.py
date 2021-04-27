@@ -1,3 +1,5 @@
+from itertools import groupby
+from operator import itemgetter
 from typing import Any, Dict, List
 
 from django.core.handlers.wsgi import WSGIRequest
@@ -57,6 +59,29 @@ class RecruitmentResultOverviewListView(generics.ListAPIView):
 
         return Recruitment.objects.filter(**filters) \
             if len(filters) > 0 else Recruitment.objects.all()
+
+    def merge_recruitments(self, data: List[Any]) -> List[Any]:
+        grouper = itemgetter('field_of_study', 'faculty', 'year', 'degree')
+        result = []
+        for key, grp in groupby(sorted(data, key=grouper), grouper):
+            temp_dict = dict(zip(
+                ['field_of_study', 'faculty', 'year', 'degree'], key))
+            temp_dict["candidates_count"] = 0
+            temp_dict["signed_candidates_count"] = 0
+            temp_dict["contest_laureates_count"] = 0
+            for item in grp:
+                temp_dict["candidates_count"] += item["candidates_count"]
+                temp_dict["signed_candidates_count"] += \
+                    item["signed_candidates_count"]
+                temp_dict["contest_laureates_count"] += \
+                    item["contest_laureates_count"]
+            result.append(temp_dict)
+        return sorted(result, key=itemgetter('year'), reverse=True)
+
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(self.merge_recruitments(serializer.data))
 
     def post(self, request: Request,
              *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
