@@ -1,18 +1,5 @@
 import { makeStyles } from "@material-ui/styles";
 
-// const useStyles = makeStyles({
-//     toolbar: {
-//         background: 'primary',
-//         minHeight: '100px',
-//         textAlign: 'center'
-//     },
-//     logo: {
-//         marginLeft: '10%'
-//     },
-//     title: {
-//         marginLeft: '30%'
-//     }
-// })
 
 export default makeStyles(theme => ({
     logo: {
@@ -22,23 +9,6 @@ export default makeStyles(theme => ({
     appBar: {
         width: "100vw",
         zIndex: theme.zIndex.drawer + 1,
-    },
-    title: {
-        marginLeft: theme.spacing(50)
-    },
-    grow: {
-        flexGrow: 1,
-    },
-    toolbar: {
-        paddingLeft: theme.spacing(2),
-        paddingRight: theme.spacing(2),
-    },
-    hide: {
-        display: "none",
-    },
-    headerMenuButton: {
-        marginLeft: theme.spacing(2),
-        padding: theme.spacing(0.5),
     },
     headerIcon: {
         fontSize: 35,
