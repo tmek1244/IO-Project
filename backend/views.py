@@ -18,9 +18,7 @@ from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
 from backend.serializers import (RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
-                                 RecruitmentResultSerializer)
-
-from .serializers import UploadSerializer
+                                 RecruitmentResultSerializer, UploadSerializer)
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -151,6 +149,28 @@ class GetFieldsOfStudy(APIView):
         return Response(result, status=status.HTTP_200_OK)
 
 
+class GetThresholdOnField(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, string: str = "faculty+field") -> Response:
+        try:
+            result: List[Dict[str, Any]] = []
+            faculty, field = string.split('+')
+            faculty_obj = Faculty.objects.get(name=faculty)
+            field_obj = FieldOfStudy.objects.get(name=field,
+                                                 faculty=faculty_obj)
+            recruitment = Recruitment.objects.filter(field_of_study=field_obj)
+            recruitment_results = RecruitmentResult.objects.filter(
+                recruitment__in=recruitment, result='Signed')
+            if recruitment_results:
+                result = list(recruitment_results.values(
+                    'recruitment__year').annotate(max_points=Min('points')))
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
 class CompareFields(APIView):
     # permission_classes = (IsAuthenticated, )
 
@@ -185,7 +205,6 @@ class CompareFields(APIView):
                             'recruitment__year').annotate(
                             result=fun_to_apply('points'))[0]['result']
                     })
-
             return Response(result)
         except Exception as e:
             print(e)
