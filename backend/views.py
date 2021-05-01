@@ -172,7 +172,8 @@ class UploadView(CreateAPIView):
 
 class GetFacultiesView(APIView):
     def get(self, request: Request) -> Response:
-        return Response(list(Faculty.objects.all()), status=status.HTTP_200_OK)
+        result: List[str] = [x.name for x in Faculty.objects.all()]
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class GetFieldsOfStudy(APIView):
