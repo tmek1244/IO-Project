@@ -13,16 +13,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import (Faculty, FieldOfStudy, Recruitment,
-                            RecruitmentResult)
-from backend.serializers import (RecruitmentResultOverviewSerializer,
-                                 RecruitmentResultSerializer)
-
-from .serializers import (FacultySerializer, FakeFieldOfStudySerializer,
-                          UploadSerializer)
 from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
                             RecruitmentResult)
-from backend.serializers import (RecruitmentResultFacultiesSerializer,
+from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
+                                 RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer, UploadSerializer)
@@ -235,7 +229,9 @@ class GetBasicData(APIView):
                 return Response(result, status=status.HTTP_200_OK)
 
             elif "contest" == string:
-                result["all"] = list(Candidate.objects.order_by().values_list('contest', flat=True).distinct())
+                result["all"] = list(Candidate.objects.order_by().
+                                     values_list('contest', flat=True).
+                                     distinct())
 
                 return Response(result, status=status.HTTP_200_OK)
 
@@ -244,6 +240,7 @@ class GetBasicData(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
 
 class GetThresholdOnField(APIView):
     permission_classes = (IsAuthenticated,)

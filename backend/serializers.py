@@ -200,12 +200,15 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         try:
 
             for line in validated_data["file"]:
-                (_, year, round,
-                mode, degree, faculty_name, fof_name,
-                result, points, contest, _,
-                last_name, first_name, _, _, _, pesel, gender, date_of_birth,
-                _, _, _, candidate_city, _, _, _, _,
-                _, school_city, school_name, _, school_type, school_faculty, school_fof) = line.decode("utf-8").strip().split(",")
+                (
+                  _, year, round,
+                  mode, degree, faculty_name, fof_name,
+                  result, points, contest, _,
+                  last_name, first_name, _, _, _, pesel, gender, date_of_birth,
+                  _, _, _, candidate_city, _, _, _, _,
+                  _, school_city, school_name, _, school_type, school_faculty,
+                  school_fof
+                ) = line.decode("utf-8").strip().split(",")
 
                 candidate = create_candidate(
                     upload_request, pesel, first_name,
@@ -235,8 +238,9 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         return upload_request
 
 
-def create_candidate(upload_request: Any, pesel: str, first_name: str, last_name: str,
-                     date_of_birth: str, gender: str, city: str, contest: str) -> Any:
+def create_candidate(
+        upload_request: Any, pesel: str, first_name: str, last_name: str,
+        date_of_birth: str, gender: str, city: str, contest: str) -> Any:
     candidate, created = Candidate.objects.get_or_create(
         pesel=pesel,
         first_name=first_name,
@@ -297,7 +301,7 @@ def create_exam_result(upload_request: Any, candidate: Model, subject: str,
 
 
 def get_field_of_study(faculty_name: str, field_of_study_name: str,
-                          mode: str, degree: str) -> Any:
+                       mode: str, degree: str) -> Any:
     faculty = Faculty.objects.get(name=faculty_name)
     field_of_study = FieldOfStudy.objects.get(
         faculty=faculty,

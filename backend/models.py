@@ -29,8 +29,10 @@ class FieldOfStudy(models.Model):
 
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
-    degree = models.CharField(choices=DEGREE, max_length=10, null=True, blank=True, default="1")
-    type = models.CharField(max_length=100, null=True, blank=True, default="stacjonarne")
+    degree = models.CharField(choices=DEGREE, max_length=10, null=True,
+                              blank=True, default="1")
+    type = models.CharField(max_length=100, null=True, blank=True,
+                            default="stacjonarne")
 
 
 class Candidate(models.Model):
@@ -45,7 +47,8 @@ class Candidate(models.Model):
     contest = models.CharField(max_length=80, null=True, blank=True)
 
     class Meta:
-        ordering = ('pesel','contest')
+        ordering = ('pesel', 'contest')
+
 
 class GraduatedSchool(models.Model):
     SCHOOL_TYPE = (

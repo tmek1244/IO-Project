@@ -1,10 +1,7 @@
 from django.urls import path, re_path
 
-from .views import (AddFacultyView, AddFieldOfStudy, GetBasicData,
-                    GetFacultiesView, GetFieldsOfStudy,
-                    RecruitmentResultListView,
-                    RecruitmentResultOverviewListView, UploadView)
-from backend.views import (FieldOfStudyContestLaureatesCountView,
+from backend.views import (AddFacultyView, AddFieldOfStudy,
+                           FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
                            GetThresholdOnField,
                            RecruitmentResultFacultiesListView,

@@ -1,14 +1,17 @@
-from typing import Any, Dict, List, Tuple
+import sys
+from typing import Any
 
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from backend.models import Faculty, FieldOfStudy
-from django.contrib.auth import get_user_model
 
-import sys
-sys.path.insert(0,'....') 
+sys.path.insert(0, '....')
+try:
+    import generate_data
+except Exception as e:
+    raise(e)
 
-import generate_data
 
 class Command(BaseCommand):
     help = 'Closes the specified poll for voting'
