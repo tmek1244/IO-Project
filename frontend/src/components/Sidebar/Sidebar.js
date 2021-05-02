@@ -10,6 +10,7 @@ import {
     PersonAdd as PersonAddIcon,
     AddBox as AddBoxIcon,
     TableChart as TableChartIcon,
+    FormatUnderlined as DragHandleIcon
 } from '@material-ui/icons'
 
 import SidebarLink from './components/SidebarLink'
@@ -18,16 +19,6 @@ import classNames from 'classnames'
 import useStyles from './styles'
 import { useAuthState } from '../../context/AuthContext'
 
-const links = [
-    { id: 0, label: "Dashboard", link: '/', icon: <HomeIcon /> },
-    { id: 1, label: "Dodaj dane", link: '/dodajDane', icon: <AddBoxIcon /> },
-    { id: 2, label: "Podsumowanie", link: '/podsumowanie', icon: <TableChartIcon /> },
-    { id: 3, label: "Dodaj użytkownika", link: '/rejestracja', icon: <PersonAddIcon /> },
-]
-
-
-
-
 
 const Sidebar = ({location}) => {
     const classes = useStyles()
@@ -35,13 +26,21 @@ const Sidebar = ({location}) => {
     const sidebarState = useLayoutState()
     const authState = useAuthState()
 
-    const links = [
+    var links = [
         { id: 0, label: "Dashboard", link: '/', icon: <HomeIcon /> },
         { id: 1, label: "Dodaj dane", link: '/dodajDane', icon: <AddBoxIcon /> },
         { id: 2, label: "Podsumowanie", link: '/podsumowanie', icon: <TableChartIcon /> },
-        authState.is_staff && { id: 3, label: "Dodaj użytkownika", link: '/rejestracja', icon: <PersonAddIcon /> },
+        { id: 3, label: "Zmień hasło", link: '/haslo', icon: <DragHandleIcon /> },
+    ]
+
+    const adminLinks = [
+        { id: 4, label: "Dodaj użytkownika", link: '/rejestracja', icon: <PersonAddIcon /> },
     ]
     
+    if (authState.is_staff){
+        links = links.concat(adminLinks)
+    }
+      
 
     return (
         <Drawer
@@ -72,15 +71,10 @@ const Sidebar = ({location}) => {
                             location={location}
                         />
                     ))
-
-
                 }
             </List>
-
         </Drawer>
-
     )
-
 }
 
 
