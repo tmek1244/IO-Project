@@ -1,6 +1,7 @@
 from typing import Any, Dict
 
 from django.db.models import Model
+from django.db.models.aggregates import Max, Min
 from rest_framework import serializers
 
 from .models import (Candidate, ExamResult, Faculty, FieldOfStudy, Grade,
@@ -74,13 +75,13 @@ class RecruitmentResultSerializer(serializers.ModelSerializer[Any]):
 
 
 class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
-    cycle = serializers.\
+    cycle = serializers. \
         ReadOnlyField(source='recruitment.field_of_study.degree')
     year = serializers.ReadOnlyField(source='recruitment.year')
     recruitment_round = serializers.ReadOnlyField(source='recruitment.round')
-    faculty = serializers.\
-        ReadOnlyField(source='recruitment.field_of_study.degree.faculty.name')
-    field_of_study = serializers.\
+    faculty = serializers. \
+        ReadOnlyField(source='recruitment.field_of_study.faculty.name')
+    field_of_study = serializers. \
         ReadOnlyField(source='recruitment.field_of_study.name')
     first_name = serializers.ReadOnlyField(source='student.first_name')
     last_name = serializers.ReadOnlyField(source='student.last_name')
@@ -95,6 +96,90 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
                   'field_of_study', 'result', 'points', 'first_name',
                   'last_name', 'year_of_exam', 'city', 'date_of_birth',
                   'gender')
+
+
+class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
+
+    candidates_count = serializers.SerializerMethodField()
+    first_cycle_threshold = serializers.SerializerMethodField()
+    second_cycle_threshold = serializers.SerializerMethodField()
+    third_cycle_threshold = serializers.SerializerMethodField()
+    thresholds = serializers.SerializerMethodField()
+
+    def get_recruitments_filters(self, obj: Any) -> Any:
+        pass
+
+    def get_candidates_count(self, obj: Any) -> int:
+        recruitments = Recruitment.objects.\
+            filter(**self.get_recruitments_filters(obj))
+        return RecruitmentResult.objects\
+            .filter(recruitment__in=recruitments)\
+            .values_list('student', flat=True)\
+            .distinct().count()
+
+    def get_cycle_threshold(self, obj: Any, cycle: int) -> Any:
+        recruitments_filters = self.get_recruitments_filters(obj)
+        recruitments_filters['round'] = cycle
+        recruitments = Recruitment.objects.filter(**recruitments_filters)
+        recruitment_results = RecruitmentResult.objects.filter(
+            recruitment__in=recruitments, result='Signed'
+        )
+        if recruitment_results:
+            result = recruitment_results.aggregate(Min('points')).\
+                get('points__min')
+            return result
+        return None
+
+    def get_thresholds(self, obj: Any) -> Any:
+        result = {}
+        recruitments = Recruitment.objects\
+            .filter(**self.get_recruitments_filters(obj))
+        number_of_cycles = recruitments\
+            .aggregate(Max('round')).get('round__max')
+        if number_of_cycles is not None:
+            for cycle in range(1, number_of_cycles):
+                cycle_threshold = self.get_cycle_threshold(obj, cycle)
+                if cycle_threshold is not None:
+                    result[cycle] = self.get_cycle_threshold(obj, cycle)
+            return result
+        return None
+
+
+class RecruitmentResultFacultiesSerializer(
+    RecruitmentResultAggregateSerializer
+):
+    class Meta:
+        model = Faculty
+        fields = ('name', 'candidates_count', 'thresholds')
+
+    def get_recruitments_filters(self, obj: Faculty) -> Dict[str, Any]:
+        field_of_studies_filters = {'faculty': obj}
+        if 'degree' in self.context['request'].data:
+            field_of_studies_filters['degree'] = \
+                self.context['request'].data['degree']
+        field_of_studies = \
+            FieldOfStudy.objects.filter(**field_of_studies_filters)
+        recruitments_filters = {'field_of_study__in': field_of_studies}
+        if 'year' in self.context['request'].data:
+            recruitments_filters['year'] = self.context['request'].data['year']
+        return recruitments_filters
+
+
+class RecruitmentResultFieldsOfStudySerializer(
+    RecruitmentResultAggregateSerializer
+):
+    faculty = serializers.ReadOnlyField(source='faculty.name')
+
+    class Meta:
+        model = FieldOfStudy
+        fields = ('name', 'faculty', 'degree', 'candidates_count',
+                  'thresholds')
+
+    def get_recruitments_filters(self, obj: FieldOfStudy) -> Dict[str, Any]:
+        recruitments_filters = {'field_of_study': obj}
+        if 'year' in self.context['request'].data:
+            recruitments_filters['year'] = self.context['request'].data['year']
+        return recruitments_filters
 
 
 class UploadSerializer(serializers.ModelSerializer[Any]):
@@ -115,7 +200,6 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         try:
 
             for line in validated_data["file"]:
-
                 (first_name, last_name, date_of_birth, gender, year_of_exam,
                  city, school_city, school_type, school_name, graduade_faculty,
                  graduade_field_of_study, mode, grade_IT, grade_math,
@@ -128,9 +212,9 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
                                              year_of_exam, city)
 
                 graduated_school = create_graduated_school(
-                            upload_request, candidate, school_city,
-                            school_type, school_name, graduade_faculty,
-                            graduade_field_of_study, mode)
+                    upload_request, candidate, school_city,
+                    school_type, school_name, graduade_faculty,
+                    graduade_field_of_study, mode)
 
                 create_grade(upload_request, graduated_school, "IT",
                              grade_IT)
@@ -151,8 +235,8 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
                                                        field_of_study_name)
 
                 recruitment = create_recruitment(
-                            upload_request, field_of_study,
-                            year, round)
+                    upload_request, field_of_study,
+                    year, round)
 
                 create_recruitment_result(upload_request,
                                           candidate, recruitment,
@@ -188,14 +272,14 @@ def create_graduated_school(upload_request: Any, candidate: Model,
                             school_name: str, graduade_faculty: str,
                             graduade_field_of_study: str, mode: str) -> Any:
     graduated_school, created = GraduatedSchool.objects.get_or_create(
-            candidate=candidate,
-            school_city=school_city,
-            school_type=school_type,
-            school_name=school_name,
-            faculty=graduade_faculty,
-            field_of_study=graduade_field_of_study,
-            mode=mode
-        )
+        candidate=candidate,
+        school_city=school_city,
+        school_type=school_type,
+        school_name=school_name,
+        faculty=graduade_faculty,
+        field_of_study=graduade_field_of_study,
+        mode=mode
+    )
     if created:
         graduated_school.upload_request = upload_request
         graduated_school.save()
