@@ -38,8 +38,13 @@ function LoginPanel(props) {
         return true;
     }
 
+    const onKeyUp = (event)  => {
+        if(event.charCode === 13){ // && validatePassword() && validateEmail()) {
+            handleLogin();
+        }
+    }
+
     const handleLogin = async (e) => {
-        e.preventDefault();
         try {
             let response = await loginUser(dispatch, {username:email, password});
             if(!response.access) return;
@@ -97,6 +102,7 @@ function LoginPanel(props) {
                                         name="password"
                                         type="password"
                                         label="Hasło"
+                                        onKeyPress={onKeyUp}
                                         onChange={(e)=>setPassword(e.target.value)}
                                         onFocus={(e)=> setPasswordCheck(false)}
                                         onBlur={(e)=> setPasswordCheck(true)}
