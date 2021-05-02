@@ -44,6 +44,8 @@ class Candidate(models.Model):
     city = models.CharField(max_length=80, null=True, blank=True)
     contest = models.CharField(max_length=80, null=True, blank=True)
 
+    class Meta:
+        ordering = ('pesel','contest')
 
 class GraduatedSchool(models.Model):
     SCHOOL_TYPE = (

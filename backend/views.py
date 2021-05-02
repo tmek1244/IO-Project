@@ -234,6 +234,11 @@ class GetBasicData(APIView):
 
                 return Response(result, status=status.HTTP_200_OK)
 
+            elif "contest" == string:
+                result["all"] = list(Candidate.objects.order_by().values_list('contest', flat=True).distinct())
+
+                return Response(result, status=status.HTTP_200_OK)
+
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
