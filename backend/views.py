@@ -232,7 +232,6 @@ class GetBasicData(APIView):
                                      distinct())
 
                 return Response(result, status=status.HTTP_200_OK)
-                
 
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -307,20 +306,27 @@ class CompareFields(APIView):
 class StatusDistributionView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, year: int = 2020, round: int = 0) -> Response:
+    def get(self, request: Request, year: int = 2020,
+            round: int = 0) -> Response:
         try:
             if round:
                 result = {
-                    d["result"]:d["total"] for d in 
-                    list(RecruitmentResult.objects.filter(recruitment__year=year).filter(recruitment__round=round).values('result').annotate(total=Count('result')).order_by('total'))
+                    d["result"]: d["total"] for d in
+                    list(RecruitmentResult.objects.
+                         filter(recruitment__year=year).
+                         filter(recruitment__round=round).
+                         values('result').annotate(total=Count('result')).
+                         order_by('total'))
                 }
             else:
                 result = {
-                    d["result"]:d["total"] for d in 
-                    list(RecruitmentResult.objects.filter(recruitment__year=year).values('result').annotate(total=Count('result')).order_by('total'))
+                    d["result"]: d["total"] for d in
+                    list(RecruitmentResult.objects.
+                         filter(recruitment__year=year).
+                         values('result').annotate(total=Count('result')).
+                         order_by('total'))
                 }
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
-
