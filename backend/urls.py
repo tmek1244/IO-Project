@@ -1,11 +1,9 @@
 from django.urls import path, re_path
 
-<<<<<<< HEAD
 from .views import (AddFacultyView, AddFieldOfStudy, GetBasicData,
                     GetFacultiesView, GetFieldsOfStudy,
                     RecruitmentResultListView,
                     RecruitmentResultOverviewListView, UploadView)
-=======
 from backend.views import (FieldOfStudyContestLaureatesCountView,
                            GetFacultiesView, GetFieldsOfStudy,
                            GetThresholdOnField,
@@ -13,7 +11,6 @@ from backend.views import (FieldOfStudyContestLaureatesCountView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView, UploadView)
->>>>>>> 8df71840079638e9d18e9f369e138276e274df7d
 
 app_name = 'backend'
 
@@ -34,11 +31,9 @@ urlpatterns = [
     path('fields_of_studies/',
          GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
-<<<<<<< HEAD
     path('add/faculty', AddFacultyView.as_view(), name='add_faculty'),
     path('add/field-of-study', AddFieldOfStudy.as_view(), name='add_fof'),
     path('basic-data/<string>/', GetBasicData.as_view(), name='basic_data'),
-=======
     path('threshold/', GetThresholdOnField.as_view(), name='threshold'),
     re_path(r'^threshold/(?P<string>.+)/$', GetThresholdOnField.as_view(),
             name='get_basic_data'),
@@ -48,5 +43,4 @@ urlpatterns = [
     re_path(r'^contest-laureates/(?P<string>.+)/$',
             FieldOfStudyContestLaureatesCountView.as_view(),
             name='get_contest_laureates_count')
->>>>>>> 8df71840079638e9d18e9f369e138276e274df7d
 ]
