@@ -20,6 +20,34 @@ class FacultySerializer(serializers.ModelSerializer[Any]):
         model = Faculty
         fields = '__all__'
 
+    def create(self, validated_data: Dict[str, Any]) -> bool:
+        faculty, created = Faculty.objects.get_or_create(
+            name=validated_data["name"]
+        )
+        faculty.save()
+
+        return created
+
+
+class FakeFieldOfStudySerializer(serializers.ModelSerializer[Any]):
+    faculty = serializers.CharField(required=True)
+
+    class Meta:
+        model = FieldOfStudy
+        fields = ('faculty', 'name', 'degree')
+
+    def create(self, validated_data: Dict[str, Any]) -> bool:
+        try:
+            fof, created = FieldOfStudy.objects.get_or_create(
+                faculty=Faculty.objects.get(name=validated_data['faculty']),
+                name=validated_data["name"],
+                degree=validated_data['degree']
+            )
+            fof.save()
+        except Exception:
+            return False
+        return True
+
 
 class FieldOfStudySerializer(serializers.ModelSerializer[Any]):
     faculty = FacultySerializer(read_only=True)
@@ -173,11 +201,11 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
 
             for line in validated_data["file"]:
                 (first_name, last_name, date_of_birth, gender, year_of_exam,
-                 city, school_city, school_type, school_name,
-                 graduade_faculty, graduade_field_of_study, mode,
-                 grade_IT, grade_math, grade_english, points_IT, points_math,
-                 points_english, year, round, field_of_study_name, points,
-                 result) = line.decode("utf-8").strip().split(",")
+                 city, school_city, school_type, school_name, graduade_faculty,
+                 graduade_field_of_study, mode, grade_IT, grade_math,
+                 grade_english, points_IT, points_math, points_english,
+                 year, round, faculty_name, field_of_study_name,
+                 points, result) = line.decode("utf-8").strip().split(",")
 
                 candidate = create_candidate(upload_request, first_name,
                                              last_name, date_of_birth, gender,
@@ -203,6 +231,7 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
                                    points_english)
 
                 field_of_study = create_field_of_study(upload_request,
+                                                       faculty_name,
                                                        field_of_study_name)
 
                 recruitment = create_recruitment(
@@ -213,7 +242,8 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
                                           candidate, recruitment,
                                           points, result)
 
-        except Exception:
+        except Exception as e:
+            print(e)
             upload_request.delete()
             return None
 
@@ -283,13 +313,13 @@ def create_exam_result(upload_request: Any, candidate: Model, subject: str,
 
 
 def create_field_of_study(upload_request: Any,
+                          faculty_name: str,
                           field_of_study_name: str) -> Any:
-    field_of_study, created = FieldOfStudy.objects.get_or_create(
+    faculty = Faculty.objects.get(name=faculty_name)
+    field_of_study = FieldOfStudy.objects.get(
+        faculty=faculty,
         name=field_of_study_name
     )
-    if created:
-        field_of_study.upload_request = upload_request
-        field_of_study.save()
     return field_of_study
 
 

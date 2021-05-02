@@ -128,8 +128,11 @@ class Recruitment:
     def __init__(self, round_nr: Any) -> None:
         self.year = random.randint(2016, 2021)
         self.round = round_nr
-        self.field_of_study = random.choice(
-            ["Informatyka", "Elektornika", "Odlewnictwo"])
+        self.faculty, self.field_of_study = random.choice([
+            ("WIET", "Informatyka"),
+            ("WIET", "Elektronika"),
+            ("WIMIR", "Odlewnictwo")
+        ])
         self.points = random.randint(100, 1000)
         self.result = random.choice(
             ["Accepted", "Rejected", "Signed"])

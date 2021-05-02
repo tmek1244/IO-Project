@@ -54,8 +54,10 @@ class CreateUserView(CreateAPIView):
             **kwargs: Dict[Any, Any]) -> Any:
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
-            serializer.create(serializer.validated_data)
-            return Response(status=status.HTTP_200_OK)
+            if serializer.create(serializer.validated_data):
+                return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
