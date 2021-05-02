@@ -42,4 +42,5 @@ urlpatterns = [
             name='get_contest_laureates_count'),
 
     path('status-distribution/<int:year>/', StatusDistributionView.as_view(), name='status-distribution'),
+    path('status-distribution/<int:year>/<int:round>', StatusDistributionView.as_view(), name='status-distribution'),
 ]

@@ -97,7 +97,7 @@ class RecruitmentResult(models.Model):
                                        null=True, blank=True)
     student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     recruitment = models.ForeignKey(Recruitment, on_delete=models.CASCADE)
-    points = models.FloatField()
+    points = models.FloatField(null=True, blank=True)
     result = models.CharField(choices=POSSIBLE_RESULT, max_length=10)
 
     class Meta:

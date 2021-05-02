@@ -307,11 +307,18 @@ class CompareFields(APIView):
 class StatusDistributionView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, year: int) -> Response:
+    def get(self, request: Request, year: int = 2020, round: int = 0) -> Response:
         try:
-            result =\
-            list(RecruitmentResult.objects.all().values('status').annotate(total=Count('status')).order_by('total'))
-
+            if round:
+                result = {
+                    d["result"]:d["total"] for d in 
+                    list(RecruitmentResult.objects.filter(recruitment__year=year).filter(recruitment__round=round).values('result').annotate(total=Count('result')).order_by('total'))
+                }
+            else:
+                result = {
+                    d["result"]:d["total"] for d in 
+                    list(RecruitmentResult.objects.filter(recruitment__year=year).values('result').annotate(total=Count('result')).order_by('total'))
+                }
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
