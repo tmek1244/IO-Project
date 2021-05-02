@@ -295,53 +295,30 @@ class CompareFields(APIView):
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
-class GetBasicData(APIView):
+class FieldConversionView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request,
-            year: int) -> Response:
-        try:
-            result: Dict[Any, Any] = {}
+            year: int,
+            faculty: str = None,
+            field_of_study: str = None) -> Response:
 
-            if "faculty" == string:
-                result["all"] = [faculty.name for faculty in
-                                 Faculty.objects.all()]
-                return Response(result, status=status.HTTP_200_OK)
+        from_inside = 0
+        from_outside = 0
 
-            elif "field-of-study" == string:
-                for faculty in Faculty.objects.all():
-                    result[faculty.name] = []
-                result["all"] = []
+        for rr in Recruitment.objects.filter(result__in=["$","+","rekrutacja zakończona","wpisany"]):
+            try:
+                faculty_name = rr.recruitment.field_of_study.faculty.name
+                fof_name = rr.recruitment.field_of_study.name
 
-                for fof in FieldOfStudy.objects.all():
-                    if fof.faculty:
-                        result[fof.faculty.name].append(fof.name)
-                    result["all"].append(fof.name)
-                return Response(result, status=status.HTTP_200_OK)
+                if (not faculty or faculty == faculty_name) and (not field_of_study or field_of_study == fof_name):
+                    if rr.student.graduated_school_set.filter(school_name="AGH").filter(faculty=faculty_name).filter(field_of_study=fof_name):
+                        from_inside += 1
+                    else:
+                        from_outside += 1
 
-            elif "year" == string:
-                result["all"] = list(sorted(set(
-                            recruitment.year for recruitment in
-                            Recruitment.objects.all())))
-                return Response(result, status=status.HTTP_200_OK)
+            except Exception as e:
+                print(e)
 
-            elif "round" == string:
-                for recruitment in Recruitment.objects.all():
-                    result[recruitment.year] = set()
-                result["all"] = set()
-
-                for recruitment in Recruitment.objects.all():
-                    result[recruitment.year].add(recruitment.round)
-                    result["all"].add(recruitment.round)
-
-                for key in result.keys():
-                    result[key] = list(sorted(result[key]))
-
-                return Response(result, status=status.HTTP_200_OK)
-
-            else:
-                return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            print(e)
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        result = {"from-inside": from_inside, "from-outside": from_outside}
+        return Response(result, status=status.HTTP_200_OK)

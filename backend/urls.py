@@ -39,5 +39,9 @@ urlpatterns = [
          name='contest_laureates'),
     re_path(r'^contest-laureates/(?P<string>.+)/$',
             FieldOfStudyContestLaureatesCountView.as_view(),
-            name='get_contest_laureates_count')
+            name='get_contest_laureates_count'),
+    
+    path('field-conversion/<int:year>/', GetThresholdOnField.as_view(), name='field-conversion'),
+    path('field-conversion/<int:year>/<faculty>/', GetThresholdOnField.as_view(), name='field-conversion'),
+    path('field-conversion/<int:year>/<faculty>/<field_of_study>/', GetThresholdOnField.as_view(), name='field-conversion'),
 ]
