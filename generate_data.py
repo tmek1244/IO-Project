@@ -109,6 +109,7 @@ class Recruitment:
             ]
         )
 
+
 def main(persons: Any, file_name: Any) -> Any:
     f = open(file_name, "w")
     print(
