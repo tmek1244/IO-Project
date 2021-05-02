@@ -29,9 +29,8 @@ class FieldOfStudy(models.Model):
 
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
-    degree = models.CharField(choices=DEGREE, max_length=10, default="1",
-                              null=True, blank=True)
-    mode = models.CharField(max_length=100, choices=MODE, default="stacjonarne", null=True, blank=True)
+    degree = models.CharField(choices=DEGREE, max_length=10, null=True, blank=True, default="1")
+    type = models.CharField(max_length=100, null=True, blank=True, default="stacjonarne")
 
 
 class Candidate(models.Model):
@@ -42,8 +41,8 @@ class Candidate(models.Model):
     last_name = models.CharField(max_length=50, null=True, blank=True)
     date_of_birth = models.DateField(null=True, blank=True)
     gender = models.CharField(max_length=50, null=True, blank=True)
-    year_of_exam = models.IntegerField(null=True, blank=True)
     city = models.CharField(max_length=80, null=True, blank=True)
+    contest = models.CharField(max_length=80, null=True, blank=True)
 
 
 class GraduatedSchool(models.Model):
@@ -99,7 +98,6 @@ class RecruitmentResult(models.Model):
     recruitment = models.ForeignKey(Recruitment, on_delete=models.CASCADE)
     points = models.FloatField()
     result = models.CharField(max_length=150)
-    olympiad = models.CharField(max_length=150)
 
 
 class Payment(models.Model):

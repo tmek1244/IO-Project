@@ -117,7 +117,7 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
             for line in validated_data["file"]:
                 (_, year, round,
                 mode, degree, faculty_name, fof_name,
-                result, points, olympiad, _,
+                result, points, contest, _,
                 last_name, first_name, _, _, _, pesel, gender, date_of_birth,
                 _, _, _, candidate_city, _, _, _, _,
                 _, school_city, school_name, _, school_type, school_faculty, school_fof) = line.decode("utf-8").strip().split(",")
@@ -125,22 +125,22 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
                 candidate = create_candidate(
                     upload_request, pesel, first_name,
                     last_name, date_of_birth, gender,
-                    candidate_city)
+                    candidate_city, contest)
 
                 create_graduaded_school(
                             upload_request, candidate, school_city,
                             school_type, school_name, school_faculty,
                             school_fof)
 
-                fof = create_field_of_study(
-                    upload_request, faculty_name, fof_name, mode, degree)
+                fof = get_field_of_study(
+                    faculty_name, fof_name, mode, degree)
 
                 recruitment = create_recruitment(
                             upload_request, fof, year, round)
 
                 create_recruitment_result(
                     upload_request, candidate, recruitment,
-                    points, result, olympiad)
+                    points, result)
 
         except Exception as e:
             print(e)
@@ -151,14 +151,15 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
 
 
 def create_candidate(upload_request: Any, pesel: str, first_name: str, last_name: str,
-                     date_of_birth: str, gender: str, city: str) -> Any:
+                     date_of_birth: str, gender: str, city: str, contest: str) -> Any:
     candidate, created = Candidate.objects.get_or_create(
         pesel=pesel,
         first_name=first_name,
         last_name=last_name,
         date_of_birth=date_of_birth,
         gender=gender,
-        city=city
+        city=city,
+        contest=contest
     )
     if created:
         candidate.upload_request = upload_request
@@ -210,13 +211,13 @@ def create_exam_result(upload_request: Any, candidate: Model, subject: str,
     return exam_result
 
 
-def create_field_of_study(faculty_name: str, field_of_study_name: str,
+def get_field_of_study(faculty_name: str, field_of_study_name: str,
                           mode: str, degree: str) -> Any:
     faculty = Faculty.objects.get(name=faculty_name)
     field_of_study = FieldOfStudy.objects.get(
         faculty=faculty,
         name=field_of_study_name,
-        mode=mode,
+        type=mode,
         degree=degree,
     )
     return field_of_study
@@ -237,13 +238,12 @@ def create_recruitment(upload_request: Any, field_of_study: Model, year: str,
 
 def create_recruitment_result(upload_request: Any, candidate: Model,
                               recruitment: Model, points: str,
-                              result: str, olympiad:str) -> Any:
+                              result: str) -> Any:
     recruitment_result, created = RecruitmentResult.objects.get_or_create(
         student=candidate,
         recruitment=recruitment,
         points=points,
-        result=result,
-        olympiad=olympiad
+        result=result
     )
     if created:
         recruitment_result.upload_request = upload_request

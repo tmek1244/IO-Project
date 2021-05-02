@@ -218,7 +218,7 @@ def main(persons: Any, file_name: Any) -> Any:
         "no", "rok", "runda",
         "rodzaj", "stopień", "wydział", "kierunek",
         "status", "punkty", "olimpiada", "data_aplikacji",
-        "nazwisko", "imię", "imię2", "imię_ojca", "imię_matki", "pesel", "płeć", 
+        "nazwisko", "imię", "imię2", "imię_ojca", "imię_matki", "pesel", "płeć", "data_urodzenia"
         "ulica", "nr_domu", "nr_mieszkania", "miasto", "kod_pocztowy", "poczta", "kraj", "email",
         "szkoła_kraj", "szkoła_miasto", "szkoła_nazwa", "szkoła_data", "szkoła_stopień", "szkoła_wydział", "szkoła_kierunek", 
         sep=","
@@ -232,7 +232,7 @@ def main(persons: Any, file_name: Any) -> Any:
         print(random.randint(1000,10000), r.year, r.round, # ogólne
               fof.mode, fof.degree, fof.faculty_name, fof.fof_name, # wydział gdzie aplikował
               r.result, r.points, r.olympiad, "", # z jakim wynikiem
-              c.last_name, c.first_name, "", "", "", random.randint(10**10, 10**11), c.gender, # kto aplikował
+              c.last_name, c.first_name, "", "", "", random.randint(10**10, 10**11), c.gender, c.date_of_birth, # kto aplikował
               "","","", c.city, "", "", "PL", "", # skąd jest
               "PL", gs.city, gs.name, gs.date, gs.degree, gs.faculty, gs.fof, # z jakiej poprzedniej szkoły
               sep=",", file=f
