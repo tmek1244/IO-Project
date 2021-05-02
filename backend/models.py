@@ -54,7 +54,7 @@ class GraduatedSchool(models.Model):
     SCHOOL_TYPE = (
         ('T', 'techikum'),
         ('L', 'liceum'),
-        ('B', 'Bachelor')
+        ('1', 'Bachelor')
     )
     upload_request = models.ForeignKey(UploadRequest, on_delete=models.CASCADE,
                                        null=True, blank=True)

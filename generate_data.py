@@ -72,15 +72,15 @@ class GraduadedSchool:
     ]
 
     universities = [
-        ("Kraków", "AGH", "B", "") + fof for fof in FieldOfStudy.fofs] + [
-        ("Kraków", "UJ", "B", "", "TCS", "TCS"),
-        ("Kraków", "UJ", "B", "", "Filozoficzny", "Filozofia"),
-        ("Kraków", "PK", "B", "", "Ogólny", "Informatyka"),
-        ("Kraków", "PK", "B", "", "Ogólny", "Robotyka"),
-        ("Kraków", "PK", "B", "", "Ogólny", "Budownictwo"),
-        ("Wrocław", "PW", "B", "", "Ogólny", "Informatyka"),
-        ("Warszawa", "UW", "B", "", "Ogólny", "Informatyka"),
-        ("Warszawa", "PW", "B", "", "Ogólny", "Informatyka"),
+        ("Kraków", "AGH", "1", "") + fof for fof in FieldOfStudy.fofs] + [
+        ("Kraków", "UJ", "1", "", "TCS", "TCS"),
+        ("Kraków", "UJ", "1", "", "Filozoficzny", "Filozofia"),
+        ("Kraków", "PK", "1", "", "Ogólny", "Informatyka"),
+        ("Kraków", "PK", "1", "", "Ogólny", "Robotyka"),
+        ("Kraków", "PK", "1", "", "Ogólny", "Budownictwo"),
+        ("Wrocław", "PW", "1", "", "Ogólny", "Informatyka"),
+        ("Warszawa", "UW", "1", "", "Ogólny", "Informatyka"),
+        ("Warszawa", "PW", "1", "", "Ogólny", "Informatyka"),
     ]
 
     def __init__(self) -> None:
