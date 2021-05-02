@@ -297,7 +297,7 @@ class GetThresholdOnField(APIView):
 
 class CompareFields(APIView):
     # permission_classes = (IsAuthenticated, )
-
+    """Need faculty+field_of_study+year+function"""
     def get(self, request: Request, string: str) -> Response:
         try:
             result: List[Dict[str, Any]] = []
