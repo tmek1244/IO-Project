@@ -181,6 +181,58 @@ class AddFieldOfStudy(CreateAPIView):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
 
+class GetBasicData(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            string: str) -> Response:
+        try:
+            result: Dict[Any, Any] = {}
+
+            if "faculty" == string:
+                result["all"] = [faculty.name for faculty in
+                                 Faculty.objects.all()]
+                return Response(result, status=status.HTTP_200_OK)
+
+            elif "field-of-study" == string:
+                for faculty in Faculty.objects.all():
+                    result[faculty.name] = []
+                result["all"] = []
+
+                for fof in FieldOfStudy.objects.all():
+                    if fof.faculty:
+                        result[fof.faculty.name].append(fof.name)
+                    result["all"].append(fof.name)
+                return Response(result, status=status.HTTP_200_OK)
+
+            elif "year" == string:
+                result["all"] = list(sorted(set(
+                            recruitment.year for recruitment in
+                            Recruitment.objects.all())))
+                return Response(result, status=status.HTTP_200_OK)
+
+            elif "round" == string:
+                for recruitment in Recruitment.objects.all():
+                    result[recruitment.year] = set()
+                result["all"] = set()
+
+                for recruitment in Recruitment.objects.all():
+                    result[recruitment.year].add(recruitment.round)
+                    result["all"].add(recruitment.round)
+
+                for key in result.keys():
+                    result[key] = list(sorted(result[key]))
+
+                return Response(result, status=status.HTTP_200_OK)
+
+            else:
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
 class GetThresholdOnField(APIView):
     permission_classes = (IsAuthenticated,)
 
