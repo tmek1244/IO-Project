@@ -6,6 +6,7 @@ import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@m
 import ThresholdChart from './Charts/ThresholdChart';
 import useStyles from "./styles";
 import LaureateChart from './Charts/LaureateChart';
+import FacultyAggregation from './Tables/FacultyAggregation';
 
 
 const FacultyAnalysis = () => {
@@ -77,7 +78,9 @@ const FacultyAnalysis = () => {
                             <Grid item xs={12}>
                                 <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} />
                             </Grid>
-                          
+                            <Grid item xs={12}>
+                                <FacultyAggregation />
+                            </Grid>
                         </Grid>
                     </>
             }

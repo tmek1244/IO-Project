@@ -11,7 +11,7 @@ const options = {
 };
 
 
-export default function LaureateChart({ faculty, cycle }) {
+export default function LaureateChart({ faculty }) {
 
     const convertResult = (json) => {
         const result = { 
