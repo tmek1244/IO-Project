@@ -18,6 +18,7 @@ import { useLayoutState } from './context/LayoutContext'
 import Dashboard from './pages/Dashboard/Dashboard'
 import TableRaportPanel from './pages/TableRaport/TableRaportPanel'
 import { useAuthState } from './context/AuthContext'
+import FacultyAnalysis from './pages/FacultyAnalysis/FacultyAnalysis'
 
 
 const AuthenticatedApp = () => {
@@ -45,6 +46,9 @@ const AuthenticatedApp = () => {
                         </Route>
                         <Route exact path='/haslo'>
                             <ChangePasswordPanel />
+                        </Route>
+                        <Route exact path='/podsumowanie_wydzial'>
+                            <FacultyAnalysis />
                         </Route>
                         {
                             authState.is_staff &&
