@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@material-ui/core';
 import ThresholdChart from './Charts/ThresholdChart';
 import useStyles from "./styles";
+import LaureateChart from './Charts/LaureateChart';
 
 
 const FacultyAnalysis = () => {
@@ -20,7 +21,6 @@ const FacultyAnalysis = () => {
     const [cycle, setCycle] = useState(1);
 
 
-    //TODO ułożyć ładniej formy do wybierania kierunku i cyklu oraz ogarniczyć rozmiar carda z wykresem 
     return (
         <>
             {
@@ -71,6 +71,9 @@ const FacultyAnalysis = () => {
                         </div>
 
                         <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                                <LaureateChart faculty={faculties[facultyIdx]} cycle={cycle} />
+                            </Grid>
                             <Grid item xs={12}>
                                 <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} />
                             </Grid>
