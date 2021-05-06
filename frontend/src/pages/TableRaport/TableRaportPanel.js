@@ -62,7 +62,7 @@ const TableRaportPanel = () => {
     const [data, setData] = React.useState([])
     const authState = useAuthState()
 
-    const [faculties, loading, error] = useFetch('api/backend/faculties', [])
+    const [faculties, loading, error] = useFetch('api/backend/basic-data/faculty', [], json => json.all)
 
     const handleInputChange = (e, type) => {
         e.preventDefault()
