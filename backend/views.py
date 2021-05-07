@@ -174,6 +174,7 @@ class UploadView(CreateAPIView):
 
 class UploadFieldsOfStudyView(CreateAPIView):
     serializer_class = UploadFieldOfStudySerializer
+    permission_classes = (IsAdminUser,)
     parser_classes = (FormParser, MultiPartParser)
 
     def post(self, request: Request,
