@@ -264,6 +264,14 @@ class GetBasicData(APIView):
 
                 return Response(result, status=status.HTTP_200_OK)
 
+            elif "result-name" == string:
+                result["all"] = list(RecruitmentResult.objects.
+                                     order_by().
+                                     values_list('result', flat=True).
+                                     distinct())
+
+                return Response(result, status=status.HTTP_200_OK)
+
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
@@ -329,6 +337,35 @@ class CompareFields(APIView):
                             result=fun_to_apply('points'))[0]['result']
                     })
             return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class StatusDistributionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, year: int = 2020,
+            round: int = 0) -> Response:
+        try:
+            if round:
+                result = {
+                    d["result"]: d["total"] for d in
+                    list(RecruitmentResult.objects.
+                         filter(recruitment__year=year).
+                         filter(recruitment__round=round).
+                         values('result').annotate(total=Count('result')).
+                         order_by('total'))
+                }
+            else:
+                result = {
+                    d["result"]: d["total"] for d in
+                    list(RecruitmentResult.objects.
+                         filter(recruitment__year=year).
+                         values('result').annotate(total=Count('result')).
+                         order_by('total'))
+                }
+            return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
