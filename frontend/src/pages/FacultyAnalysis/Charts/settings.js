@@ -15,4 +15,8 @@ export const commonOptions = {
             },
         ],
     },
+    //TODO: REMOVE?
+    animation: {
+        duration: 0
+    }
 };

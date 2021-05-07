@@ -7,7 +7,20 @@ import ThresholdChart from './Charts/ThresholdChart';
 import useStyles from "./styles";
 import LaureateChart from './Charts/LaureateChart';
 import FacultyAggregation from './Tables/FacultyAggregation';
+import CandidatesNumChart from './Charts/CandidatesNumChart';
 
+import SelectFieldsComponent from './../../components/SelectFields/SelectFieldsComponent';
+import AveragesMediansChart from './Charts/AveragesMediandsChart';
+
+
+export function GetReducedFields(fieldsLiteral, allowedFields) {
+    return Object.keys(fieldsLiteral)
+        .filter(key => allowedFields.includes(key))
+        .reduce((obj,key) => {
+            obj[key] = fieldsLiteral[key];
+            return obj;
+        }, {});
+}
 
 const FacultyAnalysis = () => {
     var classes = useStyles();
@@ -20,6 +33,22 @@ const FacultyAnalysis = () => {
     // jeden element oraz będziemy się do niej odwoływać dopiero jak będzie pobrana, czyli loading będzie na false
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
+
+    //TODO get them from GET request
+    const allFields = [
+        "informatyka",
+        "elektrotechnika",
+        "telekomunikacja",
+        "cyberbezpieczeństwo",
+        "random",
+        "org",
+        "kolejnykierunek"
+    ]
+
+    //TODO maybe refactor after we implement GET request
+    const [allowedFields, setAllowedFields] = useState(allFields ? allFields : []);
+
+
 
 
     return (
@@ -71,13 +100,27 @@ const FacultyAnalysis = () => {
                             </div>
                         </div>
 
+                        <div>
+                            <SelectFieldsComponent fields={allFields} setFields={setAllowedFields}/>
+                        </div>
+
                         <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                                <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
+                            </Grid>
                             <Grid item xs={12} md={6}>
                                 <LaureateChart faculty={faculties[facultyIdx]} cycle={cycle} />
                             </Grid>
                             <Grid item xs={12}>
                                 <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} />
                             </Grid>
+                            <Grid item xs={12} md={6}>
+                                <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                {/* <LaureateChart faculty={faculties[facultyIdx]} cycle={cycle} /> */}
+                            </Grid>
+
                             <Grid item xs={12}>
                                 <FacultyAggregation />
                             </Grid>
