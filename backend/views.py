@@ -21,7 +21,9 @@ from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
-                                 RecruitmentResultSerializer, UploadSerializer)
+                                 RecruitmentResultSerializer,
+                                 UploadFieldOfStudySerializer,
+                                 UploadSerializer)
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -163,6 +165,24 @@ class UploadView(CreateAPIView):
                                       context={'request': request})
         if serializer.is_valid():
             if serializer.create(serializer.validated_data):
+                return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class UploadFieldsOfStudyView(CreateAPIView):
+    serializer_class = UploadFieldOfStudySerializer
+    parser_classes = (FormParser, MultiPartParser)
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            data['year'] = kwargs['year']
+            if serializer.create(data):
                 return Response(status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_406_NOT_ACCEPTABLE)

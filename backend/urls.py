@@ -7,7 +7,8 @@ from backend.views import (AddFacultyView, AddFieldOfStudy,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
-                           RecruitmentResultOverviewListView, UploadView)
+                           RecruitmentResultOverviewListView,
+                           UploadFieldsOfStudyView, UploadView)
 
 app_name = 'backend'
 
@@ -24,6 +25,9 @@ urlpatterns = [
          RecruitmentResultFieldsOfStudyListView.as_view(),
          name='recruitment_result_fields_of_study_list'),
     path('upload/', UploadView.as_view(), name='upload_data'),
+    path('upload/fields_of_study/<year>/',
+         UploadFieldsOfStudyView.as_view(),
+         name='upload_fields_of_study'),
     path('faculties/', GetFacultiesView.as_view(), name='faculties'),
     path('fields_of_studies/',
          GetFieldsOfStudy.as_view(),
