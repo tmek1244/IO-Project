@@ -12,7 +12,7 @@ const options = {
 };
 
 
-export default function AveragesMediansChart({ faculty , allowedFields}) {
+export default function AveragesMediansChart({ faculty , cycle, allowedFields}) {
 
     const convertResult = (json) => {
         const result = { 
@@ -79,7 +79,7 @@ export default function AveragesMediansChart({ faculty , allowedFields}) {
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>Liczba kandydatów na jedno miejsce</Typography>}
+                title={<Typography variant='h5'>Średnia i mediana kandydatów na kierunki</Typography>}
             />
             <CardContent>
                 <div >

@@ -11,7 +11,7 @@ const options = {
 };
 
 
-export default function CandidatesNumChart({ faculty, allowedFields}) {
+export default function CandidatesNumChart({ faculty, cycle, allowedFields}) {
 
     const convertResult = (json) => {
         const result = { 
