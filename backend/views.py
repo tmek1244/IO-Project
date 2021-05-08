@@ -18,6 +18,7 @@ from backend.filters import RecruitmentResultListFilters
 from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
+                                 FieldOfStudyCandidatesPerPlaceSerializer,
                                  RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
@@ -124,6 +125,25 @@ class RecruitmentResultFieldsOfStudyListView(
         queryset = FieldOfStudy.objects.\
             filter(degree=self.request.data['degree'])\
             if 'degree' in self.request.data else FieldOfStudy.objects.all()
+        return queryset
+
+
+class FieldOfStudyCandidatesPerPlaceListView(
+    RecruitmentResultFieldsOfStudyListView
+):
+    serializer_class = FieldOfStudyCandidatesPerPlaceSerializer
+
+    def get_queryset(self) -> Manager[FieldOfStudy]:
+        filters = {}
+        if 'degree' in self.request.data:
+            filters['degree'] = self.request.data['degree']
+        if 'field_of_study' in self.request.data:
+            filters['name'] = self.request.data['field_of_study']
+        if 'faculty' in self.request.data:
+            faculty = Faculty.objects.filter(
+                name=self.request.data['faculty'])[0]
+            filters['faculty'] = faculty
+        queryset = FieldOfStudy.objects.filter(**filters)
         return queryset
 
 

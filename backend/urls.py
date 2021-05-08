@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 
 from backend.views import (AddFacultyView, AddFieldOfStudy,
+                           FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
                            GetThresholdOnField,
@@ -24,6 +25,9 @@ urlpatterns = [
     path('recruitment-result-fields-of-study/',
          RecruitmentResultFieldsOfStudyListView.as_view(),
          name='recruitment_result_fields_of_study_list'),
+    path('fields-of-study-candidates-per-place/',
+         FieldOfStudyCandidatesPerPlaceListView.as_view(),
+         name='fields_of_study_candidates_per_place'),
     path('upload/', UploadView.as_view(), name='upload_data'),
     path('upload/fields_of_study/<year>/',
          UploadFieldsOfStudyView.as_view(),
