@@ -171,6 +171,8 @@ class UploadView(CreateAPIView):
 
 
 class GetFacultiesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request: Request) -> Response:
         result: List[str] = [x.name for x in Faculty.objects.all()]
         return Response(result, status=status.HTTP_200_OK)

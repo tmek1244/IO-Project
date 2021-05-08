@@ -31,6 +31,8 @@ DEBUG = True
 
 ALLOWED_HOSTS: List[str] = os.environ.get(
     'ALLOWED_HOST', "localhost,127.0.0.1").split(",")
+LOGIN_URL = '/api/user/login'
+LOGOUT_URL = '/api/user/logout'
 
 # Application definition
 
@@ -152,3 +154,14 @@ STATIC_URL = '/static/'
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = 'tmp/email-messages/'
+
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Auth Token <Bearer API-TOKEN>': {
+            'type': 'apiKey',
+            'in': 'header',
+            'name': 'Authorization'
+        }
+    }
+}
