@@ -116,9 +116,7 @@ class RecruitmentResultFacultiesListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class RecruitmentResultFieldsOfStudyListView(
-    RecruitmentResultFacultiesListView
-):
+class RecruitmentResultFieldsOfStudyListView(generics.ListAPIView):
     serializer_class = RecruitmentResultFieldsOfStudySerializer
 
     def get_queryset(self) -> Manager[FieldOfStudy]:
@@ -126,6 +124,10 @@ class RecruitmentResultFieldsOfStudyListView(
             filter(degree=self.request.data['degree'])\
             if 'degree' in self.request.data else FieldOfStudy.objects.all()
         return queryset
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
 
 
 class FieldOfStudyCandidatesPerPlaceListView(

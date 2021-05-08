@@ -158,14 +158,13 @@ class RecruitmentResultFieldsOfStudySerializer(
 class FieldOfStudyCandidatesPerPlaceSerializer(
     RecruitmentResultFieldsOfStudySerializer
 ):
-    places = serializers.SerializerMethodField()
     candidates_per_place = serializers.SerializerMethodField()
     year = serializers.SerializerMethodField()
 
     class Meta:
         model = FieldOfStudy
         fields = ('name', 'faculty', 'degree', 'year',
-                  'candidates_count', 'places', 'candidates_per_place')
+                  'candidates_per_place')
 
     def get_year(self, obj: FieldOfStudy) -> int:
         if 'year' not in self.context['request'].data:
