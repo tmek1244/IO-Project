@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
+import { GetReducedFields } from '../FacultyAnalysis';
 
 const options = {
     ...commonOptions,
@@ -11,7 +12,7 @@ const options = {
 
 
 
-export default function ThresholdChart({ faculty, cycle }) {
+export default function ThresholdChart({ faculty, cycle, allowedFields }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
@@ -58,7 +59,7 @@ export default function ThresholdChart({ faculty, cycle }) {
             <CardContent>
                 <div >
                     {/* TODO change data to real data */}
-                    <Bar data={convertResult(fakeData)} options={options} />
+                    <Bar data={convertResult(GetReducedFields(fakeData, allowedFields))} options={options} />
                 </div>
             </CardContent>
 

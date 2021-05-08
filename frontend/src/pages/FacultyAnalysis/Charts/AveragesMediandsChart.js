@@ -12,17 +12,27 @@ const options = {
 };
 
 
-export default function AveragesMediansChart({ faculty , cycle, allowedFields}) {
+export default function AveragesMediansChart({ faculty , allowedFields}) {
 
     const convertResult = (json) => {
         const result = { 
             labels: Object.keys(json),
             datasets: [{
-                label: "Liczba kandydatów na jedno miejsce",
-                data: Object.values(json),
-                backgroundColor: colors,
-            }],
-        }
+                label: "Średnia",
+                data: [],
+                backgroundColor: colors[0],
+            },
+            {
+                label: "Mediana",
+                data: [],
+                backgroundColor: colors[1],
+            }
+        ]}
+
+        Object.keys(json).forEach(k => {
+            result.datasets[0].data.push(json[k]["average"]);
+            result.datasets[1].data.push(json[k]["median"]);
+        })
 
         return result
     }
@@ -34,15 +44,37 @@ export default function AveragesMediansChart({ faculty , cycle, allowedFields}) 
 
     //TODO usnąć jak będą pobierane dane
     const fieldsOfStudyData = {
-        informatyka: 10,
-        elektrotechnika: 1,
-        telekomunikacja: 2,
-        cyberbezpieczeństwo: 2,
-        random: 5,
-        org: 1,
-        kolejnykierunek: 6,
+        informatyka: {
+            average: 900,
+            median: 800,
+        },
+        elektrotechnika: {
+            average: 300,
+            median: 100,
+        },
+        telekomunikacja: {
+            average: 900,
+            median: 400,
+        },
+        cyberbezpieczeństwo: {
+            average: 400,
+            median: 800,
+        },
+        random: {
+            average: 550,
+            median: 600,
+        },
+        org: {
+            average:900,
+            median:800,
+        },
+        kolejnykierunek: {
+            average:900,
+            median:800,
+        },
     }
-            
+    
+    
     return (
         <Card  >
             <CardHeader
