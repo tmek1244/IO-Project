@@ -25,7 +25,8 @@ class FieldListFilters:
             field_filters["name"] = self.name_filter
 
         if self.degree_filter is not None:
-            field_filters["degree"] = self.degree_filter
+            field_of_study_filters["degree__in"] = (
+                (6, 7) if self.degree_filter == 1 else 8)
 
         return field_filters
 
