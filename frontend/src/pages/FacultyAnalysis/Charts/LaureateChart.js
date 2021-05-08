@@ -3,7 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
-
+import { GetReducedFields } from '../FacultyAnalysis';
 
 const options = {
     ...commonOptions,
@@ -11,7 +11,7 @@ const options = {
 };
 
 
-export default function LaureateChart({ faculty }) {
+export default function LaureateChart({ faculty, allowedFields}) {
 
     const convertResult = (json) => {
         const result = { 
@@ -50,7 +50,7 @@ export default function LaureateChart({ faculty }) {
             <CardContent>
                 <div >
                     {/* TODO change data to real data */}
-                    <Bar data={convertResult(fakeData)} options={options} />
+                    <Bar data={convertResult(GetReducedFields(fakeData, allowedFields))} options={options} />
                 </div>
             </CardContent>
         </Card>

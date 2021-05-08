@@ -25,7 +25,9 @@ export function GetReducedFields(fieldsLiteral, allowedFields) {
 const FacultyAnalysis = () => {
     var classes = useStyles();
 
-    const [faculties, loading, error] = useFetch('api/backend/basic-data/faculty', [], json => json.all)
+    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], json => json)
+    // const [faculties, loading, error] = useFetch('api/backend/basic-data/faculty', [], json => json.all)
+    const faculties = Object.keys(facultiesStudyFields);
 
     // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
     // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
@@ -34,7 +36,8 @@ const FacultyAnalysis = () => {
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
 
-    //TODO get them from GET request
+    //TODO change after we get real rest requests
+    //const allFields = facultiesStudyFields[faculties[facultyIdx]];
     const allFields = [
         "informatyka",
         "elektrotechnika",
@@ -50,7 +53,6 @@ const FacultyAnalysis = () => {
 
 
 
-
     return (
         <>
             {
@@ -58,7 +60,6 @@ const FacultyAnalysis = () => {
                     <p>loading</p> // TODO zmienić na spinner
                     :
                     <>
-
                         <div className={classes.pageTitleContainer}>
                             <Typography className={classes.text} variant="h3" size="sm">
                                 Podsumowanie wydziału {/* TODO jakoś lepiej by to wypadało nazwać  */}
@@ -106,16 +107,16 @@ const FacultyAnalysis = () => {
 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
-                                <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
+                                <CandidatesNumChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <LaureateChart faculty={faculties[facultyIdx]} cycle={cycle} />
+                                <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} />
+                                <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
+                                <AveragesMediansChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 {/* <LaureateChart faculty={faculties[facultyIdx]} cycle={cycle} /> */}
