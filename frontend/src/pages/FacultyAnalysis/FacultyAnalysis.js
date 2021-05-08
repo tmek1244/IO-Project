@@ -11,6 +11,7 @@ import CandidatesNumChart from './Charts/CandidatesNumChart';
 
 import SelectFieldsComponent from './../../components/SelectFields/SelectFieldsComponent';
 import AveragesMediansChart from './Charts/AveragesMediandsChart';
+import StudentsStatusChart from './Charts/StudentsStatusChart';
 
 
 export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -107,7 +108,7 @@ const FacultyAnalysis = () => {
 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
-                                <CandidatesNumChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
+                                <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
@@ -116,12 +117,11 @@ const FacultyAnalysis = () => {
                                 <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <AveragesMediansChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
+                                <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
-                            <Grid item xs={12} md={6}>
-                                {/* <LaureateChart faculty={faculties[facultyIdx]} cycle={cycle} /> */}
+                            <Grid item xs={12}>
+                                <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
-
                             <Grid item xs={12}>
                                 <FacultyAggregation />
                             </Grid>
