@@ -10,7 +10,8 @@ import {
     PersonAdd as PersonAddIcon,
     AddBox as AddBoxIcon,
     TableChart as TableChartIcon,
-    FormatUnderlined as DragHandleIcon
+    FormatUnderlined as DragHandleIcon,
+    Equalizer as EqualizerIcon,
 } from '@material-ui/icons'
 
 import SidebarLink from './components/SidebarLink'
@@ -30,7 +31,8 @@ const Sidebar = ({location}) => {
         { id: 0, label: "Dashboard", link: '/', icon: <HomeIcon /> },
         { id: 1, label: "Dodaj dane", link: '/dodajDane', icon: <AddBoxIcon /> },
         { id: 2, label: "Podsumowanie", link: '/podsumowanie', icon: <TableChartIcon /> },
-        { id: 3, label: "Zmień hasło", link: '/haslo', icon: <DragHandleIcon /> },
+        { id: 3, label: "Wydział", link: '/podsumowanie_wydzial', icon: <EqualizerIcon /> },
+        { id: 4, label: "Zmień hasło", link: '/haslo', icon: <DragHandleIcon /> },
     ]
 
     const adminLinks = [
