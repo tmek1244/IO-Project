@@ -126,7 +126,7 @@ class ExamResult:
 
 class Recruitment:
     def __init__(self, round_nr: Any) -> None:
-        self.year = random.randint(2016, 2021)
+        self.year = random.randint(2020, 2021)
         self.round = round_nr
         self.faculty, self.field_of_study = random.choice([
             ("WIET", "Informatyka"),
@@ -151,7 +151,7 @@ def main(persons: Any, file_name: Any) -> Any:
         for i in range(persons):
             record = [vars(Candidate()), random.choice(HIGH_SCHOOL),
                       vars(Grade()), vars(ExamResult())]
-            for nr in range(1, 6):
+            for nr in range(1, 4):
                 if random.random() > 0.8:
                     break
                 print(
@@ -160,4 +160,4 @@ def main(persons: Any, file_name: Any) -> Any:
 
 
 if __name__ == '__main__':
-    main(persons=10, file_name='generated_data.csv')
+    main(persons=100, file_name='generated_data.csv')
