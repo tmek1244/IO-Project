@@ -1,6 +1,7 @@
 from django.urls import path, re_path
 
-from backend.views import (AddFacultyView, AddFieldOfStudy, CompareFields,
+from backend.views import (ActualFacultyThreshold, AddFacultyView,
+                           AddFieldOfStudy, CompareFields,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
@@ -49,5 +50,9 @@ urlpatterns = [
             FieldOfStudyContestLaureatesCountView.as_view(),
             name='get_contest_laureates_count'),
     re_path(r'^compare/(?P<string>.+)/$',
-            CompareFields.as_view(), name='compare_fields')
+            CompareFields.as_view(), name='compare_fields'),
+    path(
+        r'actual_recruitment_faculty_threshold/faculty=<faculty>'
+        r'&cycle=<degree>/',
+        ActualFacultyThreshold.as_view(), name='actual_threshold')
 ]
