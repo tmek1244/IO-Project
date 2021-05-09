@@ -18,6 +18,7 @@ from backend.filters import RecruitmentResultListFilters
 from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
+                                 FieldOfStudyCandidatesPerPlaceSerializer,
                                  RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
@@ -125,6 +126,31 @@ class RecruitmentResultFieldsOfStudyListView(
             filter(degree=self.request.data['degree'])\
             if 'degree' in self.request.data else FieldOfStudy.objects.all()
         return queryset
+
+
+class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
+    serializer_class = FieldOfStudyCandidatesPerPlaceSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self) -> Manager[FieldOfStudy]:
+        filters = {}
+        if 'degree' in self.request.data:
+            filters['degree'] = self.request.data['degree']
+        if 'field_of_study' in self.request.data:
+            filters['name'] = self.request.data['field_of_study']
+        if 'faculty' in self.request.data:
+            try:
+                faculty = Faculty.objects.filter(
+                    name=self.request.data['faculty'])[0]
+                filters['faculty'] = faculty
+            except IndexError:
+                return FieldOfStudy.objects.none()
+        queryset = FieldOfStudy.objects.filter(**filters)
+        return queryset
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
 
 
 class FieldOfStudyContestLaureatesCountView(APIView):

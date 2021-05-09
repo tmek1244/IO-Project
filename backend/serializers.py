@@ -155,6 +155,39 @@ class RecruitmentResultFieldsOfStudySerializer(
         return recruitments_filters
 
 
+class FieldOfStudyCandidatesPerPlaceSerializer(
+    RecruitmentResultFieldsOfStudySerializer
+):
+    candidates_per_place = serializers.SerializerMethodField()
+    year = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FieldOfStudy
+        fields = ('name', 'faculty', 'degree', 'year',
+                  'candidates_per_place')
+
+    def get_year(self, obj: FieldOfStudy) -> int:
+        if 'year' not in self.context['request'].data:
+            raise serializers.ValidationError("Year missing")
+        else:
+            return int(self.context['request'].data['year'])
+
+    def get_places(self, obj: FieldOfStudy) -> Any:
+        places = FieldOfStudyPlacesLimit.objects.filter(
+            field_of_study=obj,
+            year=self.get_year(obj)
+        )
+        return places[0].places if len(places) > 0 else None
+
+    def get_candidates_per_place(self, obj: FieldOfStudy) -> Any:
+        places = self.get_places(obj)
+        if places is None:
+            return None
+        else:
+            result = self.get_candidates_count(obj) / places
+            return result
+
+
 class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
     degree = serializers.SerializerMethodField()
     faculty = serializers. \
