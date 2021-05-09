@@ -18,10 +18,13 @@ from backend.filters import RecruitmentResultListFilters
 from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
+                                 FieldOfStudyCandidatesPerPlaceSerializer,
                                  RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
-                                 RecruitmentResultSerializer, UploadSerializer)
+                                 RecruitmentResultSerializer,
+                                 UploadFieldOfStudySerializer,
+                                 UploadSerializer)
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -125,6 +128,31 @@ class RecruitmentResultFieldsOfStudyListView(
         return queryset
 
 
+class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
+    serializer_class = FieldOfStudyCandidatesPerPlaceSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self) -> Manager[FieldOfStudy]:
+        filters = {}
+        if 'degree' in self.request.data:
+            filters['degree'] = self.request.data['degree']
+        if 'field_of_study' in self.request.data:
+            filters['name'] = self.request.data['field_of_study']
+        if 'faculty' in self.request.data:
+            try:
+                faculty = Faculty.objects.filter(
+                    name=self.request.data['faculty'])[0]
+                filters['faculty'] = faculty
+            except IndexError:
+                return FieldOfStudy.objects.none()
+        queryset = FieldOfStudy.objects.filter(**filters)
+        return queryset
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
+
+
 class FieldOfStudyContestLaureatesCountView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -163,6 +191,25 @@ class UploadView(CreateAPIView):
                                       context={'request': request})
         if serializer.is_valid():
             if serializer.create(serializer.validated_data):
+                return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+
+class UploadFieldsOfStudyView(CreateAPIView):
+    serializer_class = UploadFieldOfStudySerializer
+    permission_classes = (IsAdminUser,)
+    parser_classes = (FormParser, MultiPartParser)
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            data['year'] = kwargs['year']
+            if serializer.create(data):
                 return Response(status=status.HTTP_200_OK)
             else:
                 return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
