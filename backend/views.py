@@ -285,13 +285,16 @@ class GetBasicData(APIView):
 
             elif "field-of-study" == string:
                 for faculty in Faculty.objects.all():
-                    result[faculty.name] = []
-                result["all"] = []
+                    result[faculty.name] = set()
+                result["all"] = set()
 
                 for fof in FieldOfStudy.objects.all():
                     if fof.faculty:
-                        result[fof.faculty.name].append(fof.name)
-                    result["all"].append(fof.name)
+                        result[fof.faculty.name].add(fof.name)
+                    result["all"].add(fof.name)
+
+                for key in result.keys():
+                    result[key] = list(sorted(result[key]))
                 return Response(result, status=status.HTTP_200_OK)
 
             elif "year" == string:
@@ -314,9 +317,15 @@ class GetBasicData(APIView):
 
                 return Response(result, status=status.HTTP_200_OK)
 
+            elif "contest" == string:
+                result["all"] = list(Candidate.objects.order_by().
+                                     values_list('contest', flat=True).
+                                     distinct())
+
+                return Response(result, status=status.HTTP_200_OK)
+
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
