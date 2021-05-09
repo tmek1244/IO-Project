@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from django.db.models import Model
 from django.db.models.aggregates import Max, Min
@@ -205,9 +205,8 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
                   'signed_candidates_count',
                   'contest_laureates_count')
 
-    def get_degree(self, obj: Recruitment) -> int:
-        degree = obj.field_of_study.degree
-        return 1 if degree == 6 or 7 else 2
+    def get_degree(self, obj: Recruitment) -> Optional[str]:
+        return str(obj.field_of_study.degree)
 
     def get_candidates_count(self, obj: Recruitment) -> int:
         return RecruitmentResult.objects \
@@ -241,20 +240,20 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
 
         for line in validated_data["file"]:
             (degree, faculty_name, field_of_study_name, places,
-             second_degree_field_of_study_name) = \
-                line.decode("utf-8").strip().split(",")
+             second_degree_field_of_study_name) = (
+                line.decode("utf-8").strip().split(","))
             if (degree == '' or faculty_name == '' or
-                field_of_study_name == '' or places == '') or \
-                    ((int(degree) == 6 or int(degree) == 7)
-                     and second_degree_field_of_study_name == '') or \
-                    ((int(degree) == 8) and
-                     second_degree_field_of_study_name != ''):
+                field_of_study_name == '' or places == '') or (
+                    ((int(degree) == 1)
+                     and second_degree_field_of_study_name == '')) or (
+                    ((int(degree) == 2) and
+                     second_degree_field_of_study_name != '')):
                 return False
 
         for line in validated_data["file"]:
             (degree, faculty_name, field_of_study_name, places,
-             second_degree_field_of_study_name) = \
-                line.decode("utf-8").strip().split(",")
+             second_degree_field_of_study_name) = (
+                line.decode("utf-8").strip().split(","))
 
             faculty, _ = Faculty.objects.get_or_create(
                 name=faculty_name
@@ -264,20 +263,20 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
                 name=field_of_study_name,
                 degree=degree
             )
-            field_of_study_places_limit, _ = \
+            field_of_study_places_limit, _ = (
                 FieldOfStudyPlacesLimit.objects.update_or_create(
                     field_of_study=field_of_study,
                     year=validated_data['year'],
                     defaults={'places': places}
-                )
-            if int(degree) == 6 or int(degree) == 7:
-                second_degree_field_of_study, _ = \
+                ))
+            if int(degree) == 1:
+                second_degree_field_of_study, _ = (
                     FieldOfStudy.objects.get_or_create(
                         faculty=faculty,
                         name=second_degree_field_of_study_name,
-                        degree=8
-                    )
-                field_of_study_next_degree, _ = \
+                        degree=2
+                    ))
+                field_of_study_next_degree, _ = (
                     FieldOfStudyNextDegree.objects.update_or_create(
                         field_of_study=field_of_study,
                         year=validated_data['year'],
@@ -285,7 +284,7 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
                             'second_degree_field_of_study':
                                 second_degree_field_of_study
                         }
-                    )
+                    ))
 
         return True
 
