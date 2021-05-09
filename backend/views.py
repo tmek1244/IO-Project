@@ -306,27 +306,68 @@ class CompareFields(APIView):
 class StatusDistributionView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, year: int = 2020,
-            round: int = 0) -> Response:
+    def get(self, request: Request, year: int,
+            faculty: str = None, degree: str = None) -> Response:
         try:
-            if round:
-                result = {
-                    d["result"]: d["total"] for d in
-                    list(RecruitmentResult.objects.
-                         filter(recruitment__year=year).
-                         filter(recruitment__round=round).
-                         values('result').annotate(total=Count('result')).
-                         order_by('total'))
-                }
+            if faculty and degree:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=year).
+                           filter(
+                             recruitment__field_of_study__faculty__name=faculty
+                           ).
+                           filter(recruitment__field_of_study__degree=degree).
+                           values(
+                               'recruitment__field_of_study__name',
+                               'recruitment__round',
+                               'result')
+                           .annotate(total=Count('result')).
+                           order_by('total'))
+            elif faculty:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=year).
+                           filter(
+                             recruitment__field_of_study__faculty__name=faculty
+                           ).
+                           values(
+                               'recruitment__field_of_study__name',
+                               'recruitment__round',
+                               'result')
+                           .annotate(total=Count('result')).
+                           order_by('total'))
             else:
-                result = {
-                    d["result"]: d["total"] for d in
-                    list(RecruitmentResult.objects.
-                         filter(recruitment__year=year).
-                         values('result').annotate(total=Count('result')).
-                         order_by('total'))
-                }
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=year).
+                           values(
+                               'recruitment__field_of_study__name',
+                               'recruitment__round',
+                               'result')
+                           .annotate(total=Count('result')).
+                           order_by('total'))
+
+            result: Dict[Any, Any] = {"all": {}}
+            for d in tmp:
+                fof = d['recruitment__field_of_study__name']
+                round = d['recruitment__round']
+                rstatus = d['result']
+                total = d['total']
+
+                if fof not in result:
+                    result[fof] = {"all": {}}
+                if round not in result[fof]:
+                    result[fof][round] = {}
+                if rstatus not in result["all"]:
+                    result["all"][rstatus] = 0
+                if rstatus not in result[fof]["all"]:
+                    result[fof]["all"][rstatus] = 0
+
+                result[fof][round][rstatus] = total
+                result["all"][rstatus] += total
+                result[fof]["all"][rstatus] += total
+
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
-            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )

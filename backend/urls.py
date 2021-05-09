@@ -44,6 +44,8 @@ urlpatterns = [
 
     path('status-distribution/<int:year>/',
          StatusDistributionView.as_view(), name='status-distribution'),
-    path('status-distribution/<int:year>/<int:round>',
+    path('status-distribution/<int:year>/<faculty>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
+    path('status-distribution/<int:year>/<faculty>/<degree>/',
          StatusDistributionView.as_view(), name='status-distribution'),
 ]
