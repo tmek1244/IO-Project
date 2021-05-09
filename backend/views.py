@@ -116,9 +116,10 @@ class RecruitmentResultFacultiesListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class RecruitmentResultFieldsOfStudyListView(generics.ListAPIView):
+class RecruitmentResultFieldsOfStudyListView(
+    RecruitmentResultFacultiesListView
+):
     serializer_class = RecruitmentResultFieldsOfStudySerializer
-    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self) -> Manager[FieldOfStudy]:
         queryset = FieldOfStudy.objects.\
@@ -126,15 +127,10 @@ class RecruitmentResultFieldsOfStudyListView(generics.ListAPIView):
             if 'degree' in self.request.data else FieldOfStudy.objects.all()
         return queryset
 
-    def post(self, request: Request,
-             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
-        return self.list(request, *args, **kwargs)
 
-
-class FieldOfStudyCandidatesPerPlaceListView(
-    RecruitmentResultFieldsOfStudyListView
-):
+class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
     serializer_class = FieldOfStudyCandidatesPerPlaceSerializer
+    permission_classes = (IsAuthenticated,)
 
     def get_queryset(self) -> Manager[FieldOfStudy]:
         filters = {}
@@ -148,6 +144,10 @@ class FieldOfStudyCandidatesPerPlaceListView(
             filters['faculty'] = faculty
         queryset = FieldOfStudy.objects.filter(**filters)
         return queryset
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
 
 
 class FieldOfStudyContestLaureatesCountView(APIView):
