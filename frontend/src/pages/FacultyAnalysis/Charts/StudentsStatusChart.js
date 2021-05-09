@@ -56,7 +56,7 @@ export default function StudentsStatusChart({ faculty, cycle, allowedFields }) {
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>STATUS ZMIEN MNIE</Typography>}
+                title={<Typography variant='h5'>CHA-60 WIP</Typography>}
             />
             <CardContent>
                 <div >

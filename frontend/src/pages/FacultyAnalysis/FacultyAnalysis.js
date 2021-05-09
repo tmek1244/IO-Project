@@ -68,7 +68,7 @@ const FacultyAnalysis = () => {
                     <>
                         <div className={classes.pageTitleContainer}>
                             <Typography className={classes.text} variant="h3" size="sm">
-                                Podsumowanie wydziału {faculties[facultyIdx]} stopień {cycle}
+                                Podsumowanie: {faculties[facultyIdx]} stopień {cycle}
                             </Typography>
                             <div className={classes.formContainer}>
                                 <div className={classes.facultySelector}>
