@@ -30,56 +30,34 @@ export default function AveragesMediansChart({ faculty , cycle, allowedFields}) 
         ]}
 
         Object.keys(json).forEach(k => {
-            result.datasets[0].data.push(json[k]["average"]);
-            result.datasets[1].data.push(json[k]["median"]);
+            result.datasets[0].data.push(json[k]["AVG"]);
+            result.datasets[1].data.push(json[k]["MED"]);
         })
 
         return result
     }
 
-
-    //TODO odkomentować jak będzie endpoint
-    //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/candidates_number_per_place?faculty=${faculty}`, {}, convertResult)
-
-
-    //TODO usnąć jak będą pobierane dane
-    const fieldsOfStudyData = {
-        informatyka: {
-            average: 900,
-            median: 800,
-        },
-        elektrotechnika: {
-            average: 300,
-            median: 100,
-        },
-        telekomunikacja: {
-            average: 900,
-            median: 400,
-        },
-        cyberbezpieczeństwo: {
-            average: 400,
-            median: 800,
-        },
-        random: {
-            average: 550,
-            median: 600,
-        },
-        org: {
-            average:900,
-            median:800,
-        },
-        kolejnykierunek: {
-            average:900,
-            median:800,
+    //TODO zmienic jak będzie endpoint
+    //const [fetchedData, loading, error ] = useFetch(`/api/backend/aam/${faculty}+2020/`, {}, convertResult)
+    const fetchedData = {
+        "WIET 2020": {
+            "Informatyka": {
+                "AVG": 900,
+                "MED": 800,
+            },
+            "Elektornika": {
+                "AVG": 300,
+                "MED": 100,
+            },
         },
     }
-    
+    const fieldsOfStudyData = fetchedData["WIET 2020"];
     
     return (
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>Średnia i mediana kandydatów na kierunki</Typography>}
+                title={<Typography variant='h5'>Średnia i mediana kandydatów na kierunek</Typography>}
             />
             <CardContent>
                 <div >
