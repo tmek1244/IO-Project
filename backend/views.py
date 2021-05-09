@@ -218,8 +218,11 @@ class UploadFieldsOfStudyView(CreateAPIView):
 
 
 class GetFacultiesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request: Request) -> Response:
-        return Response(list(Faculty.objects.all()), status=status.HTTP_200_OK)
+        result: List[str] = [x.name for x in Faculty.objects.all()]
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class GetFieldsOfStudy(APIView):
@@ -343,7 +346,7 @@ class GetThresholdOnField(APIView):
 
 class CompareFields(APIView):
     # permission_classes = (IsAuthenticated, )
-
+    """Need faculty+field_of_study+year+function"""
     def get(self, request: Request, string: str) -> Response:
         try:
             result: List[Dict[str, Any]] = []
