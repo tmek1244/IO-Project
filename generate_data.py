@@ -100,12 +100,12 @@ class Recruitment:
         self.olympiad = random.choice(["Diament"] * 3 + ["OM"] + [""] * 20)
         self.result = random.choice(
             [
-                "nieprzyjęty z powodu niedokonania wpisu",
-                "niezakwalifikowany",
-                "rekrutacja zakończona",
-                "wpisany",
-                "rekrutacja zakończona",
-                "wpisany",
+                "unregistered",
+                "rejected",
+                "accepted",
+                "signed",
+                "accepted",
+                "signed",
             ]
         )
 
