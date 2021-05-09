@@ -139,9 +139,12 @@ class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
         if 'field_of_study' in self.request.data:
             filters['name'] = self.request.data['field_of_study']
         if 'faculty' in self.request.data:
-            faculty = Faculty.objects.filter(
-                name=self.request.data['faculty'])[0]
-            filters['faculty'] = faculty
+            try:
+                faculty = Faculty.objects.filter(
+                    name=self.request.data['faculty'])[0]
+                filters['faculty'] = faculty
+            except IndexError:
+                return FieldOfStudy.objects.none()
         queryset = FieldOfStudy.objects.filter(**filters)
         return queryset
 
