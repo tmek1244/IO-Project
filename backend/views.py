@@ -388,7 +388,6 @@ class CompareFields(APIView):
 def get_median(values: django.db.models.QuerySet[RecruitmentResult]) -> float:
 
     sorted_list = sorted(list(map(lambda x: x.points, values)))
-    print(sorted_list)
     if len(sorted_list) % 2 == 0:
         return (
                        sorted_list[len(sorted_list)//2]
@@ -409,7 +408,8 @@ class AvgAndMedOfFields(APIView):
             assert len(split_request) % 2 == 0
 
             for i in range(len(split_request) // 2):
-                print(split_request[2*i])
+                this_faculty = {}
+                # print(split_request[2*i])
                 faculty_obj = Faculty.objects.get(name=split_request[2*i])
                 field_obj = FieldOfStudy.objects.filter(faculty=faculty_obj)
                 for field in field_obj:
@@ -418,11 +418,14 @@ class AvgAndMedOfFields(APIView):
                     recruitment_results = RecruitmentResult.objects.filter(
                         recruitment__in=recruitment, result='Signed')
                     if recruitment_results:
-                        result[field.name] = {
+                        this_faculty[field.name] = {
                             'AVG': recruitment_results.aggregate(
                                 Avg('points'))['points__avg'],
                             'MED': get_median(recruitment_results)
                         }
+                result[
+                    split_request[2*i]+' '+split_request[2 * i + 1]
+                    ] = this_faculty
             return Response(result)
         except Exception as e:
             print(e)
