@@ -2,6 +2,7 @@ from itertools import groupby
 from operator import itemgetter
 from typing import Any, Dict, List
 
+import django.db.models
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Avg, Manager, Max, Min
 from django.db.models.aggregates import Count
@@ -382,3 +383,47 @@ class CompareFields(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+def get_median(values: django.db.models.QuerySet[RecruitmentResult]) -> float:
+
+    sorted_list = sorted(list(map(lambda x: x.points, values)))
+    print(sorted_list)
+    if len(sorted_list) % 2 == 0:
+        return (
+                       sorted_list[len(sorted_list)//2]
+                       + sorted_list[len(sorted_list)//2-1]
+               )/2
+    else:
+        return sorted_list[len(sorted_list)//2]
+
+
+class AvgAndMedOfFields(APIView):
+    permission_classes = (IsAuthenticated, )
+    """Need faculty+year"""
+
+    def get(self, request: Request, faculty_year_list: str) -> Response:
+        try:
+            result: Dict[str, Dict[str, Any]] = {}
+            split_request = faculty_year_list.split('+')
+            assert len(split_request) % 2 == 0
+
+            for i in range(len(split_request) // 2):
+                print(split_request[2*i])
+                faculty_obj = Faculty.objects.get(name=split_request[2*i])
+                field_obj = FieldOfStudy.objects.filter(faculty=faculty_obj)
+                for field in field_obj:
+                    recruitment = Recruitment.objects.filter(
+                        field_of_study=field, year=split_request[2 * i + 1])
+                    recruitment_results = RecruitmentResult.objects.filter(
+                        recruitment__in=recruitment, result='Signed')
+                    if recruitment_results:
+                        result[field.name] = {
+                            'AVG': recruitment_results.aggregate(
+                                Avg('points'))['points__avg'],
+                            'MED': get_median(recruitment_results)
+                        }
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
