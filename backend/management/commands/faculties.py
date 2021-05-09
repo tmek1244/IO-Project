@@ -5,7 +5,7 @@ from django.core.management.base import BaseCommand
 from backend.models import Faculty, FieldOfStudy
 
 FACULTIES: Dict[str, List[Tuple[str, str]]] = {
-    'WIET': [('Informatyka', '7'), ('Elektornika', '7')],
+    'WIET': [('Informatyka', '7'), ('Elektronika', '7')],
     'WO': [('Odlewnictwo', '7'),
            ('Komputerowe Wspomaganie Procesów Inżynierskich', '7')],
     'WFIS': [('Fizyka Techniczna', '6'), ('Informatyka Stosowana', '7')]
