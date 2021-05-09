@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import PageTitle from '../../components/PageTitle/PageTitle';
 import useFetch from '../../hooks/useFetch';
 import { useState } from 'react';
@@ -12,6 +12,7 @@ import CandidatesNumChart from './Charts/CandidatesNumChart';
 import SelectFieldsComponent from './../../components/SelectFields/SelectFieldsComponent';
 import AveragesMediansChart from './Charts/AveragesMediandsChart';
 import StudentsStatusChart from './Charts/StudentsStatusChart';
+import Cycle2ndChart from './Charts/Cycle2ndChart';
 
 
 export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -23,10 +24,14 @@ export function GetReducedFields(fieldsLiteral, allowedFields) {
         }, {});
 }
 
+export function GetReducedArray(fieldsArray, allowedFields) {
+    return fieldsArray.filter(arr => allowedFields.includes(arr["name"]));
+}
+
 const FacultyAnalysis = () => {
     var classes = useStyles();
 
-    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], json => json)
+    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], json => json);
     // const [faculties, loading, error] = useFetch('api/backend/basic-data/faculty', [], json => json.all)
     const faculties = Object.keys(facultiesStudyFields);
 
@@ -38,16 +43,16 @@ const FacultyAnalysis = () => {
     const [cycle, setCycle] = useState(1);
 
     //TODO change after we get real rest requests
-    //const allFields = facultiesStudyFields[faculties[facultyIdx]];
-    const allFields = [
-        "informatyka",
-        "elektrotechnika",
-        "telekomunikacja",
-        "cyberbezpieczeństwo",
-        "random",
-        "org",
-        "kolejnykierunek"
-    ]
+    const allFields = facultiesStudyFields[faculties[facultyIdx]];
+    // const allFields = [
+    //     "informatyka",
+    //     "elektrotechnika",
+    //     "telekomunikacja",
+    //     "cyberbezpieczeństwo",
+    //     "random",
+    //     "org",
+    //     "kolejnykierunek"
+    // ]
 
     //TODO maybe refactor after we implement GET request
     const [allowedFields, setAllowedFields] = useState(allFields ? allFields : []);
@@ -63,7 +68,7 @@ const FacultyAnalysis = () => {
                     <>
                         <div className={classes.pageTitleContainer}>
                             <Typography className={classes.text} variant="h3" size="sm">
-                                Podsumowanie wydziału {/* TODO jakoś lepiej by to wypadało nazwać  */}
+                                Podsumowanie wydziału {faculties[facultyIdx]} stopień {cycle}
                             </Typography>
                             <div className={classes.formContainer}>
                                 <div className={classes.facultySelector}>
@@ -111,7 +116,10 @@ const FacultyAnalysis = () => {
                                 <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
+                                {cycle == 1 ? 
+                                    <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/> :
+                                    <Cycle2ndChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
+                                }
                             </Grid>
                             <Grid item xs={12}>
                                 <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>

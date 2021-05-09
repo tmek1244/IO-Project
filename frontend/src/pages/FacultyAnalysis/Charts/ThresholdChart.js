@@ -18,12 +18,14 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
     const convertResult = (json) => {
         const result = { labels: Object.keys(json), datasets: [] }
 
-        for (let index = 1; index <= json[result.labels[0]].length; index++) {
-            result.datasets.push({
-                label: `Próg w cyklu ${index}`,
-                data: [],
-                backgroundColor: colors[index - 1]
-            })
+        if(typeof json[result.labels[0]] !== "undefined") {
+            for (let index = 1; index <= json[result.labels[0]].length; index++) {
+                result.datasets.push({
+                    label: `Próg w cyklu ${index}`,
+                    data: [],
+                    backgroundColor: colors[index - 1]
+                })
+            }
         }
 
         Object.keys(json).forEach(key => {
