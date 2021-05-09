@@ -29,9 +29,8 @@ class FieldOfStudy(models.Model):
 
     faculty = models.ForeignKey(Faculty, on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
-    degree = models.CharField(choices=DEGREE, max_length=10, null=True,
-                              blank=True, default="1")
-    type = models.CharField(max_length=100, null=True, blank=True,
+    degree = models.CharField(choices=DEGREE, max_length=10, default="1")
+    type = models.CharField(max_length=100,
                             default="stacjonarne")
 
 
@@ -93,16 +92,17 @@ class Recruitment(models.Model):
 
 class RecruitmentResult(models.Model):
     POSSIBLE_RESULT = (
-        ('+', 'Accepted'),
-        ('-', 'Rejected'),
-        ('$', 'Signed')
+        ('accepted', 'rekrutacja zakończona'),
+        ('signed', 'wpisany'),
+        ('rejected', 'niezakwalifikowany'),
+        ('unregistered', 'nieprzyjęty z powodu niedokonania wpisu'),
     )
     upload_request = models.ForeignKey(UploadRequest, on_delete=models.CASCADE,
                                        null=True, blank=True)
     student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     recruitment = models.ForeignKey(Recruitment, on_delete=models.CASCADE)
     points = models.FloatField()
-    result = models.CharField(max_length=150)
+    result = models.CharField(choices=POSSIBLE_RESULT, max_length=100)
 
 
 class Payment(models.Model):
