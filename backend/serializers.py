@@ -83,12 +83,11 @@ class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
         pass
 
     def get_candidates_count(self, obj: Any) -> int:
-        recruitments = Recruitment.objects. \
-            filter(**self.get_recruitments_filters(obj))
-        return RecruitmentResult.objects \
-            .filter(recruitment__in=recruitments) \
-            .values_list('student', flat=True) \
-            .distinct().count()
+        recruitments = Recruitment.objects.filter(
+            **self.get_recruitments_filters(obj))
+        return RecruitmentResult.objects.filter(
+            recruitment__in=recruitments).values_list(
+            'student', flat=True).distinct().count()
 
     def get_cycle_threshold(self, obj: Any, cycle: int) -> Any:
         recruitments_filters = self.get_recruitments_filters(obj)
@@ -98,17 +97,17 @@ class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
             recruitment__in=recruitments, result='Signed'
         )
         if recruitment_results:
-            result = recruitment_results.aggregate(Min('points')). \
-                get('points__min')
+            result = recruitment_results.aggregate(Min('points')).get(
+                'points__min')
             return result
         return None
 
     def get_thresholds(self, obj: Any) -> Any:
         result = {}
-        recruitments = Recruitment.objects \
-            .filter(**self.get_recruitments_filters(obj))
-        number_of_cycles = recruitments \
-            .aggregate(Max('round')).get('round__max')
+        recruitments = Recruitment.objects.filter(
+            **self.get_recruitments_filters(obj))
+        number_of_cycles = recruitments.aggregate(
+            Max('round')).get('round__max')
         if number_of_cycles is not None:
             for cycle in range(1, number_of_cycles):
                 cycle_threshold = self.get_cycle_threshold(obj, cycle)
@@ -128,10 +127,10 @@ class RecruitmentResultFacultiesSerializer(
     def get_recruitments_filters(self, obj: Faculty) -> Dict[str, Any]:
         field_of_studies_filters = {'faculty': obj}
         if 'degree' in self.context['request'].data:
-            field_of_studies_filters['degree'] = \
-                self.context['request'].data['degree']
-        field_of_studies = \
-            FieldOfStudy.objects.filter(**field_of_studies_filters)
+            field_of_studies_filters['degree'] = (
+                self.context['request'].data['degree'])
+        field_of_studies = FieldOfStudy.objects.filter(
+            **field_of_studies_filters)
         recruitments_filters = {'field_of_study__in': field_of_studies}
         if 'year' in self.context['request'].data:
             recruitments_filters['year'] = self.context['request'].data['year']
@@ -209,25 +208,21 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
         return str(obj.field_of_study.degree)
 
     def get_candidates_count(self, obj: Recruitment) -> int:
-        return RecruitmentResult.objects \
-            .filter(recruitment=obj) \
-            .values_list('student', flat=True) \
-            .distinct().count()
+        return RecruitmentResult.objects.filter(
+            recruitment=obj).values_list(
+            'student', flat=True).distinct().count()
 
     def get_signed_candidates_count(self, obj: Recruitment) -> int:
-        return RecruitmentResult.objects \
-            .filter(recruitment=obj, result='Signed') \
-            .values_list('student', flat=True) \
-            .distinct().count()
+        return RecruitmentResult.objects.filter(
+            recruitment=obj, result='Signed').values_list(
+            'student', flat=True).distinct().count()
 
     def get_contest_laureates_count(self, obj: Recruitment) -> int:
-        candidates = Candidate.objects \
-            .exclude(contest__isnull=True) \
-            .exclude(contest__exact='')
-        return RecruitmentResult.objects \
-            .filter(recruitment=obj, student__in=candidates) \
-            .values_list('student', flat=True) \
-            .distinct().count()
+        candidates = Candidate.objects.exclude(
+            contest__isnull=True).exclude(contest__exact='')
+        return RecruitmentResult.objects.filter(
+            recruitment=obj, student__in=candidates).values_list(
+            'student', flat=True).distinct().count()
 
 
 class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
