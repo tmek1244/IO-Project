@@ -30,6 +30,22 @@ class FieldOfStudy(models.Model):
                               null=True, blank=True)
 
 
+class FieldOfStudyPlacesLimit(models.Model):
+    field_of_study = models.ForeignKey(FieldOfStudy, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    places = models.IntegerField()
+
+
+class FieldOfStudyNextDegree(models.Model):
+    field_of_study = models.ForeignKey(FieldOfStudy, on_delete=models.CASCADE)
+    year = models.IntegerField()
+    second_degree_field_of_study = models.ForeignKey(
+        FieldOfStudy,
+        on_delete=models.CASCADE,
+        related_name='second_degree_field_of_study'
+    )
+
+
 class Candidate(models.Model):
     upload_request = models.ForeignKey(UploadRequest, on_delete=CASCADE,
                                        null=True, blank=True)
@@ -97,7 +113,7 @@ class RecruitmentResult(models.Model):
                                        null=True, blank=True)
     student = models.ForeignKey(Candidate, on_delete=models.CASCADE)
     recruitment = models.ForeignKey(Recruitment, on_delete=models.CASCADE)
-    points = models.FloatField(null=True, blank=True)
+    points = models.FloatField()
     result = models.CharField(choices=POSSIBLE_RESULT, max_length=10)
 
     class Meta:
