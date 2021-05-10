@@ -10,8 +10,8 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView,
-                           StatusDistributionView,
-                           UploadFieldsOfStudyView, UploadView)
+                           StatusDistributionView, UploadFieldsOfStudyView,
+                           UploadView)
 
 app_name = 'backend'
 

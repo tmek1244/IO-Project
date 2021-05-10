@@ -326,7 +326,7 @@ class GetBasicData(APIView):
                                      distinct())
 
                 return Response(result, status=status.HTTP_200_OK)
-                
+
             elif "contest" == string:
                 result["all"] = list(Candidate.objects.order_by().
                                      values_list('contest', flat=True).
@@ -472,6 +472,8 @@ class StatusDistributionView(APIView):
                 {"problem": str(e)},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
+
+
 def get_median(values: django.db.models.QuerySet[RecruitmentResult]) -> float:
 
     sorted_list = sorted(list(map(lambda x: x.points, values)))
