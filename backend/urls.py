@@ -3,13 +3,11 @@ from django.urls import path, re_path
 from backend.views import (AddFacultyView, AddFieldOfStudy,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
-                           GetThresholdOnField,
+                           GetThresholdOnField, LaureatesOnFOFSView,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
-                           RecruitmentResultOverviewListView,
-                           LaureatesOnFOFSView,
-                           UploadView)
+                           RecruitmentResultOverviewListView, UploadView)
 
 app_name = 'backend'
 

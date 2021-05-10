@@ -310,11 +310,13 @@ class LaureatesOnFOFSView(APIView):
                              recruitment__field_of_study__faculty__name=faculty
                            ).
                            exclude(
-                             recruitment__field_of_study__degree__in=["2","3","4"]
+                             recruitment__field_of_study__degree__in=[
+                                 "2", "3", "4"]
                            ).
                            values(
                                'recruitment__field_of_study__name')
-                           .annotate(total=Count('recruitment__field_of_study__name')).
+                           .annotate(total=Count(
+                               'recruitment__field_of_study__name')).
                            order_by('total'))
             else:
                 tmp = list(RecruitmentResult.objects.
@@ -322,11 +324,13 @@ class LaureatesOnFOFSView(APIView):
                            filter(result__in=["+", "accepted", "signed"]).
                            exclude(student__contest__in=[None, ""]).
                            exclude(
-                             recruitment__field_of_study__degree__in=["2","3","4"]
+                             recruitment__field_of_study__degree__in=[
+                                 "2", "3", "4"]
                            ).
                            values(
                                'recruitment__field_of_study__name')
-                           .annotate(total=Count('recruitment__field_of_study__name')).
+                           .annotate(total=Count(
+                               'recruitment__field_of_study__name')).
                            order_by('total'))
 
             result: Dict[Any, Any] = {"all": 0}
