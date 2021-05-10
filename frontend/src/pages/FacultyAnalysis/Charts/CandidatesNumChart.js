@@ -51,6 +51,13 @@ export default function CandidatesNumChart({ faculty, cycle, allowedFields}) {
             "degree": "7",
             "year": 2020,
             "candidates_per_place": 0.015
+        },
+        {
+            "name":"Odlewnictwo",
+            "faculty": "WO",
+            "degree": "7",
+            "year": 2020,
+            "candidates_per_place": 15
         }
     ]
             

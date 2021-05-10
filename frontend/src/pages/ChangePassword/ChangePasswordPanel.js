@@ -29,7 +29,7 @@ function ChangePasswordPanel(props) {
             })
             setStatus(await response.status);
             setOld("");
-            if(await response.status=="200") setOldCheck(false);
+            if(await response.status==="200") setOldCheck(false);
         }
         catch (error) {
             console.log(error)
@@ -63,16 +63,16 @@ function ChangePasswordPanel(props) {
                             <Grid container>
                                 <Grid item xs={12} className={(classes.margin, classes.center)}>
                                     {
-                                        (status=="400" || status=="500") ?
+                                        (status==="400" || status==="500") ?
                                         <Typography
                                             variant='body1'
                                             color='error'
                                             align="center"
                                         >
-                                            {(status=="400") ? "Nie zmieniono hasła. Poprawnie wpisałeś stare hasło?" :
+                                            {(status==="400") ? "Nie zmieniono hasła. Poprawnie wpisałeś stare hasło?" :
                                             "Brak połączenia z serwerem"}
                                         </Typography> :
-                                        (status=="200" ?
+                                        (status==="200" ?
                                         <Typography
                                             variant='body1'
                                             color='primary'

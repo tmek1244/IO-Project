@@ -17,7 +17,7 @@ export default function Cycle2ndChart({ faculty, allowedFields}) {
         const result = { 
             labels: Object.keys(json),
             datasets: [{
-                label: "Liczba laureatów kandydujących na kierunek",
+                label: "CHA 66 TODOO",
                 data: Object.values(json),
                 backgroundColor: colors,
             }]
@@ -45,7 +45,7 @@ export default function Cycle2ndChart({ faculty, allowedFields}) {
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>STUDENCIAKI TODO</Typography>}
+                title={<Typography variant='h5'>CHA-66 TODO</Typography>}
             />
             <CardContent>
                 <div >

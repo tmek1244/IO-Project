@@ -32,8 +32,8 @@ export default function LaureateChart({ faculty, allowedFields}) {
 
     //TODO usnąć jak będą pobierane dane
     const fakeData = {
-        informatyka: 100,
-        elektrotechnika: 30,
+        Informatyka: 100,
+        Elektornika: 30,
         telekomunikacja: 47,
         cyberbezpieczeństwo: 90,
         random: 5,
