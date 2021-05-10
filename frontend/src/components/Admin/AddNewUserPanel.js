@@ -1,21 +1,14 @@
 import React from 'react';
 import { useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
 import TextField from '@material-ui/core/TextField';
 import Grid from '@material-ui/core/Grid';
 import { Button, Card, CardContent, CardHeader, MenuItem, Select, Typography } from '@material-ui/core';
-import PageTitle from '../PageTitle/PageTitle'
 
 import { useAuthState } from '../../context/AuthContext'
 import useFetch from '../../hooks/useFetch'
 
-const useStyles = makeStyles((theme) => ({
-    margin: {
-        margin: theme.spacing(1),
-    },
-}));
 
 export default function AddNewUserPanel() {
     const [newUserData, setNewUserData] = useState({
@@ -39,7 +32,6 @@ export default function AddNewUserPanel() {
     const [faculties, loading, error] = useFetch('api/backend/faculties', [])
 
 
-    const classes = useStyles();
 
     const authState = useAuthState()
 
@@ -103,9 +95,9 @@ export default function AddNewUserPanel() {
                 style={{ 'textAlign': 'center' }}
             />
             <CardContent>
-                <Grid container >
+                <Grid container spacing={2}>
                     <Grid item xs={false} sm={2} />
-                    <Grid item className={classes.margin} xs={12} sm={12} md={4}>
+                    <Grid item xs={12} sm={12} md={4}>
                         <TextField
                             id='first_name-input'
                             name='first_name'
@@ -116,7 +108,7 @@ export default function AddNewUserPanel() {
                             fullWidth={true}
                         />
                     </Grid>
-                    <Grid item className={classes.margin} xs={12} sm={12} md={4}>
+                    <Grid item xs={12} sm={12} md={4}>
                         <TextField
                             id='last_name-input'
                             name='last_name'
@@ -131,8 +123,8 @@ export default function AddNewUserPanel() {
                     <Grid item xs={false} sm={1} />
                     <Grid item xs={false} sm={2} />
 
-                    <Grid item xs={12} sm={12} md={9} className={classes.margin} >
-                        <FormControl variant="outlined" error={errorForm.faculty} style={{ "width": "90.5%" }} >
+                    <Grid item xs={12} sm={12} md={9} >
+                        <FormControl variant="outlined" error={errorForm.faculty} style={{ "width": "89%" }} >
                             <InputLabel id="faculty-input-label">Wydział</InputLabel>
                             <Select
                                 labelId="faculty-input-label"
@@ -150,7 +142,7 @@ export default function AddNewUserPanel() {
                     </Grid>
 
                     <Grid item xs={false} sm={2} />
-                    <Grid item xs={12} md={5} className={classes.margin}>
+                    <Grid item xs={12} md={5} >
                         <TextField
                             id='email-input'
                             name='email'
@@ -162,7 +154,7 @@ export default function AddNewUserPanel() {
                         />
                     </Grid>
 
-                    <Grid item xs={12} md={3} className={classes.margin}>
+                    <Grid item xs={12} md={3} >
                         <FormControl variant="outlined" style={{ "width": "100%" }} >
                             <InputLabel id="role-input-label">Rola</InputLabel>
                             <Select
@@ -185,7 +177,7 @@ export default function AddNewUserPanel() {
                             variant="contained"
                             color="primary"
                             onClick={handleSubmit}
-                            style={{ 'marginLeft': '45%' }}
+                            style={{ 'marginLeft': '40%' }}
                         >
                             Dodaj użytkownika
                          </Button>

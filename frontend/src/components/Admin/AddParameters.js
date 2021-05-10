@@ -4,6 +4,10 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import { Button, Card, CardContent, CardHeader, Typography } from '@material-ui/core';
 import { useAuthState } from '../../context/AuthContext'
+import { DatePicker } from "@material-ui/pickers";
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import MomentUtils from '@date-io/moment';
+import moment from 'moment';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -20,9 +24,13 @@ const AddParameters = () => {
 
     const [file, setFile] = useState(null)
     const [fileError, setFileError] = useState(false);
+    const [fileSend, setFileSend] = useState(false)
     const [responseOk, setResponseOk] = useState(false);
 
+    const [selectedDate, handleDateChange] = useState(moment());
+
     const onFileChange = event => {
+        setFileError(false)
         setFile(event.target.files[0])
     }
 
@@ -41,9 +49,10 @@ const AddParameters = () => {
             const formData = new FormData()
             formData.append('file', file)
 
+            console.log(selectedDate.year())
+            const year = selectedDate.year()
 
-
-            fetch('/api/backend/upload/fields_of_study/2020/', {
+            fetch(`/api/backend/upload/fields_of_study/${year}/`, {
                 method: "POST",
                 headers: {
                     'Authorization': `Bearer ${authState.access}`,
@@ -51,6 +60,7 @@ const AddParameters = () => {
                 body: formData
             })
                 .then(response => {
+                    setFileSend(true)
                     if (response.ok) {
                         setFile(null)
                         setResponseOk(true)
@@ -75,44 +85,61 @@ const AddParameters = () => {
                 style={{ 'textAlign': 'center' }}
             />
             <CardContent>
-                <Grid container>
+                <MuiPickersUtilsProvider utils={MomentUtils}>
 
-                    <Grid item className={classes.margin} style={{ "marginLeft": '35%' }}>
+                    <Grid container spacing={2}>
 
-                        <input
-                            color="primary"
-                            accept=".csv, application/vnd.ms-excel"
-                            type="file"
-                            id="icon-button-file"
-                            style={{ display: 'none', }}
-                            onChange={onFileChange}
-                        />
-                        <label htmlFor="icon-button-file">
+                        <Grid item >
+                            <DatePicker
+                                views={["year"]}
+                                label="Rok rekrutacji"
+                                disableFuture
+                                inputVariant="outlined"
+                                value={selectedDate}
+                                onChange={handleDateChange}
+                                style={{ marginLeft: "50%" }}
+                            />
+                        </Grid>
+                        <Grid item>
+
+                            <input
+                                color="primary"
+                                accept=".csv, application/vnd.ms-excel"
+                                type="file"
+                                id="icon-button-file"
+                                style={{ display: 'none', }}
+                                onChange={onFileChange}
+                            />
+                            <label htmlFor="icon-button-file">
+                                <Button
+                                    variant="contained"
+                                    component="span"
+                                    color="white"
+                                    style={{ marginTop: "10px" }}
+                                >
+                                    Wybierz plik
+                                </Button>
+                            </label>
+
+                        </Grid>
+                        <Grid item xs={12} className={classes.margin} >
+                            {
+                                fileError ? <p style={{marginLeft: "35%"}} >Należy wybrać plik!</p> : (file !== null && <p style={{marginLeft: "30%"}}>Wybrano plik: {file.name}</p>)
+                            }
                             <Button
                                 variant="contained"
-                                component="span"
-                                color="white"
+                                color="primary"
+                                onClick={handleSubmit}
+                                style={{ 'marginLeft': '35%' }}
                             >
-                                Wybierz plik
-                                </Button>
-                        </label>
-                        {
-                            fileError ? <p>Należy wybrać plik!</p> : file !== null && <p>Wybrano plik: {file.name}</p>
-                        }
-                    </Grid>
-                    <Grid item xs={12} className={classes.margin} >
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            onClick={handleSubmit}
-                            style={{ 'marginLeft': '35%' }}
-                        >
-                            Wyślij dane
+                                Wyślij dane
                                     </Button>
-                        {responseOk && <p style={{ 'marginLeft': '35%' }}>Pomyślnie wysłano dane</p>}
-                    </Grid>
+                            {fileSend && (responseOk ? <p style={{ 'marginLeft': '35%' }}>Pomyślnie wysłano dane</p> : <p style={{ 'marginLeft': '35%' }}>Nie udało się załadować pliku</p>)}
+                        </Grid>
 
-                </Grid>
+                    </Grid>
+                </MuiPickersUtilsProvider >
+
             </CardContent>
         </Card>
     )
