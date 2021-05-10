@@ -39,8 +39,8 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
 
     //TODO usnąć po tym jak będzie możliwosć pobierania
     const fakeData = {
-        informatyka: [960, 960, 960, 960],
-        elektrotechnika: [890, 870, 840, 840],
+        Informatyka: [960, 960, 960, 960],
+        Elektornika: [890, 870, 840, 840],
         telekomunikacja: [920, 900, 890, 880],
         cyberbezpieczeństwo: [950, 940, 940, 938],
         random: [960, 960, 960, 960],

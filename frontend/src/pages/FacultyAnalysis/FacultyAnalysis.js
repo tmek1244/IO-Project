@@ -31,33 +31,20 @@ export function GetReducedArray(fieldsArray, allowedFields) {
 const FacultyAnalysis = () => {
     var classes = useStyles();
 
-    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], json => json);
-    // const [faculties, loading, error] = useFetch('api/backend/basic-data/faculty', [], json => json.all)
-    const faculties = Object.keys(facultiesStudyFields);
-
+    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], json => {
+        return json
+    });
+    
     // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
     // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
     // w momencie ustalania tego parametru nie mamy jeszcze pobranej listy wydziałów, ale wiemy, że będzie miała co najmniej
     // jeden element oraz będziemy się do niej odwoływać dopiero jak będzie pobrana, czyli loading będzie na false
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
+    const [allowedFields, setAllowedFields] = useState([]);
 
-    //TODO change after we get real rest requests
+    const faculties = Object.keys(facultiesStudyFields);
     const allFields = facultiesStudyFields[faculties[facultyIdx]];
-    // const allFields = [
-    //     "informatyka",
-    //     "elektrotechnika",
-    //     "telekomunikacja",
-    //     "cyberbezpieczeństwo",
-    //     "random",
-    //     "org",
-    //     "kolejnykierunek"
-    // ]
-
-    //TODO maybe refactor after we implement GET request
-    const [allowedFields, setAllowedFields] = useState(allFields ? allFields : []);
-
-
 
     return (
         <>
@@ -80,7 +67,7 @@ const FacultyAnalysis = () => {
                                             id="faculty-input"
                                             name='faculty'
                                             defaultValue={facultyIdx}
-                                            onChange={e => { setFacultyIdx(e.target.value) }}
+                                            onChange={e => setFacultyIdx(e.target.value)}
                                         >
                                             {
                                                 faculties.map((element, idx) => {
@@ -128,7 +115,7 @@ const FacultyAnalysis = () => {
                                 <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
+                                <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12}>
                                 <FacultyAggregation />

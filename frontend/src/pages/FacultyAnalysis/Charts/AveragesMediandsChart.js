@@ -30,8 +30,11 @@ export default function AveragesMediansChart({ faculty , cycle, allowedFields}) 
         ]}
 
         Object.keys(json).forEach(k => {
-            result.datasets[0].data.push(json[k]["AVG"]);
-            result.datasets[1].data.push(json[k]["MED"]);
+            Object.keys(json[k]).forEach(type => {
+                result.datasets[
+                    Object.keys(json[k]).indexOf(type)
+                ].data.push(json[k][type]);
+            })
         })
 
         return result
