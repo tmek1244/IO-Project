@@ -239,8 +239,6 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
                 line.decode("utf-8").strip().split(","))
             if (degree == '' or faculty_name == '' or
                 field_of_study_name == '' or places == '') or (
-                    ((int(degree) == 1)
-                     and second_degree_field_of_study_name == '')) or (
                     ((int(degree) == 2) and
                      second_degree_field_of_study_name != '')):
                 return False
@@ -264,7 +262,7 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
                     year=validated_data['year'],
                     defaults={'places': places}
                 ))
-            if int(degree) == 1:
+            if second_degree_field_of_study_name != '':
                 second_degree_field_of_study, _ = (
                     FieldOfStudy.objects.get_or_create(
                         faculty=faculty,
