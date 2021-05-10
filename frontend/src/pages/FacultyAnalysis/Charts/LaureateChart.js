@@ -14,6 +14,7 @@ const options = {
 export default function LaureateChart({ faculty, allowedFields}) {
 
     const convertResult = (json) => {
+        json = GetReducedFields(json, allowedFields)
         const result = { 
             labels: Object.keys(json),
             datasets: [{
@@ -50,7 +51,7 @@ export default function LaureateChart({ faculty, allowedFields}) {
             <CardContent>
                 <div >
                     {/* TODO change data to real data */}
-                    <Bar data={convertResult(GetReducedFields(fakeData, allowedFields))} options={options} />
+                    <Bar data={convertResult(fakeData)} options={options} />
                 </div>
             </CardContent>
         </Card>

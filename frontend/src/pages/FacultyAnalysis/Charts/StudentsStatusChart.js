@@ -14,6 +14,7 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
+        //TODO prawdopodobnie da sie uproscic
         const result = { labels: [], datasets: [] }
         
         Object.keys(json).filter(key => key !== "all").forEach(key => {
@@ -35,11 +36,7 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
                 var stats = json[key]
                 Object.keys(stats).forEach (statusKey => {
                     var points = stats[statusKey];
-                    result.datasets[
-                        Object.keys(stats).indexOf(statusKey)
-                    ].data.push(
-                        points
-                    )
+                    result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
                 })
             }
         })
@@ -49,7 +46,6 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
 
 
     //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/status-distribution/${year}/${faculty}/${cycle}/`, {}, e=>e)
-    //TODO usnąć po tym jak będzie możliwosć pobierania
     const fieldsOfStudyData = {
         "all": {
             status1: 1000,

@@ -16,6 +16,8 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
+        json = GetReducedFields(json, allowedFields)
+
         const result = { labels: Object.keys(json), datasets: [] }
 
         if(typeof json[result.labels[0]] !== "undefined") {
@@ -61,7 +63,7 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
             <CardContent>
                 <div >
                     {/* TODO change data to real data */}
-                    <Bar data={convertResult(GetReducedFields(fakeData, allowedFields))} options={options} />
+                    <Bar data={convertResult(fakeData)} options={options} />
                 </div>
             </CardContent>
 

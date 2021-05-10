@@ -12,9 +12,13 @@ const options = {
 };
 
 
-export default function AveragesMediansChart({ faculty , cycle, allowedFields}) {
+export default function AveragesMediansChart({ faculty , cycle, year, allowedFields}) {
 
     const convertResult = (json) => {
+        if(Object.keys(json).includes(`${faculty} ${year}`)) {
+            json = GetReducedFields(json[`${faculty} ${year}`], allowedFields)
+        }
+
         const result = { 
             labels: Object.keys(json),
             datasets: [{
@@ -40,8 +44,7 @@ export default function AveragesMediansChart({ faculty , cycle, allowedFields}) 
         return result
     }
 
-    //TODO zmienic jak będzie endpoint
-    //const [fetchedData, loading, error ] = useFetch(`/api/backend/aam/${faculty}+2020/`, {}, convertResult)
+    //const [fetchedData, loading, error ] = useFetch(`/api/backend/aam/${faculty}+${year}/`, {}, convertResult)
     const fetchedData = {
         "WIET 2020": {
             "Informatyka": {
@@ -54,7 +57,6 @@ export default function AveragesMediansChart({ faculty , cycle, allowedFields}) 
             },
         },
     }
-    const fieldsOfStudyData = fetchedData["WIET 2020"];
     
     return (
         <Card  >
@@ -64,7 +66,7 @@ export default function AveragesMediansChart({ faculty , cycle, allowedFields}) 
             />
             <CardContent>
                 <div >
-                    <Bar data={convertResult(GetReducedFields(fieldsOfStudyData, allowedFields))} options={options}/>
+                    <Bar data={convertResult(fetchedData)} options={options}/>
                 </div>
             </CardContent>
         </Card>
