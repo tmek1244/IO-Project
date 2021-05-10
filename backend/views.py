@@ -1,3 +1,4 @@
+import datetime
 from itertools import groupby
 from operator import itemgetter
 from typing import Any, Dict, List
@@ -354,8 +355,9 @@ class GetThresholdOnField(APIView):
 
 
 class CompareFields(APIView):
-    # permission_classes = (IsAuthenticated, )
     """Need faculty+field_of_study+year+function"""
+    permission_classes = (IsAuthenticated, )
+
     def get(self, request: Request, string: str) -> Response:
         try:
             result: List[Dict[str, Any]] = []
@@ -387,6 +389,35 @@ class CompareFields(APIView):
                             'recruitment__year').annotate(
                             result=fun_to_apply('points'))[0]['result']
                     })
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class ActualFacultyThreshold(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request: Request, faculty: str, degree: str) -> Response:
+        try:
+            faculty_obj = Faculty.objects.get(name=faculty)
+            # TODO change after models changes
+            result: Dict[str, List[float]] = {}
+            for field in FieldOfStudy.objects.filter(
+                    faculty=faculty_obj, degree=degree):
+                field_list: List[float] = []
+                for cycle in range(5):
+                    recruitment = Recruitment.objects.filter(
+                        field_of_study=field, round=cycle,
+                        year=datetime.datetime.now().year)
+                    recruitment_results = RecruitmentResult.objects.filter(
+                        recruitment__in=recruitment, result='Signed')
+                    threshold = recruitment_results.aggregate(
+                        Min('points'))['points__min']
+
+                    if threshold:
+                        field_list.append(threshold)
+                result[field.name] = field_list
             return Response(result)
         except Exception as e:
             print(e)
