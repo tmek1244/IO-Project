@@ -305,7 +305,8 @@ class LaureatesOnFOFSView(APIView):
                 tmp = list(RecruitmentResult.objects.
                            filter(recruitment__year=year).
                            filter(result__in=["+", "accepted", "signed"]).
-                           exclude(student__contest__in=[None, ""]).
+                           exclude(student__contest__isnull=True).
+                           exclude(student__contest__exact='').
                            filter(
                              recruitment__field_of_study__faculty__name=faculty
                            ).
@@ -322,7 +323,8 @@ class LaureatesOnFOFSView(APIView):
                 tmp = list(RecruitmentResult.objects.
                            filter(recruitment__year=year).
                            filter(result__in=["+", "accepted", "signed"]).
-                           exclude(student__contest__in=[None, ""]).
+                           exclude(student__contest__isnull=True).
+                           exclude(student__contest__exact='').
                            exclude(
                              recruitment__field_of_study__degree__in=[
                                  "2", "3", "4"]
