@@ -10,7 +10,8 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView,
-                           UploadFieldsOfStudyView, UploadView)
+                           StatusDistributionView, UploadFieldsOfStudyView,
+                           UploadView)
 
 app_name = 'backend'
 
@@ -49,6 +50,13 @@ urlpatterns = [
     re_path(r'^contest-laureates/(?P<string>.+)/$',
             FieldOfStudyContestLaureatesCountView.as_view(),
             name='get_contest_laureates_count'),
+
+    path('status-distribution/<int:year>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
+    path('status-distribution/<int:year>/<faculty>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
+    path('status-distribution/<int:year>/<faculty>/<degree>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
     re_path(r'^compare/(?P<string>.+)/$',
             CompareFields.as_view(), name='compare_fields'),
     re_path(r'^aam/(?P<degree>.+)/(?P<faculty_year_list>.+)/$',

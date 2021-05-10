@@ -120,6 +120,9 @@ class RecruitmentResult(models.Model):
     points = models.FloatField()
     result = models.CharField(choices=POSSIBLE_RESULT, max_length=100)
 
+    class Meta:
+        ordering = ('points', 'result')
+
 
 class Payment(models.Model):
     upload_request = models.ForeignKey(UploadRequest, on_delete=models.CASCADE,
