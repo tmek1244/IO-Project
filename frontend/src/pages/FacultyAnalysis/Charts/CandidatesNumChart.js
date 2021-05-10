@@ -10,9 +10,10 @@ const options = {
 };
 
 
-export default function CandidatesNumChart({ faculty, cycle, allowedFields}) {
+export default function CandidatesNumChart({ faculty, cycle, year, allowedFields}) {
 
     const convertResult = (json) => {
+        json = GetReducedArray(json, allowedFields)
         const result = { 
             labels: [],
             datasets: [{
@@ -31,12 +32,11 @@ export default function CandidatesNumChart({ faculty, cycle, allowedFields}) {
     }
 
     // const payload = {
-    //     "year":2020, //TODO think about it, maybe add everywhere year?
+    //     "year":year,
     //     "degree":cycle,
     //     "faculty":faculty
     // }
     // const [fieldsOfStudyData, loading, error] = useFetchPost('/api/backend/fields-of-study-candidates-per-place/', payload, [], convertResult);
-    //TODO usnąć jak będą pobierane dane
     const fieldsOfStudyData = [
         {
             "name":"Informatyka",
@@ -69,7 +69,7 @@ export default function CandidatesNumChart({ faculty, cycle, allowedFields}) {
             />
             <CardContent>
                 <div >
-                    <Bar data={convertResult(GetReducedArray(fieldsOfStudyData, allowedFields))} options={options}/>
+                    <Bar data={convertResult(fieldsOfStudyData)} options={options}/>
                 </div>
             </CardContent>
         </Card>

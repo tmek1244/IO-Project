@@ -100,7 +100,7 @@ const FacultyAnalysis = () => {
 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
-                                <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
+                                <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 {cycle == 1 ? 
@@ -112,7 +112,7 @@ const FacultyAnalysis = () => {
                                 <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
+                                <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12}>
                                 <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
