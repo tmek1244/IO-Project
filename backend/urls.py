@@ -1,8 +1,7 @@
 from django.urls import path, re_path
 
 from backend.views import (ActualFacultyThreshold, AddFacultyView, 
-                           AddFieldOfStudy, AvgAndMedOfFields,
-                           CompareFields,
+                           AddFieldOfStudy, AvgAndMedOfFields, CompareFields,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
