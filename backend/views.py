@@ -1,3 +1,4 @@
+import datetime
 from itertools import groupby
 from operator import itemgetter
 from typing import Any, Dict, List
@@ -286,13 +287,16 @@ class GetBasicData(APIView):
 
             elif "field-of-study" == string:
                 for faculty in Faculty.objects.all():
-                    result[faculty.name] = []
-                result["all"] = []
+                    result[faculty.name] = set()
+                result["all"] = set()
 
                 for fof in FieldOfStudy.objects.all():
                     if fof.faculty:
-                        result[fof.faculty.name].append(fof.name)
-                    result["all"].append(fof.name)
+                        result[fof.faculty.name].add(fof.name)
+                    result["all"].add(fof.name)
+
+                for key in result.keys():
+                    result[key] = list(sorted(result[key]))
                 return Response(result, status=status.HTTP_200_OK)
 
             elif "year" == string:
@@ -315,9 +319,15 @@ class GetBasicData(APIView):
 
                 return Response(result, status=status.HTTP_200_OK)
 
+            elif "contest" == string:
+                result["all"] = list(Candidate.objects.order_by().
+                                     values_list('contest', flat=True).
+                                     distinct())
+
+                return Response(result, status=status.HTTP_200_OK)
+
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
@@ -346,8 +356,9 @@ class GetThresholdOnField(APIView):
 
 
 class CompareFields(APIView):
-    # permission_classes = (IsAuthenticated, )
     """Need faculty+field_of_study+year+function"""
+    permission_classes = (IsAuthenticated, )
+
     def get(self, request: Request, string: str) -> Response:
         try:
             result: List[Dict[str, Any]] = []
@@ -432,3 +443,32 @@ class AvgAndMedOfFields(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ActualFacultyThreshold(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request: Request, faculty: str, degree: str) -> Response:
+        try:
+            faculty_obj = Faculty.objects.get(name=faculty)
+            # TODO change after models changes
+            result: Dict[str, List[float]] = {}
+            for field in FieldOfStudy.objects.filter(
+                    faculty=faculty_obj, degree=degree):
+                field_list: List[float] = []
+                for cycle in range(5):
+                    recruitment = Recruitment.objects.filter(
+                        field_of_study=field, round=cycle,
+                        year=datetime.datetime.now().year)
+                    recruitment_results = RecruitmentResult.objects.filter(
+                        recruitment__in=recruitment, result='Signed')
+                    threshold = recruitment_results.aggregate(
+                        Min('points'))['points__min']
+
+                    if threshold:
+                        field_list.append(threshold)
+                result[field.name] = field_list
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
