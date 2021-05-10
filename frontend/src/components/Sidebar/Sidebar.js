@@ -36,7 +36,7 @@ const Sidebar = ({location}) => {
     ]
 
     const adminLinks = [
-        { id: 4, label: "Dodaj użytkownika", link: '/rejestracja', icon: <PersonAddIcon /> },
+        { id: 4, label: "Administracja", link: '/administracja', icon: <PersonAddIcon /> },
     ]
     
     if (authState.is_staff){
