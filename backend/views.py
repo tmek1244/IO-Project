@@ -394,9 +394,8 @@ class ActualFacultyThreshold(APIView):
             faculty_obj = Faculty.objects.get(name=faculty)
             # TODO change after models changes
             result: Dict[str, List[float]] = {}
-            degree_list = ["6", "7"] if degree == "1" else ["3", "4"]
             for field in FieldOfStudy.objects.filter(
-                    faculty=faculty_obj, degree__in=degree_list):
+                    faculty=faculty_obj, degree=degree):
                 field_list: List[float] = []
                 for cycle in range(5):
                     recruitment = Recruitment.objects.filter(
