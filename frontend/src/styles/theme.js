@@ -6,5 +6,13 @@ export const theme = createMuiTheme({
         primary: {
             main: 'rgba(27,89,196,1)'
         }
+    },
+    overrides: {
+        MUIDataTableBodyCell: {
+            root: {
+                textAlign: "center",
+            }
+        },
+       
     }
 })

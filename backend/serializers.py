@@ -302,47 +302,35 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         try:
 
             for line in validated_data["file"]:
-                (first_name, last_name, date_of_birth, gender, year_of_exam,
-                 city, school_city, school_type, school_name, graduade_faculty,
-                 graduade_field_of_study, mode, grade_IT, grade_math,
-                 grade_english, points_IT, points_math, points_english,
-                 year, round, faculty_name, field_of_study_name,
-                 points, result) = line.decode("utf-8").strip().split(",")
+                (
+                  _, year, round,
+                  mode, degree, faculty_name, fof_name,
+                  result, points, contest, _,
+                  last_name, first_name, _, _, _, pesel, gender, date_of_birth,
+                  _, _, _, candidate_city, _, _, _, _,
+                  _, school_city, school_name, _, school_type, school_faculty,
+                  school_fof
+                ) = line.decode("utf-8").strip().split(",")
 
-                candidate = create_candidate(upload_request, first_name,
-                                             last_name, date_of_birth, gender,
-                                             year_of_exam, city)
+                candidate = create_candidate(
+                    upload_request, pesel, first_name,
+                    last_name, date_of_birth, gender,
+                    candidate_city, contest)
 
-                graduated_school = create_graduated_school(
-                    upload_request, candidate, school_city,
-                    school_type, school_name, graduade_faculty,
-                    graduade_field_of_study, mode)
+                create_graduaded_school(
+                            upload_request, candidate, school_city,
+                            school_type, school_name, school_faculty,
+                            school_fof)
 
-                create_grade(upload_request, graduated_school, "IT",
-                             grade_IT)
-                create_grade(upload_request, graduated_school, "math",
-                             grade_math)
-                create_grade(upload_request, graduated_school, "english",
-                             grade_english)
-
-                create_exam_result(upload_request, candidate, "IT",
-                                   points_IT)
-                create_exam_result(upload_request, candidate, "math",
-                                   points_math)
-                create_exam_result(upload_request, candidate, "english",
-                                   points_english)
-
-                field_of_study = create_field_of_study(upload_request,
-                                                       faculty_name,
-                                                       field_of_study_name)
+                fof = get_field_of_study(
+                    faculty_name, fof_name, mode, degree)
 
                 recruitment = create_recruitment(
-                    upload_request, field_of_study,
-                    year, round)
+                            upload_request, fof, year, round)
 
-                create_recruitment_result(upload_request,
-                                          candidate, recruitment,
-                                          points, result)
+                create_recruitment_result(
+                    upload_request, candidate, recruitment,
+                    points, result)
 
         except Exception as e:
             print(e)
@@ -352,16 +340,17 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         return upload_request
 
 
-def create_candidate(upload_request: Any, first_name: str, last_name: str,
-                     date_of_birth: str, gender: str, year_of_exam: str,
-                     city: str) -> Any:
+def create_candidate(
+        upload_request: Any, pesel: str, first_name: str, last_name: str,
+        date_of_birth: str, gender: str, city: str, contest: str) -> Any:
     candidate, created = Candidate.objects.get_or_create(
+        pesel=pesel,
         first_name=first_name,
         last_name=last_name,
         date_of_birth=date_of_birth,
         gender=gender,
-        year_of_exam=year_of_exam,
-        city=city
+        city=city,
+        contest=contest
     )
     if created:
         candidate.upload_request = upload_request
@@ -369,19 +358,18 @@ def create_candidate(upload_request: Any, first_name: str, last_name: str,
     return candidate
 
 
-def create_graduated_school(upload_request: Any, candidate: Model,
+def create_graduaded_school(upload_request: Any, candidate: Model,
                             school_city: str, school_type: str,
                             school_name: str, graduade_faculty: str,
-                            graduade_field_of_study: str, mode: str) -> Any:
+                            graduade_field_of_study: str) -> Any:
     graduated_school, created = GraduatedSchool.objects.get_or_create(
-        candidate=candidate,
-        school_city=school_city,
-        school_type=school_type,
-        school_name=school_name,
-        faculty=graduade_faculty,
-        field_of_study=graduade_field_of_study,
-        mode=mode
-    )
+            candidate=candidate,
+            school_city=school_city,
+            school_type=school_type,
+            school_name=school_name,
+            faculty=graduade_faculty,
+            field_of_study=graduade_field_of_study
+        )
     if created:
         graduated_school.upload_request = upload_request
         graduated_school.save()
@@ -414,13 +402,14 @@ def create_exam_result(upload_request: Any, candidate: Model, subject: str,
     return exam_result
 
 
-def create_field_of_study(upload_request: Any,
-                          faculty_name: str,
-                          field_of_study_name: str) -> Any:
+def get_field_of_study(faculty_name: str, field_of_study_name: str,
+                       mode: str, degree: str) -> Any:
     faculty = Faculty.objects.get(name=faculty_name)
     field_of_study = FieldOfStudy.objects.get(
         faculty=faculty,
-        name=field_of_study_name
+        name=field_of_study_name,
+        type=mode,
+        degree=degree,
     )
     return field_of_study
 
