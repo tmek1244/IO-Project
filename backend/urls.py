@@ -51,6 +51,6 @@ urlpatterns = [
             name='get_contest_laureates_count'),
     re_path(r'^compare/(?P<string>.+)/$',
             CompareFields.as_view(), name='compare_fields'),
-    re_path(r'^aam/(?P<faculty_year_list>.+)/$',
+    re_path(r'^aam/(?P<degree>.+)/(?P<faculty_year_list>.+)/$',
             AvgAndMedOfFields.as_view(), name='get_avg_and_med_of_fileds'),
 ]

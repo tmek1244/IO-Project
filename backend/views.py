@@ -401,7 +401,8 @@ class AvgAndMedOfFields(APIView):
     permission_classes = (IsAuthenticated, )
     """Need faculty+year"""
 
-    def get(self, request: Request, faculty_year_list: str) -> Response:
+    def get(self, request: Request, degree: str, faculty_year_list: str
+            ) -> Response:
         try:
             result: Dict[str, Dict[str, Any]] = {}
             split_request = faculty_year_list.split('+')
@@ -411,7 +412,8 @@ class AvgAndMedOfFields(APIView):
                 this_faculty = {}
                 # print(split_request[2*i])
                 faculty_obj = Faculty.objects.get(name=split_request[2*i])
-                field_obj = FieldOfStudy.objects.filter(faculty=faculty_obj)
+                field_obj = FieldOfStudy.objects.filter(
+                    faculty=faculty_obj, degree=degree)
                 for field in field_obj:
                     recruitment = Recruitment.objects.filter(
                         field_of_study=field, year=split_request[2 * i + 1])
