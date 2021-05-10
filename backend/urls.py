@@ -10,6 +10,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView,
+                           RecruitmentStatusAggregateListView,
                            StatusDistributionView, UploadFieldsOfStudyView,
                            UploadView)
 
@@ -64,5 +65,10 @@ urlpatterns = [
     path(
         r'actual_recruitment_faculty_threshold/faculty=<faculty>'
         r'&cycle=<degree>/',
-        ActualFacultyThreshold.as_view(), name='actual_threshold')
+        ActualFacultyThreshold.as_view(), name='actual_threshold'),
+    re_path(
+        r'^actual_recruitment_faculty_aggregation/faculty=(?P<faculty>.+)'
+        r'&cycle=(?P<cycle>.+)$',
+        RecruitmentStatusAggregateListView.as_view(),
+        name='actual_recruitment')
 ]
