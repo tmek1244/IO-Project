@@ -7,7 +7,9 @@ from backend.views import (AddFacultyView, AddFieldOfStudy,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
-                           RecruitmentResultOverviewListView, UploadView)
+                           RecruitmentResultOverviewListView,
+                           LaureatesOnFOFSView,
+                           UploadView)
 
 app_name = 'backend'
 
@@ -39,5 +41,10 @@ urlpatterns = [
          name='contest_laureates'),
     re_path(r'^contest-laureates/(?P<string>.+)/$',
             FieldOfStudyContestLaureatesCountView.as_view(),
-            name='get_contest_laureates_count')
+            name='get_contest_laureates_count'),
+
+    path('laureates-on-fofs/<int:year>/',
+         LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
+    path('laureates-on-fofs/<int:year>/<faculty>/',
+         LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
 ]
