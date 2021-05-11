@@ -25,6 +25,7 @@ from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer,
+                                 RecruitmentStatusAggregateSerializer,
                                  UploadFieldOfStudySerializer,
                                  UploadSerializer)
 
@@ -153,6 +154,32 @@ class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
     def post(self, request: Request,
              *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
         return self.list(request, *args, **kwargs)
+
+
+class RecruitmentStatusAggregateListView(generics.ListAPIView):
+    serializer_class = RecruitmentStatusAggregateSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self) -> Manager[Recruitment]:
+        filters = {}
+        if 'year' in self.kwargs:
+            filters['year'] = self.kwargs.get('year')
+        else:
+            filters['year'] = Recruitment.objects.aggregate(
+                Max('year')).get('year__max')
+        if 'faculty' in self.kwargs:
+            try:
+                faculty = Faculty.objects.filter(
+                    name=self.kwargs.get('faculty'))[0]
+                field_of_study_filters = {'faculty': faculty}
+                if 'cycle' in self.kwargs:
+                    field_of_study_filters['degree'] = self.kwargs.get('cycle')
+                filters['field_of_study__in'] = FieldOfStudy.objects.filter(
+                    **field_of_study_filters)
+            except IndexError:
+                return Recruitment.objects.none()
+        queryset = Recruitment.objects.filter(**filters)
+        return queryset
 
 
 class FieldOfStudyContestLaureatesCountView(APIView):
