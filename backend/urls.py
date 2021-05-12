@@ -5,7 +5,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
-                           GetThresholdOnField,
+                           GetThresholdOnField, LaureatesOnFOFSView,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
@@ -52,6 +52,10 @@ urlpatterns = [
             FieldOfStudyContestLaureatesCountView.as_view(),
             name='get_contest_laureates_count'),
 
+    path('laureates-on-fofs/<faculty>/',
+         LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
+    path('laureates-on-fofs/<faculty>/<int:year>/',
+         LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
     path('status-distribution/<int:year>/',
          StatusDistributionView.as_view(), name='status-distribution'),
     path('status-distribution/<int:year>/<faculty>/',
@@ -70,5 +74,5 @@ urlpatterns = [
         r'^actual_recruitment_faculty_aggregation/faculty=(?P<faculty>.+)'
         r'&cycle=(?P<cycle>.+)$',
         RecruitmentStatusAggregateListView.as_view(),
-        name='actual_recruitment')
+        name='actual_recruitment'),
 ]

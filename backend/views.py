@@ -431,6 +431,62 @@ class CompareFields(APIView):
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
+class LaureatesOnFOFSView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, year: int = None,
+            faculty: str = None) -> Response:
+        try:
+            last_year = Recruitment.objects.aggregate(Max('year'))["year__max"]
+            if faculty:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=(year or last_year)).
+                           filter(result__in=["+", "accepted", "signed"]).
+                           exclude(student__contest__isnull=True).
+                           exclude(student__contest__exact='').
+                           filter(
+                             recruitment__field_of_study__faculty__name=faculty
+                           ).
+                           exclude(
+                             recruitment__field_of_study__degree__in=[
+                                 "2", "3", "4"]
+                           ).
+                           values(
+                               'recruitment__field_of_study__name')
+                           .annotate(total=Count(
+                               'recruitment__field_of_study__name')).
+                           order_by('total'))
+            else:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=(year or last_year)).
+                           filter(result__in=["+", "accepted", "signed"]).
+                           exclude(student__contest__isnull=True).
+                           exclude(student__contest__exact='').
+                           exclude(
+                             recruitment__field_of_study__degree__in=[
+                                 "2", "3", "4"]
+                           ).
+                           values(
+                               'recruitment__field_of_study__name')
+                           .annotate(total=Count(
+                               'recruitment__field_of_study__name')).
+                           order_by('total'))
+
+            result: Dict[Any, Any] = {"all": 0}
+
+            for d in tmp:
+                result[d['recruitment__field_of_study__name']] = d['total']
+                result["all"] += d['total']
+
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
 class StatusDistributionView(APIView):
     permission_classes = (IsAuthenticated,)
 
