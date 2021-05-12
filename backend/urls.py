@@ -10,7 +10,9 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView,
-                           UploadFieldsOfStudyView, UploadView)
+                           RecruitmentStatusAggregateListView,
+                           StatusDistributionView, UploadFieldsOfStudyView,
+                           UploadView)
 
 app_name = 'backend'
 
@@ -54,6 +56,12 @@ urlpatterns = [
          LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
     path('laureates-on-fofs/<faculty>/<int:year>/',
          LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
+    path('status-distribution/<int:year>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
+    path('status-distribution/<int:year>/<faculty>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
+    path('status-distribution/<int:year>/<faculty>/<degree>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
     re_path(r'^compare/(?P<string>.+)/$',
             CompareFields.as_view(), name='compare_fields'),
     re_path(r'^aam/(?P<degree>.+)/(?P<faculty_year_list>.+)/$',
@@ -62,4 +70,9 @@ urlpatterns = [
         r'actual_recruitment_faculty_threshold/faculty=<faculty>'
         r'&cycle=<degree>/',
         ActualFacultyThreshold.as_view(), name='actual_threshold'),
+    re_path(
+        r'^actual_recruitment_faculty_aggregation/faculty=(?P<faculty>.+)'
+        r'&cycle=(?P<cycle>.+)$',
+        RecruitmentStatusAggregateListView.as_view(),
+        name='actual_recruitment'),
 ]

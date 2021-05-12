@@ -25,6 +25,7 @@ from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
                                  RecruitmentResultSerializer,
+                                 RecruitmentStatusAggregateSerializer,
                                  UploadFieldOfStudySerializer,
                                  UploadSerializer)
 
@@ -153,6 +154,32 @@ class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
     def post(self, request: Request,
              *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
         return self.list(request, *args, **kwargs)
+
+
+class RecruitmentStatusAggregateListView(generics.ListAPIView):
+    serializer_class = RecruitmentStatusAggregateSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self) -> Manager[Recruitment]:
+        filters = {}
+        if 'year' in self.kwargs:
+            filters['year'] = self.kwargs.get('year')
+        else:
+            filters['year'] = Recruitment.objects.aggregate(
+                Max('year')).get('year__max')
+        if 'faculty' in self.kwargs:
+            try:
+                faculty = Faculty.objects.filter(
+                    name=self.kwargs.get('faculty'))[0]
+                field_of_study_filters = {'faculty': faculty}
+                if 'cycle' in self.kwargs:
+                    field_of_study_filters['degree'] = self.kwargs.get('cycle')
+                filters['field_of_study__in'] = FieldOfStudy.objects.filter(
+                    **field_of_study_filters)
+            except IndexError:
+                return Recruitment.objects.none()
+        queryset = Recruitment.objects.filter(**filters)
+        return queryset
 
 
 class FieldOfStudyContestLaureatesCountView(APIView):
@@ -319,6 +346,14 @@ class GetBasicData(APIView):
 
                 return Response(result, status=status.HTTP_200_OK)
 
+            elif "result-name" == string:
+                result["all"] = list(RecruitmentResult.objects.
+                                     order_by().
+                                     values_list('result', flat=True).
+                                     distinct())
+
+                return Response(result, status=status.HTTP_200_OK)
+
             elif "contest" == string:
                 result["all"] = list(Candidate.objects.order_by().
                                      values_list('contest', flat=True).
@@ -442,6 +477,76 @@ class LaureatesOnFOFSView(APIView):
             for d in tmp:
                 result[d['recruitment__field_of_study__name']] = d['total']
                 result["all"] += d['total']
+
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
+class StatusDistributionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, year: int,
+            faculty: str = None, degree: str = None) -> Response:
+        try:
+            if faculty and degree:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=year).
+                           filter(
+                             recruitment__field_of_study__faculty__name=faculty
+                           ).
+                           filter(recruitment__field_of_study__degree=degree).
+                           values(
+                               'recruitment__field_of_study__name',
+                               'recruitment__round',
+                               'result')
+                           .annotate(total=Count('result')).
+                           order_by('total'))
+            elif faculty:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=year).
+                           filter(
+                             recruitment__field_of_study__faculty__name=faculty
+                           ).
+                           values(
+                               'recruitment__field_of_study__name',
+                               'recruitment__round',
+                               'result')
+                           .annotate(total=Count('result')).
+                           order_by('total'))
+            else:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=year).
+                           values(
+                               'recruitment__field_of_study__name',
+                               'recruitment__round',
+                               'result')
+                           .annotate(total=Count('result')).
+                           order_by('total'))
+
+            result: Dict[Any, Any] = {"all": {}}
+            for d in tmp:
+                fof = d['recruitment__field_of_study__name']
+                round = d['recruitment__round']
+                rstatus = d['result']
+                total = d['total']
+
+                if fof not in result:
+                    result[fof] = {"all": {}}
+                if round not in result[fof]:
+                    result[fof][round] = {}
+                if rstatus not in result["all"]:
+                    result["all"][rstatus] = 0
+                if rstatus not in result[fof]["all"]:
+                    result[fof]["all"][rstatus] = 0
+
+                result[fof][round][rstatus] = total
+                result["all"][rstatus] += total
+                result[fof]["all"][rstatus] += total
 
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
