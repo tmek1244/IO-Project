@@ -64,9 +64,6 @@ class Candidate(models.Model):
     class Meta:
         ordering = ('pesel', 'contest')
 
-    class Meta:
-        ordering = ('contest',)
-
 
 class GraduatedSchool(models.Model):
     SCHOOL_TYPE = (
