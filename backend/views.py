@@ -402,9 +402,10 @@ class LaureatesOnFOFSView(APIView):
     def get(self, request: Request, year: int = None,
             faculty: str = None) -> Response:
         try:
-            if faculty and year:
+            last_year = Recruitment.objects.aggregate(Max('year'))["year__max"]
+            if faculty:
                 tmp = list(RecruitmentResult.objects.
-                           filter(recruitment__year=year).
+                           filter(recruitment__year=(year or last_year)).
                            filter(result__in=["+", "accepted", "signed"]).
                            exclude(student__contest__isnull=True).
                            exclude(student__contest__exact='').
@@ -420,14 +421,12 @@ class LaureatesOnFOFSView(APIView):
                            .annotate(total=Count(
                                'recruitment__field_of_study__name')).
                            order_by('total'))
-            elif faculty:
-                list(RecruitmentResult.objects.
+            else:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=(year or last_year)).
                            filter(result__in=["+", "accepted", "signed"]).
                            exclude(student__contest__isnull=True).
                            exclude(student__contest__exact='').
-                           filter(
-                             recruitment__field_of_study__faculty__name=faculty
-                           ).
                            exclude(
                              recruitment__field_of_study__degree__in=[
                                  "2", "3", "4"]
