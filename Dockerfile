@@ -18,7 +18,9 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt \
     && apk del .build-deps
 
-COPY . .
+COPY /backend /backend
+COPY /IOProject /IOProject
+COPY /users /users
 
 # Tini allows us to avoid several Docker edge cases,
 # see https://github.com/krallin/tini.

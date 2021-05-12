@@ -1,5 +1,9 @@
+import datetime
+from itertools import groupby
+from operator import itemgetter
 from typing import Any, Dict, List
 
+import django.db.models
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Avg, Manager, Max, Min
 from django.db.models.aggregates import Count
@@ -16,10 +20,13 @@ from backend.filters import RecruitmentResultListFilters
 from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
+                                 FieldOfStudyCandidatesPerPlaceSerializer,
                                  RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
-                                 RecruitmentResultSerializer, UploadSerializer)
+                                 RecruitmentResultSerializer,
+                                 UploadFieldOfStudySerializer,
+                                 UploadSerializer)
 
 
 def api(request: WSGIRequest) -> JsonResponse:
@@ -44,8 +51,45 @@ class RecruitmentResultListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class RecruitmentResultOverviewListView(RecruitmentResultListView):
+class RecruitmentResultOverviewListView(generics.ListAPIView):
+    queryset = Recruitment.objects.all()
     serializer_class = RecruitmentResultOverviewSerializer
+
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self) -> Manager[Recruitment]:
+        filters = RecruitmentResultListFilters(self.request.data) \
+            .get_recruitment_filters()
+
+        return Recruitment.objects.filter(**filters) \
+            if len(filters) > 0 else Recruitment.objects.all()
+
+    def merge_recruitments(self, data: List[Any]) -> List[Any]:
+        grouper = itemgetter('field_of_study', 'faculty', 'year', 'degree')
+        result = []
+        for key, grp in groupby(sorted(data, key=grouper), grouper):
+            temp_dict = dict(zip(
+                ['field_of_study', 'faculty', 'year', 'degree'], key))
+            temp_dict["candidates_count"] = 0
+            temp_dict["signed_candidates_count"] = 0
+            temp_dict["contest_laureates_count"] = 0
+            for item in grp:
+                temp_dict["candidates_count"] += item["candidates_count"]
+                temp_dict["signed_candidates_count"] += \
+                    item["signed_candidates_count"]
+                temp_dict["contest_laureates_count"] += \
+                    item["contest_laureates_count"]
+            result.append(temp_dict)
+        return sorted(result, key=itemgetter('year'), reverse=True)
+
+    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
+        queryset = self.get_queryset()
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(self.merge_recruitments(serializer.data))
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
 
 
 class RecruitmentResultFacultiesListView(generics.ListAPIView):
@@ -84,6 +128,31 @@ class RecruitmentResultFieldsOfStudyListView(
             filter(degree=self.request.data['degree'])\
             if 'degree' in self.request.data else FieldOfStudy.objects.all()
         return queryset
+
+
+class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
+    serializer_class = FieldOfStudyCandidatesPerPlaceSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self) -> Manager[FieldOfStudy]:
+        filters = {}
+        if 'degree' in self.request.data:
+            filters['degree'] = self.request.data['degree']
+        if 'field_of_study' in self.request.data:
+            filters['name'] = self.request.data['field_of_study']
+        if 'faculty' in self.request.data:
+            try:
+                faculty = Faculty.objects.filter(
+                    name=self.request.data['faculty'])[0]
+                filters['faculty'] = faculty
+            except IndexError:
+                return FieldOfStudy.objects.none()
+        queryset = FieldOfStudy.objects.filter(**filters)
+        return queryset
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
+        return self.list(request, *args, **kwargs)
 
 
 class FieldOfStudyContestLaureatesCountView(APIView):
@@ -131,9 +200,31 @@ class UploadView(CreateAPIView):
             return Response(status=status.HTTP_403_FORBIDDEN)
 
 
+class UploadFieldsOfStudyView(CreateAPIView):
+    serializer_class = UploadFieldOfStudySerializer
+    permission_classes = (IsAdminUser,)
+    parser_classes = (FormParser, MultiPartParser)
+
+    def post(self, request: Request,
+             *args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            data = serializer.validated_data
+            data['year'] = kwargs['year']
+            if serializer.create(data):
+                return Response(status=status.HTTP_200_OK)
+            else:
+                return Response(status=status.HTTP_406_NOT_ACCEPTABLE)
+        else:
+            return Response(status=status.HTTP_403_FORBIDDEN)
+
+
 class GetFacultiesView(APIView):
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request: Request) -> Response:
-        return Response(list(Faculty.objects.all()), status=status.HTTP_200_OK)
+        result: List[str] = [x.name for x in Faculty.objects.all()]
+        return Response(result, status=status.HTTP_200_OK)
 
 
 class GetFieldsOfStudy(APIView):
@@ -196,13 +287,16 @@ class GetBasicData(APIView):
 
             elif "field-of-study" == string:
                 for faculty in Faculty.objects.all():
-                    result[faculty.name] = []
-                result["all"] = []
+                    result[faculty.name] = set()
+                result["all"] = set()
 
                 for fof in FieldOfStudy.objects.all():
                     if fof.faculty:
-                        result[fof.faculty.name].append(fof.name)
-                    result["all"].append(fof.name)
+                        result[fof.faculty.name].add(fof.name)
+                    result["all"].add(fof.name)
+
+                for key in result.keys():
+                    result[key] = list(sorted(result[key]))
                 return Response(result, status=status.HTTP_200_OK)
 
             elif "year" == string:
@@ -225,9 +319,15 @@ class GetBasicData(APIView):
 
                 return Response(result, status=status.HTTP_200_OK)
 
+            elif "contest" == string:
+                result["all"] = list(Candidate.objects.order_by().
+                                     values_list('contest', flat=True).
+                                     distinct())
+
+                return Response(result, status=status.HTTP_200_OK)
+
             else:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
-
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
@@ -256,7 +356,8 @@ class GetThresholdOnField(APIView):
 
 
 class CompareFields(APIView):
-    # permission_classes = (IsAuthenticated, )
+    """Need faculty+field_of_study+year+function"""
+    permission_classes = (IsAuthenticated, )
 
     def get(self, request: Request, string: str) -> Response:
         try:
@@ -298,10 +399,10 @@ class CompareFields(APIView):
 class LaureatesOnFOFSView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, year: int,
+    def get(self, request: Request, year: int = None,
             faculty: str = None) -> Response:
         try:
-            if faculty:
+            if faculty and year:
                 tmp = list(RecruitmentResult.objects.
                            filter(recruitment__year=year).
                            filter(result__in=["+", "accepted", "signed"]).
@@ -319,12 +420,14 @@ class LaureatesOnFOFSView(APIView):
                            .annotate(total=Count(
                                'recruitment__field_of_study__name')).
                            order_by('total'))
-            else:
-                tmp = list(RecruitmentResult.objects.
-                           filter(recruitment__year=year).
+            elif faculty:
+                list(RecruitmentResult.objects.
                            filter(result__in=["+", "accepted", "signed"]).
                            exclude(student__contest__isnull=True).
                            exclude(student__contest__exact='').
+                           filter(
+                             recruitment__field_of_study__faculty__name=faculty
+                           ).
                            exclude(
                              recruitment__field_of_study__degree__in=[
                                  "2", "3", "4"]
@@ -348,3 +451,81 @@ class LaureatesOnFOFSView(APIView):
                 {"problem": str(e)},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
+
+
+def get_median(values: django.db.models.QuerySet[RecruitmentResult]) -> float:
+
+    sorted_list = sorted(list(map(lambda x: x.points, values)))
+    if len(sorted_list) % 2 == 0:
+        return (
+                       sorted_list[len(sorted_list)//2]
+                       + sorted_list[len(sorted_list)//2-1]
+               )/2
+    else:
+        return sorted_list[len(sorted_list)//2]
+
+
+class AvgAndMedOfFields(APIView):
+    permission_classes = (IsAuthenticated, )
+    """Need faculty+year"""
+
+    def get(self, request: Request, degree: str, faculty_year_list: str
+            ) -> Response:
+        try:
+            result: Dict[str, Dict[str, Any]] = {}
+            split_request = faculty_year_list.split('+')
+            assert len(split_request) % 2 == 0
+
+            for i in range(len(split_request) // 2):
+                this_faculty = {}
+                # print(split_request[2*i])
+                faculty_obj = Faculty.objects.get(name=split_request[2*i])
+                field_obj = FieldOfStudy.objects.filter(
+                    faculty=faculty_obj, degree=degree)
+                for field in field_obj:
+                    recruitment = Recruitment.objects.filter(
+                        field_of_study=field, year=split_request[2 * i + 1])
+                    recruitment_results = RecruitmentResult.objects.filter(
+                        recruitment__in=recruitment, result='Signed')
+                    if recruitment_results:
+                        this_faculty[field.name] = {
+                            'AVG': recruitment_results.aggregate(
+                                Avg('points'))['points__avg'],
+                            'MED': get_median(recruitment_results)
+                        }
+                result[
+                    split_request[2*i]+' '+split_request[2 * i + 1]
+                    ] = this_faculty
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class ActualFacultyThreshold(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request: Request, faculty: str, degree: str) -> Response:
+        try:
+            faculty_obj = Faculty.objects.get(name=faculty)
+            # TODO change after models changes
+            result: Dict[str, List[float]] = {}
+            for field in FieldOfStudy.objects.filter(
+                    faculty=faculty_obj, degree=degree):
+                field_list: List[float] = []
+                for cycle in range(5):
+                    recruitment = Recruitment.objects.filter(
+                        field_of_study=field, round=cycle,
+                        year=datetime.datetime.now().year)
+                    recruitment_results = RecruitmentResult.objects.filter(
+                        recruitment__in=recruitment, result='Signed')
+                    threshold = recruitment_results.aggregate(
+                        Min('points'))['points__min']
+
+                    if threshold:
+                        field_list.append(threshold)
+                result[field.name] = field_list
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
