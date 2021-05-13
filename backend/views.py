@@ -435,33 +435,53 @@ class FieldConversionView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request,
-            year: int,
+            year: int = None,
             faculty: str = None,
             field_of_study: str = None) -> Response:
 
-        from_inside = 0
-        from_outside = 0
+        try:
+            from_inside = 0
+            from_outside = 0
 
-        for rr in Recruitment.objects.filter(result__in=["$","+","rekrutacja zakończona","wpisany"]):
-            try:
-                faculty_name = rr.recruitment.field_of_study.faculty.name
-                fof_name = rr.recruitment.field_of_study.name
-
-                if (not faculty or faculty == faculty_name) and (not field_of_study or field_of_study == fof_name):
-                    if rr.student.graduated_school_set.filter(school_name="AGH").filter(faculty=faculty_name).filter(field_of_study=fof_name):
-                        from_inside += 1
-                    else:
-                        from_outside += 1
-
-            except Exception as e:
-                print(e)
-                return Response(
-                    {"problem": str(e)},
-                    status=status.HTTP_503_SERVICE_UNAVAILABLE
+            rrs = (RecruitmentResult.objects.
+                filter(result__in=["$","+","accepted","signed"]).
+                exclude(recruitment__field_of_study__degree__in=["2", "3", "4"])
                 )
+            
+            if year:
+                rrs = rrs.filter(recruitment__year=year)
+            if faculty:
+                rrs = rrs.filter(recruitment__field_of_study__faculty__name=faculty)
+            if field_of_study:
+                rrs = rrs.filter(recruitment__field_of_study__name=field_of_study)
 
-        result = {"from-inside": from_inside, "from-outside": from_outside}
-        return Response(result, status=status.HTTP_200_OK)
+            result = {"all": {"from-inside": 0, "from-outside": 0}}
+            for rr in rrs:
+                try:
+                    faculty_name = rr.recruitment.field_of_study.faculty.name
+                    fof_name = rr.recruitment.field_of_study.name
+
+                    if not fof_name in result:
+                        result[fof_name] = {"from-inside": 0, "from-outside": 0}
+
+                    if (not faculty or faculty == faculty_name) and (not field_of_study or field_of_study == fof_name):
+                        if rr.student.graduatedschool_set.filter(school_name="AGH").filter(faculty=faculty_name).filter(field_of_study=fof_name):
+                            result[fof_name]["from-inside"] += 1
+                            result["all"]["from-inside"] += 1
+                        else:
+                            result[fof_name]["from-outside"] += 1
+                            result["all"]["from-outside"] += 1
+
+                except Exception as e:
+                    print(e)
+
+            return Response(result, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
 
 
 class LaureatesOnFOFSView(APIView):
