@@ -1,6 +1,6 @@
 from typing import Any, Dict, Optional
 
-from django.db.models import Model
+from django.db.models import Manager, Model
 from django.db.models.aggregates import Avg, Max, Min
 from rest_framework import serializers
 
@@ -284,36 +284,98 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
         ReadOnlyField(source='field_of_study.faculty.name')
     field_of_study = serializers. \
         ReadOnlyField(source='field_of_study.name')
-    candidates_count = serializers.SerializerMethodField()
+    candidates_per_place = serializers.SerializerMethodField()
     signed_candidates_count = serializers.SerializerMethodField()
+    unregistered_candidates_count = serializers.SerializerMethodField()
     contest_laureates_count = serializers.SerializerMethodField()
+    threshold = serializers.SerializerMethodField()
+    mean = serializers.SerializerMethodField()
+    median = serializers.SerializerMethodField()
 
     class Meta:
         model = Recruitment
         fields = ('field_of_study', 'faculty', 'degree',
-                  'year', 'round', 'candidates_count',
+                  'year', 'round', 'candidates_per_place',
                   'signed_candidates_count',
-                  'contest_laureates_count')
+                  'unregistered_candidates_count',
+                  'contest_laureates_count', 'threshold',
+                  'mean', 'median')
+
+    def get_recruitments(self, obj: Recruitment) -> Manager[Recruitment]:
+        return Recruitment.objects.filter(
+            field_of_study=obj.field_of_study,
+            year=obj.year
+        )
 
     def get_degree(self, obj: Recruitment) -> Optional[str]:
         return str(obj.field_of_study.degree)
 
-    def get_candidates_count(self, obj: Recruitment) -> int:
-        return RecruitmentResult.objects.filter(
-            recruitment=obj).values_list(
+    def get_candidates_per_place(self, obj: Recruitment) -> Any:
+        candidates = RecruitmentResult.objects.filter(
+            recruitment__in=self.get_recruitments(obj)).values_list(
             'student', flat=True).distinct().count()
+        places = FieldOfStudyPlacesLimit.objects.filter(
+            field_of_study=obj.field_of_study,
+            year=obj.year
+        )
+        if len(places) > 0:
+            return candidates / places[0].places
+        return None
 
     def get_signed_candidates_count(self, obj: Recruitment) -> int:
         return RecruitmentResult.objects.filter(
-            recruitment=obj, result='Signed').values_list(
+            recruitment__in=self.get_recruitments(obj),
+            result='signed').values_list(
+            'student', flat=True).distinct().count()
+
+    def get_unregistered_candidates_count(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment__in=self.get_recruitments(obj),
+            result='unregistered').values_list(
             'student', flat=True).distinct().count()
 
     def get_contest_laureates_count(self, obj: Recruitment) -> int:
         candidates = Candidate.objects.exclude(
             contest__isnull=True).exclude(contest__exact='')
         return RecruitmentResult.objects.filter(
-            recruitment=obj, student__in=candidates).values_list(
+            recruitment__in=self.get_recruitments(obj),
+            student__in=candidates).values_list(
             'student', flat=True).distinct().count()
+
+    def get_threshold(self, obj: Recruitment) -> Any:
+        recruitment_results = RecruitmentResult.objects.filter(
+            recruitment__in=self.get_recruitments(obj),
+            result='signed'
+        )
+        if recruitment_results:
+            result = recruitment_results.aggregate(Min('points')).get(
+                'points__min')
+            return result
+        return None
+
+    def get_mean(self, obj: Recruitment) -> Any:
+        recruitment_results = RecruitmentResult.objects.filter(
+            recruitment__in=self.get_recruitments(obj)
+        )
+        if recruitment_results:
+            result = recruitment_results.aggregate(Avg('points')).get(
+                'points__avg')
+            return result
+        return None
+
+    def get_median(self, obj: Recruitment) -> Any:
+        recruitment_results = RecruitmentResult.objects.filter(
+            recruitment__in=self.get_recruitments(obj)
+        )
+        count = recruitment_results.count()
+        ordered_results = recruitment_results.values_list(
+            'points', flat=True).order_by('points')
+        if count == 0:
+            return None
+        if count % 2 == 0:
+            return (ordered_results[int(count / 2)] +
+                    ordered_results[int(count / 2) + 1]) / 2
+        return ordered_results[int(count / 2)]
 
 
 class UploadFieldOfStudySerializer(serializers.Serializer[Any]):

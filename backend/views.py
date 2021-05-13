@@ -71,15 +71,20 @@ class RecruitmentResultOverviewListView(generics.ListAPIView):
         for key, grp in groupby(sorted(data, key=grouper), grouper):
             temp_dict = dict(zip(
                 ['field_of_study', 'faculty', 'year', 'degree'], key))
-            temp_dict["candidates_count"] = 0
-            temp_dict["signed_candidates_count"] = 0
-            temp_dict["contest_laureates_count"] = 0
-            for item in grp:
-                temp_dict["candidates_count"] += item["candidates_count"]
-                temp_dict["signed_candidates_count"] += \
-                    item["signed_candidates_count"]
-                temp_dict["contest_laureates_count"] += \
-                    item["contest_laureates_count"]
+
+            item = list(grp)[0]
+            temp_dict["candidates_per_place"] = (
+                item["candidates_per_place"])
+            temp_dict["contest_laureates_count"] = (
+                item["contest_laureates_count"])
+            temp_dict["threshold"] = item["threshold"]
+            temp_dict["mean"] = item["mean"]
+            temp_dict["median"] = item["median"]
+            temp_dict["signed_candidates_count"] = (
+                item["signed_candidates_count"])
+            temp_dict["unregistered_candidates_count"] = (
+                item["unregistered_candidates_count"])
+
             result.append(temp_dict)
         return sorted(result, key=itemgetter('year'), reverse=True)
 
