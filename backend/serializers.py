@@ -223,7 +223,11 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
         if recruitment_results:
             result = recruitment_results.aggregate(Avg('points')).get(
                 'points__avg')
-            return result
+            if result is None:
+                return None
+            result_value: float = result
+            result_value = round(result_value, 2)
+            return result_value
         return None
 
     def get_median(self, obj: Recruitment) -> Any:
@@ -231,7 +235,6 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
         recruitment_results = RecruitmentResult.objects.filter(
             **recruitment_result_filters)
         count = recruitment_results.count()
-        print(count)
         ordered_results = recruitment_results.values_list(
             'points', flat=True).order_by('points')
         if count == 0:
@@ -246,7 +249,9 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
             recruitment=obj).values_list(
             'student', flat=True).distinct().count()
 
-    def get_laureate_no(self, obj: Recruitment) -> int:
+    def get_laureate_no(self, obj: Recruitment) -> Any:
+        if obj.field_of_study.degree == 2:
+            return None
         candidates = Candidate.objects.exclude(
             contest__isnull=True).exclude(contest__exact='')
         return RecruitmentResult.objects.filter(
@@ -272,7 +277,7 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
         treshold = self.get_treshold(obj)
         try:
             return RecruitmentResult.objects.filter(
-                recruitment=obj, points__lte=treshold
+                recruitment=obj, points__lt=treshold
             ).count()
         except ValueError:
             return 0
@@ -324,7 +329,11 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
 
     def create(self, validated_data: Dict[str, Any]) -> Any:
 
+        header = True
         for line in validated_data["file"]:
+            if header:
+                header = False
+                continue
             (degree, faculty_name, field_of_study_name, places,
              second_degree_field_of_study_name) = (
                 line.decode("utf-8").strip().split(","))
@@ -334,7 +343,11 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
                      second_degree_field_of_study_name != '')):
                 return False
 
+        header = True
         for line in validated_data["file"]:
+            if header:
+                header = False
+                continue
             (degree, faculty_name, field_of_study_name, places,
              second_degree_field_of_study_name) = (
                 line.decode("utf-8").strip().split(","))
