@@ -18,7 +18,7 @@ from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
 from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
-                            RecruitmentResult)
+                            RecruitmentResult, FieldOfStudyPlacesLimit)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  FieldOfStudyCandidatesPerPlaceSerializer,
                                  RecruitmentResultFacultiesSerializer,
@@ -641,13 +641,15 @@ class FacultyPopularity(APIView):
             self, request: Request, pop_type: str,
             degree: str, n: int, year: int) -> Response:
         try:
-            result: Dict[str, int] = {}
+            result: Dict[str, float] = {}
             for field in FieldOfStudy.objects.filter(degree=degree):
                 query = RecruitmentResult.objects.filter(
                     recruitment__year=year,
                     recruitment__field_of_study=field
                 ).values("student").distinct()
-                result[field.name] = len(query)
+                result[field.name] = len(query)/(
+                    FieldOfStudyPlacesLimit.objects.get(
+                        year=year, field_of_study=field).places)
 
             return Response(
                 {k: v for k, v in sorted(
