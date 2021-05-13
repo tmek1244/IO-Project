@@ -45,58 +45,8 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
     }
 
 
-    //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/status-distribution/${year}/${faculty}/${cycle}/`, {}, e=>e)
-    const fieldsOfStudyData = {
-        "all": {
-            status1: 1000,
-            status2: 2000,
-        },
-        Informatyka: {
-            "all": {
-                status1: 1000,
-                status2: 2100,
-            },
-            "1": {
-                status1: 120,
-                status2: 220,
-            },
-            "2": {
-                status1: 130,
-                status2: 230,
-            },
-            "3": {
-                status1: 140,
-                status2: 240,
-            },
-            "4": {
-                status1: 150,
-                status2: 250,
-            }
-        },
-        Elektornika: {
-            "all": {
-                status1: 1010,
-                status2: 20010,
-            },
-            "1": {
-                status1: 10,
-                status2: 20,
-            },
-            "2": {
-                status1: 130,
-                status2: 20,
-            },
-            "3": {
-                status1: 140,
-                status2: 40,
-            },
-            "4": {
-                status1: 10,
-                status2: 90,
-            }
-        }
-    }
-
+    //ten endpoint nawet działa, ale tam przy wyświetlaniu jest jakiś problem
+    const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/status-distribution/${year}/${faculty}/${cycle}/`, {})
     return (
         <Card>
             <CardHeader
@@ -120,7 +70,7 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
                         title={<Typography variant='subtitle1'>{name}</Typography>}
                     />
                     <CardContent style={{backgroundColor: "#fcfcfc",padding:0}}>
-                        <Bar data={convertResult(fieldsOfStudyData[name])} options={options} />
+                        <Bar data={fieldsOfStudyData} options={options} />
                     </CardContent>
                     </Card>
                 </Grid>)

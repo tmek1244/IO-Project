@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import { colors, commonOptions } from './settings'
 import { GetReducedArray } from '../FacultyAnalysis';
+import useFetchPost from '../../../hooks/useFetchPost'
 
 const options = {
     ...commonOptions,
@@ -10,11 +11,12 @@ const options = {
 };
 
 
-export default function CandidatesNumChart({ faculty, cycle, year, allowedFields}) {
+export default function CandidatesNumChart({ faculty, cycle, year, allowedFields }) {
 
     const convertResult = (json) => {
-        json = GetReducedArray(json, allowedFields)
-        const result = { 
+        
+        // const reduced = GetReducedArray(json, allowedFields) //komentuję to na razie
+        const result = {
             labels: [],
             datasets: [{
                 label: "Liczba kandydatów na jedno miejsce",
@@ -23,7 +25,7 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
             }],
         }
 
-        json.forEach( lit => {
+        json.forEach(lit => {
             result.labels.push(lit["name"]);
             result.datasets[0].data.push(lit["candidates_per_place"]);
         })
@@ -31,36 +33,14 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
         return result
     }
 
-    // const payload = {
-    //     "year":year,
-    //     "degree":cycle,
-    //     "faculty":faculty
-    // }
-    // const [fieldsOfStudyData, loading, error] = useFetchPost('/api/backend/fields-of-study-candidates-per-place/', payload, [], convertResult);
-    const fieldsOfStudyData = [
-        {
-            "name":"Informatyka",
-            "faculty": "WIET",
-            "degree": "7",
-            "year": 2020,
-            "candidates_per_place": 0.005
-        },
-        {
-            "name":"Elektornika",
-            "faculty": "WIET",
-            "degree": "7",
-            "year": 2020,
-            "candidates_per_place": 0.015
-        },
-        {
-            "name":"Odlewnictwo",
-            "faculty": "WO",
-            "degree": "7",
-            "year": 2020,
-            "candidates_per_place": 15
-        }
-    ]
-            
+    const payload = {
+        "year": year,
+        "degree": cycle,
+        "faculty": faculty
+    }
+    const [fieldsOfStudyData, loading, error] = useFetchPost('/api/backend/fields-of-study-candidates-per-place/', payload, [], convertResult);
+
+
     return (
         <Card  >
             <CardHeader
@@ -68,9 +48,14 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
                 title={<Typography variant='h5'>Liczba kandydatów na jedno miejsce</Typography>}
             />
             <CardContent>
-                <div >
-                    <Bar data={convertResult(fieldsOfStudyData)} options={options}/>
-                </div>
+                {
+                    loading ?
+                        <p>ładowanko</p> // TODO zrobić spinner
+                        :
+                        <div >
+                            <Bar data={fieldsOfStudyData} options={options} />
+                        </div>
+                }
             </CardContent>
         </Card>
     )

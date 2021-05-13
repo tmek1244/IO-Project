@@ -16,11 +16,11 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
-        json = GetReducedFields(json, allowedFields)
+        // json = GetReducedFields(json, allowedFields) // komentuję jak wszędzie
 
         const result = { labels: Object.keys(json), datasets: [] }
 
-        if(typeof json[result.labels[0]] !== "undefined") {
+        if (typeof json[result.labels[0]] !== "undefined") { // czemu tak jest?
             for (let index = 1; index <= json[result.labels[0]].length; index++) {
                 result.datasets.push({
                     label: `Próg w cyklu ${index}`,
@@ -39,19 +39,7 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
         return result
     }
 
-    //TODO usnąć po tym jak będzie możliwosć pobierania
-    const fakeData = {
-        Informatyka: [960, 960, 960, 960],
-        Elektornika: [890, 870, 840, 840],
-        telekomunikacja: [920, 900, 890, 880],
-        cyberbezpieczeństwo: [950, 940, 940, 938],
-        random: [960, 960, 960, 960],
-        org: [890, 870, 840, 840],
-        kolejnykierunek: [920, 900, 890, 880],
-    }
-
-    //TODO odkomentować i sprawdzić, gdy już będzie gotowy endpoint
-    //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/actual_recruitment_faculty_threshold?faculty=${faculty}&cycle=${cycle}`, {}, convertResult)
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}/`, {}, convertResult)
 
 
     return (
@@ -61,10 +49,16 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
                 title={<Typography variant='h5'>Progi na kierunki</Typography>}
             />
             <CardContent>
-                <div >
-                    {/* TODO change data to real data */}
-                    <Bar data={convertResult(fakeData)} options={options} />
-                </div>
+                {
+                    loading ?
+                        <p>ładowanko</p>
+                        :
+                        <div >
+                            {console.log(fieldsOfStudyData)}
+                            <Bar data={fieldsOfStudyData} options={options} />
+                        </div>
+                }
+
             </CardContent>
 
         </Card>

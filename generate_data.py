@@ -1,11 +1,15 @@
 import random
 import datetime
+import sys
+import pandas as pd
 from typing import Any, Dict, Union
 
 from faker import Faker
 
 fake = Faker()
 
+first_cycle_studies = []
+second_cycle_studies = []
 
 def convert_to_str(dictionary: Dict[str, Union[str, datetime.date]]) -> str:
     result = []
@@ -28,31 +32,18 @@ class Candidate:
         self.year_of_exam = fake.date_between(
             start_date=f'-{sth}y '
         ).year
-        self.city = GraduadedSchool().city
+        self.city = GraduadedSchool(1).city # zahardcodowa miasto ze szkoły średniej
 
     def __str__(self) -> str:
         return convert_to_str(vars(self))
 
 
 class FieldOfStudy:
-    fofs = [
-        ("WIET", "Informatyka"),
-        ("WIET", "Elektronika"),
-        ("WIET", "Telekomunikacja"),
-        ("WMS", "Matematyka"),
-        ("WIMIR", "Automatyka"),
-        ("WIMIR", "Robotyka"),
-        ("FIS", "Fizyka"),
-        ("FIS", "Informatyka"),
-        ("Zarządzania", "Zarządzanie"),
-        ("Ogólny", "Górnicwo"),
-        ("Ogólny", "Hutnictwo"),
-    ]
-
+    
     def __init__(self) -> None:
-        self.faculty_name, self.fof_name = random.choice(FieldOfStudy.fofs)
         self.degree = random.choice(["1"]*4 + ["2"])
-        self.mode = random.choice(["stacjonarne"]*4 + ["niestacjonarne"])
+        [self.faculty_name, self.fof_name] = random.choice(first_cycle_studies) if self.degree == 1 else random.choice(second_cycle_studies)
+        self.mode = "stacjonarne" # na razie skupny się na stacjonarnych, bo nie rozróżniamy tego nawet potem
 
 
 class GraduadedSchool:
@@ -71,26 +62,20 @@ class GraduadedSchool:
         ("Kraków", "I", "T", "", "", ""),
     ]
 
-    universities = [
-        ("Kraków", "AGH", "1", "") + fof for fof in FieldOfStudy.fofs] + [
-        ("Kraków", "UJ", "1", "", "TCS", "TCS"),
-        ("Kraków", "UJ", "1", "", "Filozoficzny", "Filozofia"),
-        ("Kraków", "PK", "1", "", "Ogólny", "Informatyka"),
-        ("Kraków", "PK", "1", "", "Ogólny", "Robotyka"),
-        ("Kraków", "PK", "1", "", "Ogólny", "Budownictwo"),
-        ("Wrocław", "PW", "1", "", "Ogólny", "Informatyka"),
-        ("Warszawa", "UW", "1", "", "Ogólny", "Informatyka"),
-        ("Warszawa", "PW", "1", "", "Ogólny", "Informatyka"),
-    ]
+    
+    def __init__(self, lvl) -> None:
+        universities = [
+            ("Kraków", "AGH", "1", "") + tuple(fof) for fof in first_cycle_studies]
 
-    def __init__(self) -> None:
-        self.city, self.name, self.degree, self.date, self.faculty, self.fof =\
-            random.choice(GraduadedSchool.hss*4 + GraduadedSchool.universities)
+    
+        self.city, self.name, self.degree, self.date, self.faculty, self.fof = \
+            random.choice(GraduadedSchool.hss) if lvl == 1 else \
+            random.choice(universities)
 
 
 class Recruitment:
-    def __init__(self) -> None:
-        self.year = random.randint(2018, 2020)
+    def __init__(self, year) -> None:
+        self.year = year
         self.round = random.randint(1, 3)
         self.field_of_study = FieldOfStudy()
         self.points = (
@@ -98,7 +83,7 @@ class Recruitment:
             if self.field_of_study.fof_name == "Informatyka"
             else random.randint(100, 1000))
         self.olympiad = random.choice(["Diament"] * 3 + ["OM"] + [""] * 20)
-        self.result = random.choice(
+        self.result = random.choice( #TODO poprawić to, bo jest trochę bez sensu, że ktoś kto ma 1000 punktów nagle może byc nieprzyjęty
             [
                 "unregistered",
                 "rejected",
@@ -107,10 +92,24 @@ class Recruitment:
                 "accepted",
                 "signed",
             ]
+        ) if self.olympiad == "" else random.choice(
+            [
+                "accepted",
+                "signed",
+            ]
         )
 
 
-def main(persons: Any, file_name: Any) -> Any:
+def process_parameters(parameters_file: str) -> Any:
+    df = pd.read_csv(parameters_file)
+    global first_cycle_studies
+    global second_cycle_studies
+
+    first_cycle_studies = df[df['stopien'] == 1][['wydzial', 'kierunek']].values.tolist()
+    second_cycle_studies = df[df['stopien'] == 2][['wydzial', 'kierunek']].values.tolist()
+
+
+def main(persons: Any, file_name: Any, year: int) -> Any:
     f = open(file_name, "w")
     print(
         "no", "rok", "runda",
@@ -126,9 +125,10 @@ def main(persons: Any, file_name: Any) -> Any:
     )
     for i in range(persons):
         c = Candidate()
-        r = Recruitment()
+        r = Recruitment(year=year)
         fof = r.field_of_study
-        gs = GraduadedSchool()
+        lvl = 1 if r.field_of_study.degree == 1 else 2
+        gs = GraduadedSchool(lvl)
 
         print(random.randint(1000, 10000), r.year, r.round,  # ogólne
               fof.mode, fof.degree, fof.faculty_name, fof.fof_name,  # wydział
@@ -143,4 +143,22 @@ def main(persons: Any, file_name: Any) -> Any:
 
 
 if __name__ == '__main__':
-    main(persons=100, file_name='new_generated_data.csv')
+    '''
+        Użycie generatora:
+        python generate_data.py [records] [parameters_file] [year]
+        gdzie 
+        records to licza wpisów, które chcemy wygenerować
+        parameters_file to ścieżka do pliku, który zawiera opis rekruatcji, czyli wydziały oraz kierunki
+        year to rok dla którego dane chcemy generować
+
+        przykładowo:
+        python generate_data.py 1000 demo/parameters.csv 2020
+        wygeneruje 1000 rekordów dla kierunków i wydziałów z pliku parameters.csv dla rekrutacji w 2020
+    '''
+    records = int(sys.argv[1])
+    parameters_file = sys.argv[2]
+    year = int(sys.argv[3])
+
+    process_parameters(parameters_file)
+
+    main(persons=records, file_name='new_generated_data.csv', year=year)

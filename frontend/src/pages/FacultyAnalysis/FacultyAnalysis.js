@@ -31,6 +31,7 @@ export function GetReducedArray(fieldsArray, allowedFields) {
 const FacultyAnalysis = () => {
     var classes = useStyles();
 
+    //TODO poprawić ten endpoint tak, żeby zwarcał kierunki z podziałem na stopnie
     const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], json => {
         return json
     });
@@ -94,9 +95,11 @@ const FacultyAnalysis = () => {
                             </div>
                         </div>
 
+                        {/* 
+                        komentuję to na razie
                         <div>
-                            <SelectFieldsComponent fields={allFields} setFields={setAllowedFields}/>
-                        </div>
+                            <SelectFieldsComponent fields={allFields} setFields={setAllowedFields}/> 
+                        </div> */}
 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
@@ -111,14 +114,14 @@ const FacultyAnalysis = () => {
                             <Grid item xs={12}>
                                 <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid item xs={12} >
                                 <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12}>
                                 <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
                             </Grid>
                             <Grid item xs={12}>
-                                <FacultyAggregation />
+                                <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} />
                             </Grid>
                         </Grid>
                     </>

@@ -39,12 +39,13 @@ const useFetchPost = (url, payload, initialState, transformFun = (arg) => arg) =
                 throw new Error(`Response code is ${response.status}`)
             }
         }).then(json => {
-            setData(transformFun(json))
+            const transformed = transformFun(json)
+            setData(transformed)
             setIsLoading(false)
         })
         .catch(e => console.log(e))
 
-    }, [url])
+    }, [url, JSON.stringify(payload)]) //TODO bardziej wyrafinowane podejście
 
 
     return [data, isLoading, hasError]

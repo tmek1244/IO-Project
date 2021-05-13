@@ -11,11 +11,12 @@ const options = {
 };
 
 
-export default function LaureateChart({ faculty, allowedFields}) {
+export default function LaureateChart({ faculty, allowedFields }) {
 
     const convertResult = (json) => {
-        json = GetReducedFields(json, allowedFields)
-        const result = { 
+        // json = GetReducedFields(json, allowedFields)
+        delete json.all //trzeba się pozbyć niepotrzebnej sumy
+        const result = {
             labels: Object.keys(json),
             datasets: [{
                 label: "Liczba laureatów kandydujących na kierunek",
@@ -28,19 +29,7 @@ export default function LaureateChart({ faculty, allowedFields}) {
     }
 
     //TODO odkomentować jak będzie endpoint
-    //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/actual_recruitment_faculty_laureate?faculty=${faculty}`, {}, convertResult)
-
-
-    //TODO usnąć jak będą pobierane dane
-    const fakeData = {
-        Informatyka: 100,
-        Elektornika: 30,
-        telekomunikacja: 47,
-        cyberbezpieczeństwo: 90,
-        random: 5,
-        org: 13,
-        kolejnykierunek: 17,
-    }
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/`, {}, convertResult)
 
     return (
         <Card  >
@@ -49,10 +38,15 @@ export default function LaureateChart({ faculty, allowedFields}) {
                 title={<Typography variant='h5'>Liczba laureatów na kierunek</Typography>}
             />
             <CardContent>
-                <div >
-                    {/* TODO change data to real data */}
-                    <Bar data={convertResult(fakeData)} options={options} />
-                </div>
+                {
+                    loading ?
+                        <p>ładowanko</p>
+                        :
+                        <div >
+                            <Bar data={fieldsOfStudyData} options={options} />
+                        </div>
+                }
+
             </CardContent>
         </Card>
     )
