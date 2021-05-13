@@ -643,6 +643,10 @@ class LastRoundsView(APIView):
             field_of_study: str = None,
             degree: str = None) -> Response:
         try:
+
+            year = year or (
+                Recruitment.objects.aggregate(Max('year'))["year__max"])
+
             tmp: Any = RecruitmentResult.objects.filter(recruitment__year=year)
 
             if faculty:
@@ -663,7 +667,8 @@ class LastRoundsView(APIView):
             result: Dict[Any, Any] = {}
 
             for d in tmp:
-                result[d['recruitment__field_of_study__name']] = d["recruitment__round"]
+                result[d['recruitment__field_of_study__name']] =\
+                    d["recruitment__round"]
 
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
