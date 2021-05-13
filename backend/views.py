@@ -17,8 +17,9 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
-                            RecruitmentResult, FieldOfStudyPlacesLimit)
+from backend.models import (Candidate, Faculty, FieldOfStudy,
+                            FieldOfStudyPlacesLimit, Recruitment,
+                            RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  FieldOfStudyCandidatesPerPlaceSerializer,
                                  RecruitmentResultFacultiesSerializer,
