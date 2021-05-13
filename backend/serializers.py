@@ -334,7 +334,12 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
             result='unregistered').values_list(
             'student', flat=True).distinct().count()
 
-    def get_contest_laureates_count(self, obj: Recruitment) -> int:
+    def get_contest_laureates_count(self, obj: Recruitment) -> Any:
+        degree = self.get_degree(obj)
+        if degree is not None:
+            degree_value: int = int(degree)
+            if degree_value == 2:
+                return None
         candidates = Candidate.objects.exclude(
             contest__isnull=True).exclude(contest__exact='')
         return RecruitmentResult.objects.filter(
