@@ -10,7 +10,8 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView,
-                           RecruitmentStatusAggregateListView, StatusDistributionOverTheYearsView,
+                           RecruitmentStatusAggregateListView,
+                           StatusDistributionOverTheYearsView,
                            StatusDistributionView, UploadFieldsOfStudyView,
                            UploadView)
 
@@ -85,7 +86,8 @@ urlpatterns = [
     path('status-distribution-over-the-years/<faculty>/<field_of_study>/',
          StatusDistributionOverTheYearsView.as_view(),
          name='status-distribution-over-the-years'),
-    path('status-distribution-over-the-years/<faculty>/<field_of_study>/<degree>/',
+    path('status-distribution-over-the-years/' +
+         '<faculty>/<field_of_study>/<degree>/',
          StatusDistributionOverTheYearsView.as_view(),
          name='status-distribution-over-the-years'),
 ]

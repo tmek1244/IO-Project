@@ -564,8 +564,8 @@ class StatusDistributionOverTheYearsView(APIView):
             field_of_study: str = None,
             degree: str = None) -> Response:
         try:
-            tmp = RecruitmentResult.objects
-                           
+            tmp: Any = RecruitmentResult.objects
+
             if faculty:
                 tmp = tmp.filter(
                     recruitment__field_of_study__faculty__name=faculty)
@@ -581,7 +581,6 @@ class StatusDistributionOverTheYearsView(APIView):
                 'result')
                 .annotate(total=Count('result')).
                 order_by('total'))
-
 
             result: Dict[Any, Any] = {"all": {}}
             for d in tmp:
