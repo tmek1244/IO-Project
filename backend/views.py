@@ -582,25 +582,19 @@ class StatusDistributionOverTheYearsView(APIView):
                 .annotate(total=Count('result')).
                 order_by('total'))
 
-            result: Dict[Any, Any] = {"all": {}}
+            result: Dict[Any, Any] = {}
             for d in tmp:
                 fof = d['recruitment__field_of_study__name']
-                round = d['recruitment__year']
+                year = d['recruitment__year']
                 rstatus = d['result']
                 total = d['total']
 
                 if fof not in result:
-                    result[fof] = {"all": {}}
-                if round not in result[fof]:
-                    result[fof][round] = {}
-                if rstatus not in result["all"]:
-                    result["all"][rstatus] = 0
-                if rstatus not in result[fof]["all"]:
-                    result[fof]["all"][rstatus] = 0
+                    result[fof] = {}
+                if year not in result[fof]:
+                    result[fof][year] = {}
 
-                result[fof][round][rstatus] = total
-                result["all"][rstatus] += total
-                result[fof]["all"][rstatus] += total
+                result[fof][year][rstatus] = total
 
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
