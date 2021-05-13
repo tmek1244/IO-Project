@@ -89,7 +89,7 @@ urlpatterns = [
     path('last-rounds/<int:year>/<faculty>/<field_of_study>/',
          LastRoundsView.as_view(),
          name='last-rounds'),
-    path('last-rounds/<int:year>/<field_of_study>/<degree>',
+    path('last-rounds/<int:year>/<faculty>/<field_of_study>/<degree>',
          LastRoundsView.as_view(),
          name='last-rounds'),
 ]
