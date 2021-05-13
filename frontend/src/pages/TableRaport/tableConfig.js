@@ -118,5 +118,4 @@ const fakeData = [
     { cycle: 1, year: 2020, recruitment_round: 1, faculty: "Wiet", field_of_study: "Informatyka", status: "+", points: 953, first_name: "Jan", last_name: "Kowalski", year_of_exam: 2019, city: "Kraków", year_of_birth: 1999 },
     { cycle: 1, year: 2020, recruitment_round: 1, faculty: "Wiet", field_of_study: "Informatyka", status: "+", points: 953, first_name: "Jan", last_name: "Kowalski", year_of_exam: 2019, city: "Kraków", year_of_birth: 1999 },
 ]
-
 export { options, columns, fakeData }

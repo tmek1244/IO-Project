@@ -1,10 +1,11 @@
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 from django.db.models import Model
-from django.db.models.aggregates import Max, Min
+from django.db.models.aggregates import Avg, Max, Min
 from rest_framework import serializers
 
-from .models import (Candidate, ExamResult, Faculty, FieldOfStudy, Grade,
+from .models import (Candidate, ExamResult, Faculty, FieldOfStudy,
+                     FieldOfStudyNextDegree, FieldOfStudyPlacesLimit, Grade,
                      GraduatedSchool, Recruitment, RecruitmentResult,
                      UploadRequest)
 
@@ -74,48 +75,19 @@ class RecruitmentResultSerializer(serializers.ModelSerializer[Any]):
         fields = '__all__'
 
 
-class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
-    cycle = serializers. \
-        ReadOnlyField(source='recruitment.field_of_study.degree')
-    year = serializers.ReadOnlyField(source='recruitment.year')
-    recruitment_round = serializers.ReadOnlyField(source='recruitment.round')
-    faculty = serializers. \
-        ReadOnlyField(source='recruitment.field_of_study.faculty.name')
-    field_of_study = serializers. \
-        ReadOnlyField(source='recruitment.field_of_study.name')
-    first_name = serializers.ReadOnlyField(source='student.first_name')
-    last_name = serializers.ReadOnlyField(source='student.last_name')
-    year_of_exam = serializers.ReadOnlyField(source='student.year_of_exam')
-    city = serializers.ReadOnlyField(source='student.city')
-    date_of_birth = serializers.ReadOnlyField(source='student.date_of_birth')
-    gender = serializers.ReadOnlyField(source='student.gender')
-
-    class Meta:
-        model = RecruitmentResult
-        fields = ('cycle', 'year', 'recruitment_round', 'faculty',
-                  'field_of_study', 'result', 'points', 'first_name',
-                  'last_name', 'year_of_exam', 'city', 'date_of_birth',
-                  'gender')
-
-
 class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
-
     candidates_count = serializers.SerializerMethodField()
-    first_cycle_threshold = serializers.SerializerMethodField()
-    second_cycle_threshold = serializers.SerializerMethodField()
-    third_cycle_threshold = serializers.SerializerMethodField()
     thresholds = serializers.SerializerMethodField()
 
     def get_recruitments_filters(self, obj: Any) -> Any:
         pass
 
     def get_candidates_count(self, obj: Any) -> int:
-        recruitments = Recruitment.objects.\
-            filter(**self.get_recruitments_filters(obj))
-        return RecruitmentResult.objects\
-            .filter(recruitment__in=recruitments)\
-            .values_list('student', flat=True)\
-            .distinct().count()
+        recruitments = Recruitment.objects.filter(
+            **self.get_recruitments_filters(obj))
+        return RecruitmentResult.objects.filter(
+            recruitment__in=recruitments).values_list(
+            'student', flat=True).distinct().count()
 
     def get_cycle_threshold(self, obj: Any, cycle: int) -> Any:
         recruitments_filters = self.get_recruitments_filters(obj)
@@ -125,17 +97,17 @@ class RecruitmentResultAggregateSerializer(serializers.ModelSerializer[Any]):
             recruitment__in=recruitments, result='Signed'
         )
         if recruitment_results:
-            result = recruitment_results.aggregate(Min('points')).\
-                get('points__min')
+            result = recruitment_results.aggregate(Min('points')).get(
+                'points__min')
             return result
         return None
 
     def get_thresholds(self, obj: Any) -> Any:
         result = {}
-        recruitments = Recruitment.objects\
-            .filter(**self.get_recruitments_filters(obj))
-        number_of_cycles = recruitments\
-            .aggregate(Max('round')).get('round__max')
+        recruitments = Recruitment.objects.filter(
+            **self.get_recruitments_filters(obj))
+        number_of_cycles = recruitments.aggregate(
+            Max('round')).get('round__max')
         if number_of_cycles is not None:
             for cycle in range(1, number_of_cycles):
                 cycle_threshold = self.get_cycle_threshold(obj, cycle)
@@ -155,10 +127,10 @@ class RecruitmentResultFacultiesSerializer(
     def get_recruitments_filters(self, obj: Faculty) -> Dict[str, Any]:
         field_of_studies_filters = {'faculty': obj}
         if 'degree' in self.context['request'].data:
-            field_of_studies_filters['degree'] = \
-                self.context['request'].data['degree']
-        field_of_studies = \
-            FieldOfStudy.objects.filter(**field_of_studies_filters)
+            field_of_studies_filters['degree'] = (
+                self.context['request'].data['degree'])
+        field_of_studies = FieldOfStudy.objects.filter(
+            **field_of_studies_filters)
         recruitments_filters = {'field_of_study__in': field_of_studies}
         if 'year' in self.context['request'].data:
             recruitments_filters['year'] = self.context['request'].data['year']
@@ -182,6 +154,225 @@ class RecruitmentResultFieldsOfStudySerializer(
         return recruitments_filters
 
 
+class FieldOfStudyCandidatesPerPlaceSerializer(
+    RecruitmentResultFieldsOfStudySerializer
+):
+    candidates_per_place = serializers.SerializerMethodField()
+    year = serializers.SerializerMethodField()
+
+    class Meta:
+        model = FieldOfStudy
+        fields = ('name', 'faculty', 'degree', 'year',
+                  'candidates_per_place')
+
+    def get_year(self, obj: FieldOfStudy) -> int:
+        if 'year' not in self.context['request'].data:
+            raise serializers.ValidationError("Year missing")
+        else:
+            return int(self.context['request'].data['year'])
+
+    def get_places(self, obj: FieldOfStudy) -> Any:
+        places = FieldOfStudyPlacesLimit.objects.filter(
+            field_of_study=obj,
+            year=self.get_year(obj)
+        )
+        return places[0].places if len(places) > 0 else None
+
+    def get_candidates_per_place(self, obj: FieldOfStudy) -> Any:
+        places = self.get_places(obj)
+        if places is None:
+            return None
+        else:
+            result = self.get_candidates_count(obj) / places
+            return result
+
+
+class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
+    field_of_study = serializers.ReadOnlyField(source='field_of_study.name')
+    recruitment_round = serializers.ReadOnlyField(source='round')
+    treshold = serializers.SerializerMethodField()
+    mean = serializers.SerializerMethodField()
+    median = serializers.SerializerMethodField()
+    candidates_no = serializers.SerializerMethodField()
+    laureate_no = serializers.SerializerMethodField()
+    signed_in = serializers.SerializerMethodField()
+    not_signed_in = serializers.SerializerMethodField()
+    resigned = serializers.SerializerMethodField()
+    under_treshold = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Recruitment
+        fields = ('year', 'field_of_study', 'recruitment_round', 'treshold',
+                  'mean', 'median', 'candidates_no', 'laureate_no',
+                  'signed_in', 'not_signed_in', 'resigned', 'under_treshold')
+
+    def get_treshold(self, obj: Recruitment) -> Any:
+        recruitment_result_filters = {'recruitment': obj, 'result': 'signed'}
+        recruitment_results = RecruitmentResult.objects.filter(
+            **recruitment_result_filters)
+        if recruitment_results:
+            result = recruitment_results.aggregate(Min('points')).get(
+                'points__min')
+            return result
+        return None
+
+    def get_mean(self, obj: Recruitment) -> Any:
+        recruitment_result_filters = {'recruitment': obj}
+        recruitment_results = RecruitmentResult.objects.filter(
+            **recruitment_result_filters)
+        if recruitment_results:
+            result = recruitment_results.aggregate(Avg('points')).get(
+                'points__avg')
+            return result
+        return None
+
+    def get_median(self, obj: Recruitment) -> Any:
+        recruitment_result_filters = {'recruitment': obj}
+        recruitment_results = RecruitmentResult.objects.filter(
+            **recruitment_result_filters)
+        count = recruitment_results.count()
+        print(count)
+        ordered_results = recruitment_results.values_list(
+            'points', flat=True).order_by('points')
+        if count == 0:
+            return None
+        if count % 2 == 0:
+            return (ordered_results[int(count / 2)] +
+                    ordered_results[int(count / 2) + 1]) / 2
+        return ordered_results[int(count / 2)]
+
+    def get_candidates_no(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment=obj).values_list(
+            'student', flat=True).distinct().count()
+
+    def get_laureate_no(self, obj: Recruitment) -> int:
+        candidates = Candidate.objects.exclude(
+            contest__isnull=True).exclude(contest__exact='')
+        return RecruitmentResult.objects.filter(
+            recruitment=obj, student__in=candidates).values_list(
+            'student', flat=True).distinct().count()
+
+    def get_signed_in(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment=obj, result='signed'
+        ).count()
+
+    def get_not_signed_in(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment=obj).exclude(
+            result='signed').count()
+
+    def get_resigned(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment=obj, result='unregistered'
+        ).count()
+
+    def get_under_treshold(self, obj: Recruitment) -> int:
+        treshold = self.get_treshold(obj)
+        try:
+            return RecruitmentResult.objects.filter(
+                recruitment=obj, points__lte=treshold
+            ).count()
+        except ValueError:
+            return 0
+
+
+class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
+    degree = serializers.SerializerMethodField()
+    faculty = serializers. \
+        ReadOnlyField(source='field_of_study.faculty.name')
+    field_of_study = serializers. \
+        ReadOnlyField(source='field_of_study.name')
+    candidates_count = serializers.SerializerMethodField()
+    signed_candidates_count = serializers.SerializerMethodField()
+    contest_laureates_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Recruitment
+        fields = ('field_of_study', 'faculty', 'degree',
+                  'year', 'round', 'candidates_count',
+                  'signed_candidates_count',
+                  'contest_laureates_count')
+
+    def get_degree(self, obj: Recruitment) -> Optional[str]:
+        return str(obj.field_of_study.degree)
+
+    def get_candidates_count(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment=obj).values_list(
+            'student', flat=True).distinct().count()
+
+    def get_signed_candidates_count(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment=obj, result='Signed').values_list(
+            'student', flat=True).distinct().count()
+
+    def get_contest_laureates_count(self, obj: Recruitment) -> int:
+        candidates = Candidate.objects.exclude(
+            contest__isnull=True).exclude(contest__exact='')
+        return RecruitmentResult.objects.filter(
+            recruitment=obj, student__in=candidates).values_list(
+            'student', flat=True).distinct().count()
+
+
+class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
+    file = serializers.FileField()
+
+    class Meta:
+        fields = 'file'
+
+    def create(self, validated_data: Dict[str, Any]) -> Any:
+
+        for line in validated_data["file"]:
+            (degree, faculty_name, field_of_study_name, places,
+             second_degree_field_of_study_name) = (
+                line.decode("utf-8").strip().split(","))
+            if (degree == '' or faculty_name == '' or
+                field_of_study_name == '' or places == '') or (
+                    ((int(degree) == 2) and
+                     second_degree_field_of_study_name != '')):
+                return False
+
+        for line in validated_data["file"]:
+            (degree, faculty_name, field_of_study_name, places,
+             second_degree_field_of_study_name) = (
+                line.decode("utf-8").strip().split(","))
+
+            faculty, _ = Faculty.objects.get_or_create(
+                name=faculty_name
+            )
+            field_of_study, _ = FieldOfStudy.objects.get_or_create(
+                faculty=faculty,
+                name=field_of_study_name,
+                degree=degree
+            )
+            field_of_study_places_limit, _ = (
+                FieldOfStudyPlacesLimit.objects.update_or_create(
+                    field_of_study=field_of_study,
+                    year=validated_data['year'],
+                    defaults={'places': places}
+                ))
+            if second_degree_field_of_study_name != '':
+                second_degree_field_of_study, _ = (
+                    FieldOfStudy.objects.get_or_create(
+                        faculty=faculty,
+                        name=second_degree_field_of_study_name,
+                        degree=2
+                    ))
+                field_of_study_next_degree, _ = (
+                    FieldOfStudyNextDegree.objects.update_or_create(
+                        field_of_study=field_of_study,
+                        year=validated_data['year'],
+                        defaults={
+                            'second_degree_field_of_study':
+                                second_degree_field_of_study
+                        }
+                    ))
+
+        return True
+
+
 class UploadSerializer(serializers.ModelSerializer[Any]):
     file = serializers.FileField()
 
@@ -200,47 +391,35 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         try:
 
             for line in validated_data["file"]:
-                (first_name, last_name, date_of_birth, gender, year_of_exam,
-                 city, school_city, school_type, school_name, graduade_faculty,
-                 graduade_field_of_study, mode, grade_IT, grade_math,
-                 grade_english, points_IT, points_math, points_english,
-                 year, round, faculty_name, field_of_study_name,
-                 points, result) = line.decode("utf-8").strip().split(",")
+                (
+                    _, year, round,
+                    mode, degree, faculty_name, fof_name,
+                    result, points, contest, _,
+                    last_name, first_name, _, _, _, pesel, gender,
+                    date_of_birth, _, _, _, candidate_city, _, _, _, _,
+                    _, school_city, school_name, _, school_type,
+                    school_faculty, school_fof
+                ) = line.decode("utf-8").strip().split(",")
 
-                candidate = create_candidate(upload_request, first_name,
-                                             last_name, date_of_birth, gender,
-                                             year_of_exam, city)
+                candidate = create_candidate(
+                    upload_request, pesel, first_name,
+                    last_name, date_of_birth, gender,
+                    candidate_city, contest)
 
-                graduated_school = create_graduated_school(
-                    upload_request, candidate, school_city,
-                    school_type, school_name, graduade_faculty,
-                    graduade_field_of_study, mode)
+                create_graduaded_school(
+                            upload_request, candidate, school_city,
+                            school_type, school_name, school_faculty,
+                            school_fof)
 
-                create_grade(upload_request, graduated_school, "IT",
-                             grade_IT)
-                create_grade(upload_request, graduated_school, "math",
-                             grade_math)
-                create_grade(upload_request, graduated_school, "english",
-                             grade_english)
-
-                create_exam_result(upload_request, candidate, "IT",
-                                   points_IT)
-                create_exam_result(upload_request, candidate, "math",
-                                   points_math)
-                create_exam_result(upload_request, candidate, "english",
-                                   points_english)
-
-                field_of_study = create_field_of_study(upload_request,
-                                                       faculty_name,
-                                                       field_of_study_name)
+                fof = get_field_of_study(
+                    faculty_name, fof_name, mode, degree)
 
                 recruitment = create_recruitment(
-                    upload_request, field_of_study,
-                    year, round)
+                            upload_request, fof, year, round)
 
-                create_recruitment_result(upload_request,
-                                          candidate, recruitment,
-                                          points, result)
+                create_recruitment_result(
+                    upload_request, candidate, recruitment,
+                    points, result)
 
         except Exception as e:
             print(e)
@@ -250,16 +429,17 @@ class UploadSerializer(serializers.ModelSerializer[Any]):
         return upload_request
 
 
-def create_candidate(upload_request: Any, first_name: str, last_name: str,
-                     date_of_birth: str, gender: str, year_of_exam: str,
-                     city: str) -> Any:
+def create_candidate(
+        upload_request: Any, pesel: str, first_name: str, last_name: str,
+        date_of_birth: str, gender: str, city: str, contest: str) -> Any:
     candidate, created = Candidate.objects.get_or_create(
+        pesel=pesel,
         first_name=first_name,
         last_name=last_name,
         date_of_birth=date_of_birth,
         gender=gender,
-        year_of_exam=year_of_exam,
-        city=city
+        city=city,
+        contest=contest
     )
     if created:
         candidate.upload_request = upload_request
@@ -267,19 +447,18 @@ def create_candidate(upload_request: Any, first_name: str, last_name: str,
     return candidate
 
 
-def create_graduated_school(upload_request: Any, candidate: Model,
+def create_graduaded_school(upload_request: Any, candidate: Model,
                             school_city: str, school_type: str,
                             school_name: str, graduade_faculty: str,
-                            graduade_field_of_study: str, mode: str) -> Any:
+                            graduade_field_of_study: str) -> Any:
     graduated_school, created = GraduatedSchool.objects.get_or_create(
-        candidate=candidate,
-        school_city=school_city,
-        school_type=school_type,
-        school_name=school_name,
-        faculty=graduade_faculty,
-        field_of_study=graduade_field_of_study,
-        mode=mode
-    )
+            candidate=candidate,
+            school_city=school_city,
+            school_type=school_type,
+            school_name=school_name,
+            faculty=graduade_faculty,
+            field_of_study=graduade_field_of_study
+        )
     if created:
         graduated_school.upload_request = upload_request
         graduated_school.save()
@@ -312,13 +491,14 @@ def create_exam_result(upload_request: Any, candidate: Model, subject: str,
     return exam_result
 
 
-def create_field_of_study(upload_request: Any,
-                          faculty_name: str,
-                          field_of_study_name: str) -> Any:
+def get_field_of_study(faculty_name: str, field_of_study_name: str,
+                       mode: str, degree: str) -> Any:
     faculty = Faculty.objects.get(name=faculty_name)
     field_of_study = FieldOfStudy.objects.get(
         faculty=faculty,
-        name=field_of_study_name
+        name=field_of_study_name,
+        type=mode,
+        degree=degree,
     )
     return field_of_study
 

@@ -1,13 +1,18 @@
 from django.urls import path, re_path
 
-from backend.views import (AddFacultyView, AddFieldOfStudy,
+from backend.views import (ActualFacultyThreshold, AddFacultyView,
+                           AddFieldOfStudy, AvgAndMedOfFields, CompareFields,
+                           FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
-                           GetThresholdOnField,
+                           GetThresholdOnField, LaureatesOnFOFSView,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
-                           RecruitmentResultOverviewListView, UploadView)
+                           RecruitmentResultOverviewListView,
+                           RecruitmentStatusAggregateListView,
+                           StatusDistributionView, UploadFieldsOfStudyView,
+                           UploadView)
 
 app_name = 'backend'
 
@@ -23,7 +28,13 @@ urlpatterns = [
     path('recruitment-result-fields-of-study/',
          RecruitmentResultFieldsOfStudyListView.as_view(),
          name='recruitment_result_fields_of_study_list'),
+    path('fields-of-study-candidates-per-place/',
+         FieldOfStudyCandidatesPerPlaceListView.as_view(),
+         name='fields_of_study_candidates_per_place'),
     path('upload/', UploadView.as_view(), name='upload_data'),
+    path('upload/fields_of_study/<year>/',
+         UploadFieldsOfStudyView.as_view(),
+         name='upload_fields_of_study'),
     path('faculties/', GetFacultiesView.as_view(), name='faculties'),
     path('fields_of_studies/',
          GetFieldsOfStudy.as_view(),
@@ -44,4 +55,28 @@ urlpatterns = [
     path('field-conversion/<int:year>/', GetThresholdOnField.as_view(), name='field-conversion'),
     path('field-conversion/<int:year>/<faculty>/', GetThresholdOnField.as_view(), name='field-conversion'),
     path('field-conversion/<int:year>/<faculty>/<field_of_study>/', GetThresholdOnField.as_view(), name='field-conversion'),
+
+    path('laureates-on-fofs/<faculty>/',
+         LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
+    path('laureates-on-fofs/<faculty>/<int:year>/',
+         LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
+    path('status-distribution/<int:year>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
+    path('status-distribution/<int:year>/<faculty>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
+    path('status-distribution/<int:year>/<faculty>/<degree>/',
+         StatusDistributionView.as_view(), name='status-distribution'),
+    re_path(r'^compare/(?P<string>.+)/$',
+            CompareFields.as_view(), name='compare_fields'),
+    re_path(r'^aam/(?P<degree>.+)/(?P<faculty_year_list>.+)/$',
+            AvgAndMedOfFields.as_view(), name='get_avg_and_med_of_fileds'),
+    path(
+        r'actual_recruitment_faculty_threshold/faculty=<faculty>'
+        r'&cycle=<degree>/',
+        ActualFacultyThreshold.as_view(), name='actual_threshold'),
+    re_path(
+        r'^actual_recruitment_faculty_aggregation/faculty=(?P<faculty>.+)'
+        r'&cycle=(?P<cycle>.+)$',
+        RecruitmentStatusAggregateListView.as_view(),
+        name='actual_recruitment'),
 ]

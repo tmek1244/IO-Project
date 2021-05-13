@@ -26,7 +26,7 @@ services:
       - ENGINE=django.db.backends.postgresql_psycopg2
       - DB_HOST=db
       - DB_PORT=5432
-      - ALLOWED_HOST=localhost,127.0.0.1,frontend,webapp
+      - ALLOWED_HOST=localhost,127.0.0.1,frontend,webapp,0.0.0.0
     depends_on:
       - db
   frontend:

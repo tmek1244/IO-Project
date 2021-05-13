@@ -1,6 +1,6 @@
 import React from 'react'
 import AddDataPanel from './pages/AddData/AddDataPanel'
-import AddNewUserPanel from './components/Admin/AddNewUserPanel'
+import AdminPanel from './components/Admin/AdminPanel'
 import ChangePasswordPanel from './pages/ChangePassword/ChangePasswordPanel'
 import Header from './components/Header/Header'
 import Sidebar from './components/Sidebar/Sidebar'
@@ -18,6 +18,7 @@ import { useLayoutState } from './context/LayoutContext'
 import Dashboard from './pages/Dashboard/Dashboard'
 import TableRaportPanel from './pages/TableRaport/TableRaportPanel'
 import { useAuthState } from './context/AuthContext'
+import FacultyAnalysis from './pages/FacultyAnalysis/FacultyAnalysis'
 
 
 const AuthenticatedApp = () => {
@@ -46,10 +47,13 @@ const AuthenticatedApp = () => {
                         <Route exact path='/haslo'>
                             <ChangePasswordPanel />
                         </Route>
+                        <Route exact path='/podsumowanie_wydzial'>
+                            <FacultyAnalysis />
+                        </Route>
                         {
                             authState.is_staff &&
-                            <Route exact path='/rejestracja'>
-                                <AddNewUserPanel />
+                            <Route exact path='/administracja'>
+                                <AdminPanel />
                             </Route>
                         }
                         <Route path='/'>
