@@ -319,7 +319,7 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
             year=obj.year
         )
         if len(places) > 0:
-            return candidates / places[0].places
+            return round(candidates / places[0].places, 2)
         return None
 
     def get_signed_candidates_count(self, obj: Recruitment) -> int:
@@ -370,8 +370,12 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
         count = recruitment_results.count()
         ordered_results = recruitment_results.values_list(
             'points', flat=True).order_by('points')
-        if count == 0:
+        if count == 0 or len(ordered_results) == 0:
             return None
+        if count == 1:
+            return ordered_results[0]
+        if count == 2:
+            return (ordered_results[0] + ordered_results[1]) / 2
         if count % 2 == 0:
             return (ordered_results[int(count / 2)] +
                     ordered_results[int(count / 2) + 1]) / 2
