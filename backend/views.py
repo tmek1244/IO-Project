@@ -590,7 +590,7 @@ class AvgAndMedOfFields(APIView):
                     recruitment = Recruitment.objects.filter(
                         field_of_study=field, year=split_request[2 * i + 1])
                     recruitment_results = RecruitmentResult.objects.filter(
-                        recruitment__in=recruitment, result='Signed')
+                        recruitment__in=recruitment, result='signed')
                     if recruitment_results:
                         this_faculty[field.name] = {
                             'AVG': recruitment_results.aggregate(
@@ -617,12 +617,14 @@ class ActualFacultyThreshold(APIView):
             for field in FieldOfStudy.objects.filter(
                     faculty=faculty_obj, degree=degree):
                 field_list: List[float] = []
+
                 for cycle in range(5):
                     recruitment = Recruitment.objects.filter(
                         field_of_study=field, round=cycle,
-                        year=datetime.datetime.now().year)
+                        year=Recruitment.objects.aggregate(
+                            Max('year'))["year__max"])
                     recruitment_results = RecruitmentResult.objects.filter(
-                        recruitment__in=recruitment, result='Signed')
+                        recruitment__in=recruitment, result='signed')
                     threshold = recruitment_results.aggregate(
                         Min('points'))['points__min']
 
