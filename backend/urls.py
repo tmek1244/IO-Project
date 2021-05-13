@@ -1,7 +1,8 @@
 from django.urls import path, re_path
 
 from backend.views import (ActualFacultyThreshold, AddFacultyView,
-                           AddFieldOfStudy, AvgAndMedOfFields, CompareFields, FieldConversionView,
+                           AddFieldOfStudy, AvgAndMedOfFields, CompareFields,
+                           FieldConversionView,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
@@ -51,10 +52,13 @@ urlpatterns = [
     re_path(r'^contest-laureates/(?P<string>.+)/$',
             FieldOfStudyContestLaureatesCountView.as_view(),
             name='get_contest_laureates_count'),
-    
-    path('field-conversion/<int:year>/', FieldConversionView.as_view(), name='field-conversion'),
-    path('field-conversion/<int:year>/<faculty>/', FieldConversionView.as_view(), name='field-conversion'),
-    path('field-conversion/<int:year>/<faculty>/<field_of_study>/', FieldConversionView.as_view(), name='field-conversion'),
+
+    path('field-conversion/<int:year>/',
+         FieldConversionView.as_view(), name='field-conversion'),
+    path('field-conversion/<int:year>/<faculty>/',
+         FieldConversionView.as_view(), name='field-conversion'),
+    path('field-conversion/<int:year>/<faculty>/<field_of_study>/',
+         FieldConversionView.as_view(), name='field-conversion'),
 
     path('laureates-on-fofs/<faculty>/',
          LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),

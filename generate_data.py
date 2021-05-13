@@ -86,15 +86,23 @@ class GraduadedSchool:
     def __init__(self, recruitment: Any = None) -> None:
         if recruitment and recruitment.field_of_study.degree == "2":
             if random.random() > 0.6:
-                self.city, self.name, self.degree, self.date, self.faculty, self.fof =\
+                (
+                    self.city, self.name, self.degree, self.date,
+                    self.faculty, self.fof) =\
                     random.choice(GraduadedSchool.universities)
             else:
-                self.city, self.name, self.degree, self.date, self.faculty, self.fof =\
-                    ("Kraków", "AGH", "1", "", recruitment.field_of_study.faculty_name, recruitment.field_of_study.fof_name)
+                (
+                    self.city, self.name, self.degree, self.date,
+                    self.faculty, self.fof) =\
+                    (
+                        "Kraków", "AGH", "1", "",
+                        recruitment.field_of_study.faculty_name,
+                        recruitment.field_of_study.fof_name)
         else:
-            self.city, self.name, self.degree, self.date, self.faculty, self.fof =\
+            (
+                self.city, self.name, self.degree, self.date,
+                self.faculty, self.fof) =\
                 random.choice(GraduadedSchool.hss*4)
-            
 
 
 class Recruitment:
