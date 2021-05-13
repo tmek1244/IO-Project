@@ -316,6 +316,15 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
             'student', flat=True).distinct().count()
 
 
+class FieldOfStudyNameSerializer(serializers.ModelSerializer[Any]):
+    faculty = serializers. \
+        ReadOnlyField(source='faculty.name')
+
+    class Meta:
+        model = FieldOfStudy
+        fields = ('name', 'faculty', 'degree', 'type')
+
+
 class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
     file = serializers.FileField()
 

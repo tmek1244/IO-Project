@@ -17,10 +17,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
+from backend.models import (Candidate, Faculty, FieldOfStudy,
+                            FieldOfStudyPlacesLimit, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  FieldOfStudyCandidatesPerPlaceSerializer,
+                                 FieldOfStudyNameSerializer,
                                  RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
@@ -50,6 +52,35 @@ class RecruitmentResultListView(generics.ListAPIView):
     def post(self, request: Request,
              *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
         return self.list(request, *args, **kwargs)
+
+
+class FieldOfStudyNotFullView(generics.ListAPIView):
+    permission_classes = (IsAuthenticated,)
+    serializer_class = FieldOfStudyNameSerializer
+
+    def get_queryset(self) -> Manager[FieldOfStudy]:
+        if 'year' in self.kwargs:
+            year = self.kwargs.get('year')
+        else:
+            year = Recruitment.objects.aggregate(
+                Max('year')).get('year__max')
+        fields_of_study = FieldOfStudy.objects.all()
+        to_be_deleted = []
+        for field_of_study in fields_of_study:
+            recruitments = Recruitment.objects.filter(
+                year=year,
+                field_of_study=field_of_study
+            )
+            candidates = RecruitmentResult.objects.filter(
+                recruitment__in=recruitments).values_list(
+                'student', flat=True).distinct().count()
+            places = FieldOfStudyPlacesLimit.objects.filter(
+                field_of_study=field_of_study,
+                year=year
+            )
+            if len(places) == 0 or candidates > places[0].places:
+                to_be_deleted.append(field_of_study.id)
+        return fields_of_study.exclude(id__in=to_be_deleted)
 
 
 class RecruitmentResultOverviewListView(generics.ListAPIView):
