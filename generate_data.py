@@ -83,9 +83,18 @@ class GraduadedSchool:
         ("Warszawa", "PW", "1", "", "Ogólny", "Informatyka"),
     ]
 
-    def __init__(self) -> None:
-        self.city, self.name, self.degree, self.date, self.faculty, self.fof =\
-            random.choice(GraduadedSchool.hss*4 + GraduadedSchool.universities)
+    def __init__(self, recruitment: Any = None) -> None:
+        if recruitment and recruitment.field_of_study.degree == "2":
+            if random.random() > 0.6:
+                self.city, self.name, self.degree, self.date, self.faculty, self.fof =\
+                    random.choice(GraduadedSchool.universities)
+            else:
+                self.city, self.name, self.degree, self.date, self.faculty, self.fof =\
+                    ("Kraków", "AGH", "1", "", recruitment.field_of_study.faculty_name, recruitment.field_of_study.fof_name)
+        else:
+            self.city, self.name, self.degree, self.date, self.faculty, self.fof =\
+                random.choice(GraduadedSchool.hss*4)
+            
 
 
 class Recruitment:
@@ -128,7 +137,7 @@ def main(persons: Any, file_name: Any) -> Any:
         c = Candidate()
         r = Recruitment()
         fof = r.field_of_study
-        gs = GraduadedSchool()
+        gs = GraduadedSchool(r)
 
         print(random.randint(1000, 10000), r.year, r.round,  # ogólne
               fof.mode, fof.degree, fof.faculty_name, fof.fof_name,  # wydział

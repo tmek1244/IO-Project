@@ -440,12 +440,11 @@ class FieldConversionView(APIView):
             field_of_study: str = None) -> Response:
 
         try:
-            from_inside = 0
-            from_outside = 0
+            year = year or Recruitment.objects.aggregate(Max('year'))["year__max"]
 
             rrs = (RecruitmentResult.objects.
                 filter(result__in=["$","+","accepted","signed"]).
-                exclude(recruitment__field_of_study__degree__in=["2", "3", "4"])
+                filter(recruitment__field_of_study__degree__in=["2", "3", "4"])
                 )
             
             if year:
@@ -464,13 +463,12 @@ class FieldConversionView(APIView):
                     if not fof_name in result:
                         result[fof_name] = {"from-inside": 0, "from-outside": 0}
 
-                    if (not faculty or faculty == faculty_name) and (not field_of_study or field_of_study == fof_name):
-                        if rr.student.graduatedschool_set.filter(school_name="AGH").filter(faculty=faculty_name).filter(field_of_study=fof_name):
-                            result[fof_name]["from-inside"] += 1
-                            result["all"]["from-inside"] += 1
-                        else:
-                            result[fof_name]["from-outside"] += 1
-                            result["all"]["from-outside"] += 1
+                    if rr.student.graduatedschool_set.filter(school_name="AGH").filter(faculty=faculty_name).filter(field_of_study=fof_name):
+                        result[fof_name]["from-inside"] += 1
+                        result["all"]["from-inside"] += 1
+                    else:
+                        result[fof_name]["from-outside"] += 1
+                        result["all"]["from-outside"] += 1
 
                 except Exception as e:
                     print(e)
