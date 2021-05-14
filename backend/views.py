@@ -608,3 +608,18 @@ class ActualFacultyThreshold(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class RecruitmentYears(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request) -> Response:
+        try:
+            recruitments = Recruitment.objects.values_list(
+                'year',
+                flat=True).distinct()
+            print(recruitments)
+            return Response(recruitments)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
