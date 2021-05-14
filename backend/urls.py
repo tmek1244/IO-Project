@@ -1,7 +1,7 @@
 from django.urls import path, re_path
 
 from backend.views import (ActualFacultyThreshold, AddFacultyView,
-                           AddFieldOfStudy, AvgAndMedOfFields, CompareFields,
+                           AddFieldOfStudy, AvgAndMedOfFields, CompareFields, FieldConversionOverTheYearsView,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
@@ -75,4 +75,14 @@ urlpatterns = [
         r'&cycle=(?P<cycle>.+)$',
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
+
+    path('field-conversion-over-the-years/',
+         FieldConversionOverTheYearsView.as_view(),
+         name='field-conversion'),
+    path('field-conversion-over-the-years/<faculty>/',
+         FieldConversionOverTheYearsView.as_view(),
+         name='field-conversion'),
+    path('field-conversion-over-the-years/<faculty>/<field_of_study>/',
+         FieldConversionOverTheYearsView.as_view(),
+         name='field-conversion'),
 ]

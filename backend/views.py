@@ -633,3 +633,67 @@ class ActualFacultyThreshold(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class FieldConversionOverTheYearsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            faculty: str = None,
+            field_of_study: str = None) -> Response:
+
+        try:
+
+            rrs = (
+                RecruitmentResult.objects.
+                filter(result__in=["$", "+", "accepted", "signed"]).
+                filter(recruitment__field_of_study__degree__in=["2", "3", "4"])
+                )
+
+            if faculty:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__faculty__name=faculty)
+            if field_of_study:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__name=field_of_study)
+
+            rrs.values(
+                'recruitment__field_of_study__faculty__name',
+                'recruitment__year'
+            )
+
+            result = {}
+            for rr in rrs:
+                try:
+                    faculty_name = rr.recruitment.field_of_study.faculty.name
+                    fof_name = rr.recruitment.field_of_study.name
+                    year = rr.recruitment.year
+
+                    if fof_name not in result:
+                        result[fof_name] = {}
+
+                    if year not in result[fof_name]:
+                        result[fof_name][year] = {
+                            "from-inside": 0,
+                            "from-outside": 0}
+
+                    if (
+                        rr.student.graduatedschool_set.
+                        filter(school_name="AGH").
+                        filter(faculty=faculty_name).
+                        filter(field_of_study=fof_name)
+                    ):
+                        result[fof_name][year]["from-inside"] += 1
+                    else:
+                        result[fof_name][year]["from-outside"] += 1
+
+                except Exception as e:
+                    print(e)
+
+            return Response(result, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
