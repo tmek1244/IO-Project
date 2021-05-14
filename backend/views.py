@@ -17,7 +17,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
+from backend.models import (Candidate, Faculty, FieldOfStudy,
+                            FieldOfStudyPlacesLimit, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  FieldOfStudyCandidatesPerPlaceSerializer,
@@ -384,6 +385,43 @@ class GetThresholdOnField(APIView):
             if recruitment_results:
                 result = list(recruitment_results.values(
                     'recruitment__year').annotate(max_points=Min('points')))
+            return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class CandidatesPerPlace(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            string: str = "faculty+field+degree") -> Response:
+        try:
+            result: List[Dict[str, Any]] = []
+            faculty, field, degree = string.split('+')
+            faculty_obj = Faculty.objects.get(name=faculty)
+            field_obj = FieldOfStudy.objects.get(
+                name=field, faculty=faculty_obj, degree=degree)
+            recruitments = Recruitment.objects.filter(
+                field_of_study=field_obj, round=1)
+            for recruitment in recruitments:
+                places = FieldOfStudyPlacesLimit.objects.filter(
+                    field_of_study=field_obj, year=recruitment.year
+                )
+                if len(places) == 0:
+                    continue
+                places_value: int = int(places[0].places)
+                recruitment_all_cycles = Recruitment.objects.filter(
+                    field_of_study=field_obj, year=recruitment.year
+                )
+                candidates = RecruitmentResult.objects.filter(
+                    recruitment__in=recruitment_all_cycles).values_list(
+                    'student', flat=True).distinct().count()
+                candidates_per_place = round(candidates / places_value, 2)
+                result.append({
+                    "year": recruitment.year,
+                    "candidates_per_place": candidates_per_place
+                })
             return Response(result)
         except Exception as e:
             print(e)
