@@ -5,8 +5,10 @@ from typing import Any, Dict, List
 
 import django.db.models
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Avg, Manager, Max, Min
+from django.db.models import Avg, Manager, Max, Min, F, Value
+from django.db.models import aggregates
 from django.db.models.aggregates import Count
+from django.db.models.fields import IntegerField
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -15,6 +17,8 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from django.db.models.functions import Mod, Round, Cast
 
 from backend.filters import RecruitmentResultListFilters
 from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
@@ -633,3 +637,65 @@ class ActualFacultyThreshold(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class PointsDistributionOverTheYearsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, step: int = 100,
+            faculty: str = None,
+            field_of_study: str = None,
+            degree: str = None) -> Response:
+        try:
+            tmp: Any = RecruitmentResult.objects.filter(result__in=["$", "+", "accepted", "signed"])
+
+            if faculty:
+                tmp = tmp.filter(
+                    recruitment__field_of_study__faculty__name=faculty)
+            if field_of_study:
+                tmp = tmp.filter(
+                    recruitment__field_of_study__name=field_of_study)
+            if degree:
+                tmp = tmp.filter(recruitment__field_of_study__degree=degree)
+
+            tmp = (tmp
+                .values(
+                    'recruitment__field_of_study__name',
+                    'recruitment__year',
+                    'points'
+                )
+                .annotate(ints=Cast('points', IntegerField()))
+                .annotate(mod_step=F('ints')%step)
+                .annotate(bucket=F('ints') - F("mod_step"))
+                .values(
+                    'recruitment__field_of_study__name',
+                    'recruitment__year',
+                    'bucket'
+                )
+                .annotate(total=Count("bucket"))
+                .order_by("total")
+                )
+
+            print(tmp)
+
+            result: Dict[Any, Any] = {}
+            for d in tmp:
+                fof = d['recruitment__field_of_study__name']
+                year = d['recruitment__year']
+                bucket = d['bucket']
+                total = d['total']
+
+                if fof not in result:
+                    result[fof] = {}
+                if year not in result[fof]:
+                    result[fof][year] = {}
+
+                result[fof][year][bucket] = total
+
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )

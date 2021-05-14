@@ -5,7 +5,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
-                           GetThresholdOnField, LaureatesOnFOFSView,
+                           GetThresholdOnField, LaureatesOnFOFSView, PointsDistributionOverTheYearsView,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
@@ -75,4 +75,23 @@ urlpatterns = [
         r'&cycle=(?P<cycle>.+)$',
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
+
+    path('points-distribution-over-the-years/',
+         PointsDistributionOverTheYearsView.as_view(),
+         name='points-distribution-over-the-years'),
+    path('points-distribution-over-the-years/<int:step>/',
+         PointsDistributionOverTheYearsView.as_view(),
+         name='points-distribution-over-the-years'),
+    path('points-distribution-over-the-years/<int:step>/<faculty>/',
+         PointsDistributionOverTheYearsView.as_view(),
+         name='points-distribution-over-the-years'),
+    path('points-distribution-over-the-years/<int:step>/<faculty>/<field_of_study>/',
+         PointsDistributionOverTheYearsView.as_view(),
+         name='points-distribution-over-the-years'),
+    path('points-distribution-over-the-years/<int:step>/' +
+         '<faculty>/<field_of_study>/<degree>/',
+         PointsDistributionOverTheYearsView.as_view(),
+         name='points-distribution-over-the-years'),
+
+        
 ]
