@@ -5,7 +5,8 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
-                           GetThresholdOnField, LaureatesOnFOFSView, PointsDistributionOverTheYearsView,
+                           GetThresholdOnField, LaureatesOnFOFSView,
+                           PointsDistributionOverTheYearsView,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
@@ -85,7 +86,8 @@ urlpatterns = [
     path('points-distribution-over-the-years/<int:step>/<faculty>/',
          PointsDistributionOverTheYearsView.as_view(),
          name='points-distribution-over-the-years'),
-    path('points-distribution-over-the-years/<int:step>/<faculty>/<field_of_study>/',
+    path('points-distribution-over-the-years/<int:step>/' +
+         '<faculty>/<field_of_study>/',
          PointsDistributionOverTheYearsView.as_view(),
          name='points-distribution-over-the-years'),
     path('points-distribution-over-the-years/<int:step>/' +
@@ -93,5 +95,4 @@ urlpatterns = [
          PointsDistributionOverTheYearsView.as_view(),
          name='points-distribution-over-the-years'),
 
-        
 ]

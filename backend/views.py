@@ -5,10 +5,10 @@ from typing import Any, Dict, List
 
 import django.db.models
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Avg, Manager, Max, Min, F, Value
-from django.db.models import aggregates
+from django.db.models import Avg, F, Manager, Max, Min
 from django.db.models.aggregates import Count
 from django.db.models.fields import IntegerField
+from django.db.models.functions import Cast
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -17,8 +17,6 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from django.db.models.functions import Mod, Round, Cast
 
 from backend.filters import RecruitmentResultListFilters
 from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
@@ -647,7 +645,8 @@ class PointsDistributionOverTheYearsView(APIView):
             field_of_study: str = None,
             degree: str = None) -> Response:
         try:
-            tmp: Any = RecruitmentResult.objects.filter(result__in=["$", "+", "accepted", "signed"])
+            tmp: Any = (RecruitmentResult.objects.
+                        filter(result__in=["$", "+", "accepted", "signed"]))
 
             if faculty:
                 tmp = tmp.filter(
@@ -658,14 +657,13 @@ class PointsDistributionOverTheYearsView(APIView):
             if degree:
                 tmp = tmp.filter(recruitment__field_of_study__degree=degree)
 
-            tmp = (tmp
-                .values(
+            tmp = (tmp.values(
                     'recruitment__field_of_study__name',
                     'recruitment__year',
                     'points'
                 )
                 .annotate(ints=Cast('points', IntegerField()))
-                .annotate(mod_step=F('ints')%step)
+                .annotate(mod_step=F('ints') % step)
                 .annotate(bucket=F('ints') - F("mod_step"))
                 .values(
                     'recruitment__field_of_study__name',
