@@ -662,7 +662,7 @@ class FieldConversionOverTheYearsView(APIView):
                 'recruitment__year'
             )
 
-            result = {}
+            result: Dict[Any,Any] = {}
             for rr in rrs:
                 try:
                     faculty_name = rr.recruitment.field_of_study.faculty.name
