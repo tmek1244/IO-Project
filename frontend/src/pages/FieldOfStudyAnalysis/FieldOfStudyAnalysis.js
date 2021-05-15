@@ -7,6 +7,7 @@ import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@m
 import useStyles from "./styles";
 
 import CandidatesPerPlaceDistriChart from './Charts/CandidatesPerPlaceDistriChart';
+import StudentStatusDistriChart from './Charts/StudentStatusDistriChart';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -35,7 +36,7 @@ const FieldOfStudyAnalysis = () => {
     // jeden element oraz będziemy się do niej odwoływać dopiero jak będzie pobrana, czyli loading będzie na false
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
-    const [field, setField] = useState("");
+    const [field, setField] = useState("Informatyka"); //TODO change
 
     const faculties = Object.keys(facultiesStudyFields);
     const allFields = facultiesStudyFields[faculties[facultyIdx]];
@@ -105,17 +106,17 @@ const FieldOfStudyAnalysis = () => {
                                     <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/> :
                                     <Cycle2ndChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
                                 }
-                            </Grid>
-                            <Grid item xs={12}>
+                            </Grid> */}
+                            {/* <Grid item xs={12}>
                                 <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
-                            </Grid>
-                            <Grid item xs={12} >
+                            </Grid> */}
+                            {/* <Grid item xs={12} >
                                 <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
-                            </Grid>
+                            </Grid> */}
                             <Grid item xs={12}>
-                                <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
+                                <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
-                            <Grid item xs={12}>
+                            {/* <Grid item xs={12}>
                                 <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} />
                             </Grid> */}
                         </Grid>

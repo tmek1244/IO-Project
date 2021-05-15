@@ -1,9 +1,9 @@
 //CHA-89 DONETMP
 
 import React from 'react'
-import { Bar } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
-import { colors, commonOptions } from './settings'
+import { colors, borderColors, commonOptions } from './settings'
 import useFetch from '../../../hooks/useFetch';
 
 const options = {
@@ -22,7 +22,8 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field })
             datasets: [{
                 label: "Liczba kandydatów na jedno miejsce",
                 data: [],
-                backgroundColor: colors,
+                backgroundColor: colors[0],
+                borderColor: borderColors[0],
             }],
         }
 
@@ -34,7 +35,8 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field })
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}/`, [], convertResult);
+    // const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}/`, [], convertResult);
+    const loading = undefined;
     const fakeData = [
         {
             "year":2019,
@@ -58,7 +60,7 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field })
                         <p>ładowanko</p> // TODO zrobić spinner
                         :
                         <div >
-                            <Bar data={convertResult(fakeData)} options={options} />
+                            <Line data={convertResult(fakeData)} options={options} />
                             {/* <Bar data={fieldsOfStudyData} options={options} /> */}
                         </div>
                 }
