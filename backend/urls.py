@@ -4,7 +4,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            AddFieldOfStudy, AvgAndMedOfFields, CompareFields,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
-                           GetFacultiesView, GetFieldsOfStudy,
+                           GetFacultiesView, GetFieldsOfStudy, GetMostLaureate,
                            GetThresholdOnField, LaureatesOnFOFSView,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
@@ -12,7 +12,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultOverviewListView,
                            RecruitmentStatusAggregateListView,
                            StatusDistributionView, UploadFieldsOfStudyView,
-                           UploadView, GetMostLaureate)
+                           UploadView)
 
 app_name = 'backend'
 
