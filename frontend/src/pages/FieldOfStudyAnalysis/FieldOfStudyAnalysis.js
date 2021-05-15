@@ -9,6 +9,7 @@ import useStyles from "./styles";
 import CandidatesPerPlaceDistriChart from './Charts/CandidatesPerPlaceDistriChart';
 import StudentStatusDistriChart from './Charts/StudentStatusDistriChart';
 import Students2ndCycleDistriChart from './Charts/Students2ndCycleDistriChart';
+import PointsDistriChart from './Charts/PointsDistriChart';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -109,9 +110,9 @@ const FieldOfStudyAnalysis = () => {
                                     <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field}/>
                                 }
                             </Grid>
-                            {/* <Grid item xs={12}>
-                                <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
-                            </Grid> */}
+                            <Grid item xs={12}>
+                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                            </Grid>
                             {/* <Grid item xs={12} >
                                 <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
                             </Grid> */}

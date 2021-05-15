@@ -1,5 +1,4 @@
-//CHA-92,94 
-//92 - is this what was meant?
+//CHA-95
 
 import React from 'react'
 import { Line } from 'react-chartjs-2';
@@ -12,7 +11,7 @@ const options = {
     aspectRatio: 4,
 };
 
-export default function StudentStatusDistriChart({ faculty, cycle, field }) {
+export default function PointsDistriChart({ faculty, cycle, field }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
@@ -41,17 +40,17 @@ export default function StudentStatusDistriChart({ faculty, cycle, field }) {
         return result
     }
 
-    // const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/status-distribution-over-the-years/${faculty}/${field}/${cycle}/`, {}, convertResults)
+    // const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/points-distribution-over-the-years/step/${faculty}/${field}/${cycle}/`, {}, convertResults)
     const loading = undefined;
     const fakeData = {
         Informatyka: {
             2019: {
-              status1: 100,
-              status2: 50,
+              Average: 500,
+              Median: 400,
             },
             2020: {
-                status1: 70,
-                status2: 120,
+                Average: 300,
+                Median: 400,
             },
         },
     }
@@ -60,7 +59,7 @@ export default function StudentStatusDistriChart({ faculty, cycle, field }) {
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>Rozkład studentów według statusu</Typography>} //TODO change name
+                title={<Typography variant='h5'>Rozkład punktów</Typography>}
             />
             <CardContent>
                 {
