@@ -12,7 +12,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultOverviewListView,
                            RecruitmentStatusAggregateListView,
                            StatusDistributionView, UploadFieldsOfStudyView,
-                           UploadView)
+                           UploadView, GetMostLaureate)
 
 app_name = 'backend'
 
@@ -75,4 +75,6 @@ urlpatterns = [
         r'&cycle=(?P<cycle>.+)$',
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
+    path('laureate_stats/<int:n>/<int:year>',
+         GetMostLaureate.as_view(), name="laureate_stats")
 ]

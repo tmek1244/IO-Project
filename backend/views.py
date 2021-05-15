@@ -633,3 +633,26 @@ class ActualFacultyThreshold(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class GetMostLaureate(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, n: int, year: int) -> Response:
+        try:
+            result: Dict[str, float] = {}
+            for field in FieldOfStudy.objects.filter(degree="1"):
+                query = RecruitmentResult.objects.filter(
+                    recruitment__year=year,
+                    recruitment__field_of_study=field,
+                    result="signed",
+                    student__contest__isnull=False
+                )
+                result[field.name] = len(query)
+            return Response(
+                {k: v for k, v in sorted(
+                    result.items(), key=lambda item: item[1],
+                    reverse=True)[:n]})
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
