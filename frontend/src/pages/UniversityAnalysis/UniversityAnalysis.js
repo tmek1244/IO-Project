@@ -14,7 +14,7 @@ const UniversityAnalysis = () => {
 
     const [cycle, setCycle] = useState(1);
     const [selectedYearIdx, setSelectedYearIdx] = useState(0);
-    const [years, loading, _error] = useFetch('/api/backend/avaiable-years/', [], json => json.sort((a, b) => b - a)) //sortowaine tablicy w porządku malejącym
+    const [years, loading, _error] = useFetch('/api/backend/available-years/', [], json => json.sort((a, b) => b - a)) //sortowaine tablicy w porządku malejącym
 
     return (
         <>
@@ -31,7 +31,7 @@ const UniversityAnalysis = () => {
                                 <div className={classes.dateSelector}>
 
                                     <FormControl variant="outlined" fullWidth  >
-                                        <InputLabel id="year-input-label">Rok rekrutacji</InputLabel>
+                                        <InputLabel id="year-input-label">Rok</InputLabel>
                                         <Select
                                             labelId="year-input-label"
                                             label="Rok"

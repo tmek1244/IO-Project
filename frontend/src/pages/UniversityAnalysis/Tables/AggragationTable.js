@@ -8,7 +8,7 @@ import useFetchPost from '../../../hooks/useFetchPost'
 const AggragationTable = ({ year, cycle }) => {
 
     var columns = []
-    if (cycle == 1) {
+    if (cycle === 1) {
         columns = firstCycleColumns
     }
     else {
@@ -17,9 +17,9 @@ const AggragationTable = ({ year, cycle }) => {
 
     const payload = {
         year: year,
-        cycle: cycle
+        study_cycle: cycle
     }
-    // /api/backend/recruitment-result-overview/
+
     const [data, loading, error] = useFetchPost(`/api/backend/recruitment-result-overview/`, payload, [])
 
 

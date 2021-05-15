@@ -2,7 +2,6 @@ const options = {
     filter: false,
     print: false,
     search: false,
-    pagination: false,
     downloadOptions: {
         filename: "raport.csv",
         filterOptions: {
@@ -38,7 +37,7 @@ const basicColumns = [
         }
     },
     {
-        name: "recruitment_round",
+        name: "round",
         label: "Cykl",
         options: {
             filter: false,
@@ -46,7 +45,7 @@ const basicColumns = [
         }
     },
     {
-        name: "treshold",
+        name: "threshold",
         label: "Próg",
         options: {
             filter: false,
@@ -70,7 +69,7 @@ const basicColumns = [
         }
     },
     {
-        name: "candidates_no",
+        name: "candidates_per_place",
         label: "Liczba kandydatów na miejsce",
         options: {
             filter: false,
@@ -81,7 +80,7 @@ const basicColumns = [
 
 const laureateColumn = [
     {
-        name: "laureate_no",
+        name: "contest_laureates_count",
         label: "Liczba laureatów",
         options: {
             filter: false,
