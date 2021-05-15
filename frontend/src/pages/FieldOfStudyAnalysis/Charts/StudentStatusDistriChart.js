@@ -16,12 +16,10 @@ export default function StudentStatusDistriChart({ faculty, cycle, field }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
-        //TODO prawdopodobnie da sie uproscic
-        const result = { labels: [], datasets: [] }
-
-        Object.keys(json[field]).forEach(key => {
-            result.labels.push(key)
-        })
+        const result = {
+            labels: Object.keys(json[field]),
+            datasets: []
+        }
         
         Object.keys(json[field][Object.keys(json[field])[0]]).forEach(key => {
             result.datasets.push({
