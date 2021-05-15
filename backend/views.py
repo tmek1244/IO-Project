@@ -657,7 +657,7 @@ class GetMostLaureate(APIView):
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
-          
+
 class FacultyPopularity(APIView):
     permission_classes = (IsAuthenticated,)
 

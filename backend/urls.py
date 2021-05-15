@@ -77,7 +77,7 @@ urlpatterns = [
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
     path('laureate_stats/<int:n>/<int:year>',
-         GetMostLaureate.as_view(), name="laureate_stats")
+         GetMostLaureate.as_view(), name="laureate_stats"),
     path('faculty_popularity/<str:pop_type>/<str:degree>/<int:n>/<int:year>/',
          FacultyPopularity.as_view(), name="faculty_popularity"),
 ]
