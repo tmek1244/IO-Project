@@ -45,7 +45,7 @@ export default function PointsDistriChart({ faculty, cycle, field }) {
     const fakeData = {
         Informatyka: {
             2019: {
-              Average: 500,
+              Average: 500,  //a1, a2 means average median etc?
               Median: 400,
             },
             2020: {
