@@ -17,7 +17,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from backend.filters import RecruitmentResultListFilters
-from backend.models import (Candidate, Faculty, FieldOfStudy, Recruitment,
+from backend.models import (Candidate, Faculty, FieldOfStudy,
+                            FieldOfStudyPlacesLimit, Recruitment,
                             RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  FieldOfStudyCandidatesPerPlaceSerializer,
@@ -558,7 +559,6 @@ class StatusDistributionView(APIView):
 
 
 def get_median(values: django.db.models.QuerySet[RecruitmentResult]) -> float:
-
     sorted_list = sorted(list(map(lambda x: x.points, values)))
     if len(sorted_list) % 2 == 0:
         return (
@@ -633,3 +633,29 @@ class ActualFacultyThreshold(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class FacultyPopularity(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(
+            self, request: Request, pop_type: str,
+            degree: str, n: int, year: int) -> Response:
+        try:
+            result: Dict[str, float] = {}
+            for field in FieldOfStudy.objects.filter(degree=degree):
+                query = RecruitmentResult.objects.filter(
+                    recruitment__year=year,
+                    recruitment__field_of_study=field
+                ).values("student").distinct()
+                result[field.name] = len(query)/(
+                    FieldOfStudyPlacesLimit.objects.get(
+                        year=year, field_of_study=field).places)
+
+            return Response(
+                {k: v for k, v in sorted(
+                    result.items(), key=lambda item: item[1],
+                    reverse=True if pop_type == "most" else False)[:n]})
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)

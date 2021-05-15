@@ -2,6 +2,7 @@ from django.urls import path, re_path
 
 from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            AddFieldOfStudy, AvgAndMedOfFields, CompareFields,
+                           FacultyPopularity,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy,
@@ -75,4 +76,6 @@ urlpatterns = [
         r'&cycle=(?P<cycle>.+)$',
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
+    path('faculty_popularity/<str:pop_type>/<str:degree>/<int:n>/<int:year>/',
+         FacultyPopularity.as_view(), name="faculty_popularity"),
 ]
