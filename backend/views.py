@@ -682,7 +682,7 @@ class FacultyPopularity(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
-          
+
 
 class FacultyThreshold(APIView):
     permission_classes = (IsAuthenticated,)
