@@ -256,9 +256,9 @@ class GetFacultiesView(APIView):
 
 
 class GetFieldsOfStudy(APIView):
-    def get(self, request: Request) -> Response:
+    def get(self, request: Request, degree: str) -> Response:
         result: Dict[str, List[str]] = {}
-        for field in FieldOfStudy.objects.all():
+        for field in FieldOfStudy.objects.filter(degree=degree):
             if field.faculty.name in result:
                 result[field.faculty.name].append(field.name)
             else:
@@ -679,6 +679,32 @@ class FacultyPopularity(APIView):
                 {k: v for k, v in sorted(
                     result.items(), key=lambda item: item[1],
                     reverse=True if pop_type == "most" else False)[:n]})
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class FacultyThreshold(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(
+            self, request: Request, mode: str,
+            degree: str, n: int, year: int) -> Response:
+        try:
+            result: Dict[str, float] = {}
+            for field in FieldOfStudy.objects.filter(degree=degree):
+                query = RecruitmentResult.objects.filter(
+                    recruitment__year=year,
+                    recruitment__field_of_study=field,
+                    result="signed"
+                ).aggregate(Min('points'))['points__min']
+                result[field.name] = query if query else -1
+                print(query)
+
+            return Response(
+                {k: v for k, v in sorted(
+                    result.items(), key=lambda item: item[1],
+                    reverse=True if mode == "top" else False)[:n]})
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
