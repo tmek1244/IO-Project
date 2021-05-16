@@ -2,10 +2,10 @@ from django.urls import path, re_path
 
 from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            AddFieldOfStudy, AvgAndMedOfFields, CompareFields,
-                           FacultyThreshold,
+                           FacultyPopularity, FacultyThreshold,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
-                           GetFacultiesView, GetFieldsOfStudy,
+                           GetFacultiesView, GetFieldsOfStudy, GetMostLaureate,
                            GetThresholdOnField, LaureatesOnFOFSView,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
@@ -78,4 +78,8 @@ urlpatterns = [
         name='actual_recruitment'),
     path('faculty_threshold/<mode>/<degree>/<int:n>/<int:year>',
          FacultyThreshold.as_view(), name='faculty_threshold')
+    path('laureate_stats/<int:n>/<int:year>',
+         GetMostLaureate.as_view(), name="laureate_stats"),
+    path('faculty_popularity/<str:pop_type>/<str:degree>/<int:n>/<int:year>/',
+         FacultyPopularity.as_view(), name="faculty_popularity"),
 ]
