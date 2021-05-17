@@ -191,7 +191,8 @@ class FieldOfStudyContestLaureatesCountView(APIView):
             faculty, field = string.split('+')
             faculty_obj = Faculty.objects.get(name=faculty)
             field_obj = FieldOfStudy.objects.get(name=field,
-                                                 faculty=faculty_obj)
+                                                 faculty=faculty_obj,
+                                                 degree=1)
             recruitment = Recruitment.objects.filter(field_of_study=field_obj)
             candidates = Candidate.objects\
                 .exclude(contest__isnull=True)\
