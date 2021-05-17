@@ -52,6 +52,9 @@ urlpatterns = [
     re_path(r'^contest-laureates/(?P<string>.+)/$',
             FieldOfStudyContestLaureatesCountView.as_view(),
             name='get_contest_laureates_count'),
+    re_path(r'^candidates-per-place/(?P<string>.+)/$',
+            CandidatesPerPlace.as_view(),
+            name='candidates_per_place'),
 
     path('laureates-on-fofs/<faculty>/',
          LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
