@@ -1,8 +1,8 @@
 //CHA-95
 
-import React from 'react'
-import { Line } from 'react-chartjs-2';
-import { Card, CardHeader, CardContent, Typography, Grid } from '@material-ui/core'
+import React, { useState } from 'react'
+import { Bar } from 'react-chartjs-2';
+import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, borderColors, commonOptions } from './settings'
 
@@ -12,7 +12,6 @@ const options = {
 };
 
 export default function PointsDistriChart({ faculty, cycle, field }) {
-
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
         if(typeof json[field] !== 'undefined') {
@@ -20,21 +19,24 @@ export default function PointsDistriChart({ faculty, cycle, field }) {
                 labels: Object.keys(json[field]),
                 datasets: []
             }
-            
-            Object.keys(json[field][Object.keys(json[field])[0]]).forEach(key => {
+
+            for(let key=0; key<=1000; key+=step) {
+                let index = key/step
+                let keyStep = Math.min(parseInt(key)+step-1, 1000)
                 result.datasets.push({
-                    label: key,
+                    label: key<1000 ? (key + '-' + keyStep) : 1000,
                     data: [],
-                    backgroundColor: colors[Object.keys(json[field][Object.keys(json[field])[0]]).indexOf(key)],
-                    borderColor: borderColors[Object.keys(json[field][Object.keys(json[field])[0]]).indexOf(key)],
+                    backgroundColor: colors[index],
+                    borderColor: borderColors[index],
                 })
-            })
+            }
 
             Object.keys(json[field]).forEach( key => {
                 var stats = json[field][key]
                 Object.keys(stats).forEach (statusKey => {
-                    var points = stats[statusKey];
-                    result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
+                    let points = stats[statusKey];
+                    let index = statusKey/step
+                    result.datasets[index].data.push(points)
                 })
             })
 
@@ -43,26 +45,17 @@ export default function PointsDistriChart({ faculty, cycle, field }) {
         return null;
     }
 
-    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/points-distribution-over-the-years/step/${faculty}/${field}/${cycle}/`, {})
-    // const loading = undefined;
-    // const fakeData = {
-    //     Informatyka: {
-    //         2019: {
-    //           Average: 500,  //a1, a2 means average median etc?
-    //           Median: 400,
-    //         },
-    //         2020: {
-    //             Average: 300,
-    //             Median: 400,
-    //         },
-    //     },
-    // }
+    //TODO maybe add setStep somewhere?
+    const [step, setStep] = useState(200)
+
+    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/points-distribution-over-the-years/${step}/${faculty}/${field}/${cycle}/`, {})
+    console.log(fieldsOfStudyData)
 
     return (
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>Rozkład punktów</Typography>}
+                title={<Typography variant='h5'>Rozkład punktów wśród kandydatów</Typography>}
             />
             <CardContent>
                 {
@@ -70,7 +63,7 @@ export default function PointsDistriChart({ faculty, cycle, field }) {
                         <p>ładowanko</p>
                         :
                         <div >
-                            <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
                         </div>
                 }
             </CardContent>
