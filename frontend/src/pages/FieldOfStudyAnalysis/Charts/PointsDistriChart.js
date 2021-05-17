@@ -47,9 +47,7 @@ export default function PointsDistriChart({ faculty, cycle, field }) {
 
     //TODO maybe add setStep somewhere?
     const [step, setStep] = useState(200)
-
     const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/points-distribution-over-the-years/${step}/${faculty}/${field}/${cycle}/`, {})
-    console.log(fieldsOfStudyData)
 
     return (
         <Card  >
