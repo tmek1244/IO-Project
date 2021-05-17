@@ -1,5 +1,3 @@
-from itertools import groupby
-from operator import itemgetter
 from typing import Any, Dict, List
 
 import django.db.models
@@ -64,29 +62,6 @@ class RecruitmentResultOverviewListView(generics.ListAPIView):
 
         return Recruitment.objects.filter(**filters) \
             if len(filters) > 0 else Recruitment.objects.all()
-
-    def merge_recruitments(self, data: List[Any]) -> List[Any]:
-        grouper = itemgetter('field_of_study', 'faculty', 'year', 'degree')
-        result = []
-        for key, grp in groupby(sorted(data, key=grouper), grouper):
-            temp_dict = dict(zip(
-                ['field_of_study', 'faculty', 'year', 'degree'], key))
-            temp_dict["candidates_count"] = 0
-            temp_dict["signed_candidates_count"] = 0
-            temp_dict["contest_laureates_count"] = 0
-            for item in grp:
-                temp_dict["candidates_count"] += item["candidates_count"]
-                temp_dict["signed_candidates_count"] += \
-                    item["signed_candidates_count"]
-                temp_dict["contest_laureates_count"] += \
-                    item["contest_laureates_count"]
-            result.append(temp_dict)
-        return sorted(result, key=itemgetter('year'), reverse=True)
-
-    def list(self, request: Request, *args: Any, **kwargs: Any) -> Response:
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(self.merge_recruitments(serializer.data))
 
     def post(self, request: Request,
              *args: List[Any], **kwargs: Dict[Any, Any]) -> Response:
@@ -191,7 +166,8 @@ class FieldOfStudyContestLaureatesCountView(APIView):
             faculty, field = string.split('+')
             faculty_obj = Faculty.objects.get(name=faculty)
             field_obj = FieldOfStudy.objects.get(name=field,
-                                                 faculty=faculty_obj)
+                                                 faculty=faculty_obj,
+                                                 degree=1)
             recruitment = Recruitment.objects.filter(field_of_study=field_obj)
             candidates = Candidate.objects\
                 .exclude(contest__isnull=True)\
@@ -631,6 +607,21 @@ class ActualFacultyThreshold(APIView):
                         field_list.append(threshold)
                 result[field.name] = field_list
             return Response(result)
+        except Exception as e:
+            print(e)
+            return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+
+
+class RecruitmentYears(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request) -> Response:
+        try:
+            recruitments = Recruitment.objects.values_list(
+                'year',
+                flat=True).distinct()
+            print(recruitments)
+            return Response(recruitments)
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)

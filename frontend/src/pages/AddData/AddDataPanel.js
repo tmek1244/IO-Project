@@ -15,7 +15,7 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
+//TODO spinner podczas wgrywania pliku
 const AddDataPanel = () => {
     const classes = useStyles();
 
