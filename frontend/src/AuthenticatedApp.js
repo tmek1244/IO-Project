@@ -16,7 +16,7 @@ import classNames from 'classnames'
 
 import { useLayoutState } from './context/LayoutContext'
 import Dashboard from './pages/Dashboard/Dashboard'
-import TableRaportPanel from './pages/TableRaport/TableRaportPanel'
+import UniversityAnalysis from './pages/UniversityAnalysis/UniversityAnalysis'
 import { useAuthState } from './context/AuthContext'
 import FacultyAnalysis from './pages/FacultyAnalysis/FacultyAnalysis'
 import FieldOfStudyAnalysis from './pages/FieldOfStudyAnalysis/FieldOfStudyAnalysis'
@@ -40,7 +40,7 @@ const AuthenticatedApp = () => {
 
                     <Switch>
                         <Route exact path='/podsumowanie'>
-                            <TableRaportPanel />
+                            <UniversityAnalysis />
                         </Route>
                         <Route exact path='/dodajdane'>
                             <AddDataPanel />

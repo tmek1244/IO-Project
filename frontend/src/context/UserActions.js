@@ -11,7 +11,6 @@ export async function loginUser(dispatch, payload) {
         });
         let data = await response.json();
 
-        console.log(data)
 
         if(data.access) {
             dispatch({type: 'LOGIN_SUCCESS', payload: data});
