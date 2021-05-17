@@ -5,14 +5,11 @@ import { useAuthState } from '../context/AuthContext'
 
 /*
 Adapted from useFetch.js
-
 Hook for fetching data with POST method. It indicated if request has finished and if there were some errors
-
 @param url - url of resource to fetch
 @param payload - body of post method
 @param initialState - {} for objects or [] for arrays
 @param transformFun - function that can be applied to fetched data before setting them to state
-
 @returns array with fetch data, loading indicator, error indicator
 */
 
@@ -51,4 +48,4 @@ const useFetchPost = (url, payload, initialState, transformFun = (arg) => arg) =
     return [data, isLoading, hasError]
 }
 
-export default useFetchPost
+export default useFetchPost 

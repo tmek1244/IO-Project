@@ -31,16 +31,18 @@ export function GetReducedArray(fieldsArray, allowedFields) {
 const FacultyAnalysis = () => {
     var classes = useStyles();
 
+    const [facultyIdx, setFacultyIdx] = useState(0);
+    const [cycle, setCycle] = useState(1);
+    const [allowedFields, setAllowedFields] = useState([]);
+
     //TODO poprawić ten endpoint tak, żeby zwarcał kierunki z podziałem na stopnie
-    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', []);
-    
+    const [facultiesStudyFields, loading, error] = useFetch(`api/backend/fields_of_studies/${cycle}`, []);
+
     // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
     // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
     // w momencie ustalania tego parametru nie mamy jeszcze pobranej listy wydziałów, ale wiemy, że będzie miała co najmniej
     // jeden element oraz będziemy się do niej odwoływać dopiero jak będzie pobrana, czyli loading będzie na false
-    const [facultyIdx, setFacultyIdx] = useState(0);
-    const [cycle, setCycle] = useState(1);
-    const [allowedFields, setAllowedFields] = useState([]);
+
 
     const faculties = Object.keys(facultiesStudyFields);
     const allFields = facultiesStudyFields[faculties[facultyIdx]];
