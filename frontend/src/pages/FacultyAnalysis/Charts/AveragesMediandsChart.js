@@ -15,32 +15,35 @@ const options = {
 export default function AveragesMediansChart({ faculty, cycle, year, allowedFields }) {
 
     const convertResult = (json) => {
-        let reduced = GetReducedFields(json[`${faculty} ${year}`], allowedFields)
-    
-        const result = {
-            labels: Object.keys(reduced),
-            datasets: [{
-                label: "Średnia",
-                data: [],
-                backgroundColor: colors[0],
-            },
-            {
-                label: "Mediana",
-                data: [],
-                backgroundColor: colors[1],
+        if(typeof json[`${faculty} ${year}`] !== 'undefined') {
+            let reduced = GetReducedFields(json[`${faculty} ${year}`], allowedFields)
+        
+            const result = {
+                labels: Object.keys(reduced),
+                datasets: [{
+                    label: "Średnia",
+                    data: [],
+                    backgroundColor: colors[0],
+                },
+                {
+                    label: "Mediana",
+                    data: [],
+                    backgroundColor: colors[1],
+                }
+                ]
             }
-            ]
-        }
 
-        Object.keys(reduced).forEach(k => {
-            Object.keys(reduced[k]).forEach(type => {
-                result.datasets[
-                    Object.keys(reduced[k]).indexOf(type)
-                ].data.push(reduced[k][type]);
+            Object.keys(reduced).forEach(k => {
+                Object.keys(reduced[k]).forEach(type => {
+                    result.datasets[
+                        Object.keys(reduced[k]).indexOf(type)
+                    ].data.push(reduced[k][type]);
+                })
             })
-        })
 
-        return result
+            return result;
+        }
+        return null;
     }
 
     const [fetchedData, loading, error] = useFetch(`/api/backend/aam/${cycle}/${faculty}+${year}/`, {})

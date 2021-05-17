@@ -51,7 +51,7 @@ function SelectFieldsComponent({fields, setFields}) {
 
             <FormControl component="fieldset">
                 <FormLabel component="legend">Kierunki</FormLabel>
-                <FormGroup>
+                <FormGroup row={true}>
                     {fields.map((name) => (
                         <FormControlLabel
                             control={<Checkbox checked={chosenFields.includes(name)} onChange={handleFieldsChange} name={name} color="primary"/>}
