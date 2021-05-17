@@ -10,6 +10,9 @@ import CandidatesPerPlaceDistriChart from './Charts/CandidatesPerPlaceDistriChar
 import StudentStatusDistriChart from './Charts/StudentStatusDistriChart';
 import Students2ndCycleDistriChart from './Charts/Students2ndCycleDistriChart';
 import PointsDistriChart from './Charts/PointsDistriChart';
+import LaureatesDistriChart from './Charts/LaureatesDistriChart';
+import ThresholdDistriChart from './Charts/ThresholdDistriChart';
+import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -27,10 +30,6 @@ import PointsDistriChart from './Charts/PointsDistriChart';
 
 const FieldOfStudyAnalysis = () => {
     var classes = useStyles();
-
-    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], json => {
-        return json
-    });
     
     // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
     // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
@@ -38,11 +37,16 @@ const FieldOfStudyAnalysis = () => {
     // jeden element oraz będziemy się do niej odwoływać dopiero jak będzie pobrana, czyli loading będzie na false
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
-    const [field, setField] = useState("Informatyka"); //TODO change
+    const [field, setField] = useState();
+
+    const onFetch = (response) => {
+        setField(response[Object.keys(response)[facultyIdx]][0])
+        return response
+    }
+    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], onFetch)
 
     const faculties = Object.keys(facultiesStudyFields);
     const allFields = facultiesStudyFields[faculties[facultyIdx]];
-
 
 
     return (
@@ -93,11 +97,9 @@ const FieldOfStudyAnalysis = () => {
                             </div>
                         </div>
 
-                        {/* 
-                        TODO: select single field component
                         <div>
-                            <SelectFieldsComponent fields={allFields} setFields={setAllowedFields}/> 
-                        </div> */}
+                            <SelectSingleFieldComponent fields={allFields} setField={setField}/> 
+                        </div>
 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
@@ -105,17 +107,16 @@ const FieldOfStudyAnalysis = () => {
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 {cycle == 1 ? 
-                                    // <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/> :
-                                    null :
+                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field}/> :
                                     <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field}/>
                                 }
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12} md={6}>
                                 <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
-                            {/* <Grid item xs={12} >
-                                <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
-                            </Grid> */}
+                            <Grid item xs={12} md={6} >
+                                <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                            </Grid>
                             <Grid item xs={12}>
                                 <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>

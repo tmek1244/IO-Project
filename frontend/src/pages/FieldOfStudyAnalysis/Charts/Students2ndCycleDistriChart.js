@@ -43,20 +43,20 @@ export default function Students2ndCycleDistriChart({ faculty, field}) {
     }
 
     
-    //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-conversion-over-the-years/${faculty}/${field}`, {}, convertResult)
-    const loading = undefined
-    const fakeData = {
-        "Informatyka": {
-            2019: {
-                "from-inside": 200,
-                "from-outside": 100,
-            },
-            2020: {
-                "from-inside": 20,
-                "from-outside": 10,
-            },
-        },
-    }        
+    const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-conversion-over-the-years/${faculty}/${field}`, {})
+    // const loading = undefined
+    // const fakeData = {
+    //     "Informatyka": {
+    //         2019: {
+    //             "from-inside": 200,
+    //             "from-outside": 100,
+    //         },
+    //         2020: {
+    //             "from-inside": 20,
+    //             "from-outside": 10,
+    //         },
+    //     },
+    // }        
 
     return (
         <Card  >
@@ -70,8 +70,7 @@ export default function Students2ndCycleDistriChart({ faculty, field}) {
                     <p>ładowanko</p>
                     :
                     <div >
-                        {/* <Bar data={fieldsOfStudyData} options={options} /> */}
-                        <Line data={convertResult(fakeData)} options={options} />
+                        <Line data={convertResult(fieldsOfStudyData)} options={options} />
                     </div>
             }
             </CardContent>

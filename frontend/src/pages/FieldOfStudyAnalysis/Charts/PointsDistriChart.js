@@ -8,52 +8,55 @@ import { colors, borderColors, commonOptions } from './settings'
 
 const options = {
     ...commonOptions,
-    aspectRatio: 4,
+    aspectRatio: 3,
 };
 
 export default function PointsDistriChart({ faculty, cycle, field }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
-        const result = {
-            labels: Object.keys(json[field]),
-            datasets: []
+        if(typeof json[field] !== 'undefined') {
+            const result = {
+                labels: Object.keys(json[field]),
+                datasets: []
+            }
+            
+            Object.keys(json[field][Object.keys(json[field])[0]]).forEach(key => {
+                result.datasets.push({
+                    label: key,
+                    data: [],
+                    backgroundColor: colors[Object.keys(json[field][Object.keys(json[field])[0]]).indexOf(key)],
+                    borderColor: borderColors[Object.keys(json[field][Object.keys(json[field])[0]]).indexOf(key)],
+                })
+            })
+
+            Object.keys(json[field]).forEach( key => {
+                var stats = json[field][key]
+                Object.keys(stats).forEach (statusKey => {
+                    var points = stats[statusKey];
+                    result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
+                })
+            })
+
+            return result;
         }
-        
-        Object.keys(json[field][Object.keys(json[field])[0]]).forEach(key => {
-            result.datasets.push({
-                label: key,
-                data: [],
-                backgroundColor: colors[Object.keys(json[field][Object.keys(json[field])[0]]).indexOf(key)],
-                borderColor: borderColors[Object.keys(json[field][Object.keys(json[field])[0]]).indexOf(key)],
-            })
-        })
-
-        Object.keys(json[field]).forEach( key => {
-            var stats = json[field][key]
-            Object.keys(stats).forEach (statusKey => {
-                var points = stats[statusKey];
-                result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
-            })
-        })
-
-        return result
+        return null;
     }
 
-    // const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/points-distribution-over-the-years/step/${faculty}/${field}/${cycle}/`, {}, convertResults)
-    const loading = undefined;
-    const fakeData = {
-        Informatyka: {
-            2019: {
-              Average: 500,  //a1, a2 means average median etc?
-              Median: 400,
-            },
-            2020: {
-                Average: 300,
-                Median: 400,
-            },
-        },
-    }
+    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/points-distribution-over-the-years/step/${faculty}/${field}/${cycle}/`, {})
+    // const loading = undefined;
+    // const fakeData = {
+    //     Informatyka: {
+    //         2019: {
+    //           Average: 500,  //a1, a2 means average median etc?
+    //           Median: 400,
+    //         },
+    //         2020: {
+    //             Average: 300,
+    //             Median: 400,
+    //         },
+    //     },
+    // }
 
     return (
         <Card  >
@@ -67,8 +70,7 @@ export default function PointsDistriChart({ faculty, cycle, field }) {
                         <p>ładowanko</p>
                         :
                         <div >
-                            {/* <Bar data={fieldsOfStudyData} options={options} /> */}
-                            <Line data={convertResult(fakeData)} options={options} />
+                            <Line data={convertResult(fieldsOfStudyData)} options={options} />
                         </div>
                 }
             </CardContent>
