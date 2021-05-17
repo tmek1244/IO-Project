@@ -55,7 +55,7 @@ class UserSerializer(serializers.ModelSerializer[Any]):
                 first_name=validated_data['first_name'],
                 last_name=validated_data['last_name'],
                 email=validated_data['email'],
-                faculty=Faculty.objects.get(name=validated_data['faculty']),
+                # faculty=Faculty.objects.get(name=validated_data['faculty']),
                 is_staff=validated_data['is_staff']
             )
             password = get_random_string(length=8)

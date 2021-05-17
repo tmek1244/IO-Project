@@ -1,15 +1,15 @@
 import sys
 import random
 import datetime
-from typing import Any, Dict, Union
+from typing import Any, Dict, Union, List
 
 import pandas as pd
 from faker import Faker
 
 fake = Faker()
 
-first_cycle_studies = []
-second_cycle_studies = []
+first_cycle_studies: List[Any] = []
+second_cycle_studies: List[Any] = []
 
 
 def convert_to_str(dictionary: Dict[str, Union[str, datetime.date]]) -> str:
@@ -69,7 +69,7 @@ class GraduadedSchool:
         ("Kraków", "I", "T", "", "", ""),
     ]
 
-    def __init__(self, lvl) -> None:
+    def __init__(self, lvl: int) -> None:
         universities = [
             ("Kraków", "AGH", "1", "") + tuple(fof)
             for fof in first_cycle_studies
@@ -83,7 +83,7 @@ class GraduadedSchool:
 
 
 class Recruitment:
-    def __init__(self, year) -> None:
+    def __init__(self, year: int) -> None:
         self.year = year
         self.round = random.randint(1, 3)
         self.field_of_study = FieldOfStudy()
