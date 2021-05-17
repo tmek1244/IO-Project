@@ -15,7 +15,7 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
 
     const convertResult = (json) => {
         
-        // const reduced = GetReducedArray(json, allowedFields) //komentuję to na razie
+        const reduced = GetReducedArray(json, allowedFields)
         const result = {
             labels: [],
             datasets: [{
@@ -25,7 +25,7 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
             }],
         }
 
-        json.forEach(lit => {
+        reduced.forEach(lit => {
             result.labels.push(lit["name"]);
             result.datasets[0].data.push(lit["candidates_per_place"]);
         })
@@ -38,8 +38,7 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
         "degree": cycle,
         "faculty": faculty
     }
-    const [fieldsOfStudyData, loading, error] = useFetchPost('/api/backend/fields-of-study-candidates-per-place/', payload, [], convertResult);
-
+    const [fieldsOfStudyData, loading, error] = useFetchPost('/api/backend/fields-of-study-candidates-per-place/', payload, []);
 
     return (
         <Card  >
@@ -53,7 +52,7 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
                         <p>ładowanko</p> // TODO zrobić spinner
                         :
                         <div >
-                            <Bar data={fieldsOfStudyData} options={options} />
+                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
                         </div>
                 }
             </CardContent>

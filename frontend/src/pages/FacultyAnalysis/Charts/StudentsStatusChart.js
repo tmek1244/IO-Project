@@ -16,17 +16,28 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
     const convertResult = (json) => {
         //TODO prawdopodobnie da sie uproscic
         const result = { labels: [], datasets: [] }
-        
+
         Object.keys(json).filter(key => key !== "all").forEach(key => {
             result.labels.push('Cykl ' + key)
         })
         
-        Object.keys(json[Object.keys(json)[0]]).forEach(key => {
+        //szukamy cyklu który ma największą liczbę różnych statusów
+        //TODO albo niech endpoint zwraca 0 gdy nie ma takiego statusu
+        let maxKey = Object.keys(json)[0];
+        let maxStatuses = Object.values(json[maxKey]).length;
+        Object.keys(json).forEach(k => {
+            if (Object.values(json[k]).length > maxStatuses) {
+                maxKey = k;
+                maxStatuses = Object.values(json[k]).length
+            }
+        })
+
+        Object.keys(json[maxKey]).forEach(key => {
             if(key !== "all") {
                 result.datasets.push({
                     label: key,
                     data: [],
-                    backgroundColor: colors[Object.keys(json[Object.keys(json)[0]]).indexOf(key)],
+                    backgroundColor: colors[Object.keys(json[maxKey]).indexOf(key)],
                 })
             }
         })
@@ -44,8 +55,6 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
         return result
     }
 
-
-    //ten endpoint nawet działa, ale tam przy wyświetlaniu jest jakiś problem
     const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/status-distribution/${year}/${faculty}/${cycle}/`, {})
     return (
         <Card>
@@ -70,7 +79,7 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
                         title={<Typography variant='subtitle1'>{name}</Typography>}
                     />
                     <CardContent style={{backgroundColor: "#fcfcfc",padding:0}}>
-                        <Bar data={fieldsOfStudyData} options={options} />
+                        <Bar data={convertResult(fieldsOfStudyData[name])} options={options} />
                     </CardContent>
                     </Card>
                 </Grid>)

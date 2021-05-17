@@ -11,47 +11,54 @@ const options = {
 };
 
 
-export default function Cycle2ndChart({ faculty, allowedFields}) {
+export default function Cycle2ndChart({ faculty, year, allowedFields}) {
 
     const convertResult = (json) => {
-        const result = { 
-            labels: Object.keys(json),
+        let reduced = GetReducedFields(json, allowedFields)
+        //TODO lepszy opis labeli
+        const result = {
+            labels: Object.keys(reduced),
             datasets: [{
-                label: "CHA 66 TODOO",
-                data: Object.values(json),
-                backgroundColor: colors,
+                label: "Kontynuuje",
+                data: [],
+                backgroundColor: colors[0],
+            },
+            {
+                label: "Z zewnątrz",
+                data: [],
+                backgroundColor: colors[1],
             }]
         }
 
+        Object.keys(reduced).forEach( key => {
+            var stats = reduced[key]
+            console.log(stats)
+            Object.keys(stats).forEach (statusKey => {
+                var points = stats[statusKey];
+                result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
+            })
+        })
         return result
     }
 
-    //TODO odkomentować jak będzie endpoint
-    //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/actual_recruitment_faculty_laureate?faculty=${faculty}`, {}, convertResult)
-
-
-    //TODO usnąć jak będą pobierane dane
-    const fakeData = {
-        informatyka: 100,
-        elektrotechnika: 30,
-        telekomunikacja: 47,
-        cyberbezpieczeństwo: 90,
-        random: 5,
-        org: 13,
-        kolejnykierunek: 17,
-    }
+    //TODO check endpoint
+    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/field-conversion/${year}/${faculty}/`, {})  
 
     return (
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>CHA-66 TODO</Typography>}
+                title={<Typography variant='h5'>Liczba studentów kontynuująca kierunek oraz z zewnątrz</Typography>}
             />
             <CardContent>
-                <div >
-                    {/* TODO change data to real data */}
-                    <Bar data={convertResult(GetReducedFields(fakeData, allowedFields))} options={options} />
-                </div>
+            {
+                loading ?
+                    <p>ładowanko</p>
+                    :
+                    <div >
+                        <Bar data={convertResult(fieldsOfStudyData)} options={options} />
+                    </div>
+            }
             </CardContent>
         </Card>
     )

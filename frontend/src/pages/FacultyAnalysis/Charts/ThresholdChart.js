@@ -16,22 +16,30 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
-        // json = GetReducedFields(json, allowedFields) // komentuję jak wszędzie
+        let reduced = GetReducedFields(json, allowedFields)
 
-        const result = { labels: Object.keys(json), datasets: [] }
+        //usuwanie kierunków które nie mają żadnych cykli
+        reduced = Object.keys(reduced)
+        .filter(key => (reduced[key].length > 0))
+        .reduce((obj,key) => {
+            obj[key] = reduced[key];
+            return obj;
+        }, {});
 
-        if (typeof json[result.labels[0]] !== "undefined") { // czemu tak jest?
-            for (let index = 1; index <= json[result.labels[0]].length; index++) {
-                result.datasets.push({
-                    label: `Próg w cyklu ${index}`,
-                    data: [],
-                    backgroundColor: colors[index - 1]
-                })
-            }
+        const result = { labels: Object.keys(reduced), datasets: [] }
+
+        //musimy znaleźć największą liczbę cykli
+        let maxCycles = Math.max.apply(null,Object.values(reduced).map(value => { return value.length }))
+        for (let index = 1; index <= maxCycles; index++) {
+            result.datasets.push({
+                label: `Próg w cyklu ${index}`,
+                data: [],
+                backgroundColor: colors[index - 1]
+            })
         }
 
-        Object.keys(json).forEach(key => {
-            json[key].forEach((val, idx) => {
+        Object.keys(reduced).forEach(key => {
+            reduced[key].forEach((val, idx) => {
                 result.datasets[idx].data.push(val)
             })
         })
@@ -39,8 +47,7 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}/`, {}, convertResult)
-
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}/`, {})
 
     return (
         <Card  >
@@ -54,8 +61,7 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
                         <p>ładowanko</p>
                         :
                         <div >
-                            {console.log(fieldsOfStudyData)}
-                            <Bar data={fieldsOfStudyData} options={options} />
+                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
                         </div>
                 }
 

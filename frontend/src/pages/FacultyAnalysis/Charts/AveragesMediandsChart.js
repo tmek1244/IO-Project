@@ -15,13 +15,10 @@ const options = {
 export default function AveragesMediansChart({ faculty, cycle, year, allowedFields }) {
 
     const convertResult = (json) => {
-        // TODO Czemu tylko robisz tę konwersję tylko jak jest klucz a jak nie ma to olewasz to i procesujesz normalnie?
-        if (Object.keys(json).includes(`${faculty} ${year}`)) {
-            json = GetReducedFields(json[`${faculty} ${year}`], allowedFields)
-        }
-
+        let reduced = GetReducedFields(json[`${faculty} ${year}`], allowedFields)
+    
         const result = {
-            labels: Object.keys(json),
+            labels: Object.keys(reduced),
             datasets: [{
                 label: "Średnia",
                 data: [],
@@ -35,18 +32,18 @@ export default function AveragesMediansChart({ faculty, cycle, year, allowedFiel
             ]
         }
 
-        Object.keys(json).forEach(k => {
-            Object.keys(json[k]).forEach(type => {
+        Object.keys(reduced).forEach(k => {
+            Object.keys(reduced[k]).forEach(type => {
                 result.datasets[
-                    Object.keys(json[k]).indexOf(type)
-                ].data.push(json[k][type]);
+                    Object.keys(reduced[k]).indexOf(type)
+                ].data.push(reduced[k][type]);
             })
         })
 
         return result
     }
 
-    const [fetchedData, loading, error] = useFetch(`/api/backend/aam/${cycle}/${faculty}+${year}/`, {}, convertResult)
+    const [fetchedData, loading, error] = useFetch(`/api/backend/aam/${cycle}/${faculty}+${year}/`, {})
 
     return (
         <Card  >
@@ -60,7 +57,7 @@ export default function AveragesMediansChart({ faculty, cycle, year, allowedFiel
                         <p>ładowanko</p>
                         :
                         <div >
-                            <Bar data={fetchedData} options={options} />
+                            <Bar data={convertResult(fetchedData)} options={options} />
                         </div>
                 }
 

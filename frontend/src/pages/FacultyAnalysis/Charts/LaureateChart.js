@@ -14,13 +14,12 @@ const options = {
 export default function LaureateChart({ faculty, allowedFields }) {
 
     const convertResult = (json) => {
-        // json = GetReducedFields(json, allowedFields)
-        delete json.all //trzeba się pozbyć niepotrzebnej sumy
+        let reduced = GetReducedFields(json, allowedFields) //already deletes json.all
         const result = {
-            labels: Object.keys(json),
+            labels: Object.keys(reduced),
             datasets: [{
                 label: "Liczba laureatów kandydujących na kierunek",
-                data: Object.values(json),
+                data: Object.values(reduced),
                 backgroundColor: colors,
             }]
         }
@@ -28,8 +27,7 @@ export default function LaureateChart({ faculty, allowedFields }) {
         return result
     }
 
-    //TODO odkomentować jak będzie endpoint
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/`, {}, convertResult)
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/`, {})
 
     return (
         <Card  >
@@ -43,10 +41,9 @@ export default function LaureateChart({ faculty, allowedFields }) {
                         <p>ładowanko</p>
                         :
                         <div >
-                            <Bar data={fieldsOfStudyData} options={options} />
+                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
                         </div>
                 }
-
             </CardContent>
         </Card>
     )

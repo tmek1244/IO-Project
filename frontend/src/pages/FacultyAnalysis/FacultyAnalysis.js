@@ -32,9 +32,7 @@ const FacultyAnalysis = () => {
     var classes = useStyles();
 
     //TODO poprawić ten endpoint tak, żeby zwarcał kierunki z podziałem na stopnie
-    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], json => {
-        return json
-    });
+    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', []);
     
     // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
     // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
@@ -95,11 +93,9 @@ const FacultyAnalysis = () => {
                             </div>
                         </div>
 
-                        {/* 
-                        komentuję to na razie
                         <div>
                             <SelectFieldsComponent fields={allFields} setFields={setAllowedFields}/> 
-                        </div> */}
+                        </div>
 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
@@ -108,7 +104,7 @@ const FacultyAnalysis = () => {
                             <Grid item xs={12} md={6}>
                                 {cycle == 1 ? 
                                     <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/> :
-                                    <Cycle2ndChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/>
+                                    <Cycle2ndChart faculty={faculties[facultyIdx]} year={"2020"} allowedFields={allowedFields}/>
                                 }
                             </Grid>
                             <Grid item xs={12}>
