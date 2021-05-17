@@ -16,7 +16,9 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultOverviewListView,
                            RecruitmentStatusAggregateListView,
                            RecruitmentYears, StatusDistributionView,
-                           UploadFieldsOfStudyView, UploadView)
+                           StatusDistributionOverTheYearsView,
+                           StatusDistributionView, UploadFieldsOfStudyView,
+                           UploadView)
 
 app_name = 'backend'
 
@@ -117,4 +119,18 @@ urlpatterns = [
          PointsDistributionOverTheYearsView.as_view(),
          name='points-distribution-over-the-years'),
 
+
+    path('status-distribution-over-the-years/',
+         StatusDistributionOverTheYearsView.as_view(),
+         name='status-distribution-over-the-years'),
+    path('status-distribution-over-the-years/<faculty>/',
+         StatusDistributionOverTheYearsView.as_view(),
+         name='status-distribution-over-the-years'),
+    path('status-distribution-over-the-years/<faculty>/<field_of_study>/',
+         StatusDistributionOverTheYearsView.as_view(),
+         name='status-distribution-over-the-years'),
+    path('status-distribution-over-the-years/' +
+         '<faculty>/<field_of_study>/<degree>/',
+         StatusDistributionOverTheYearsView.as_view(),
+         name='status-distribution-over-the-years'),
 ]

@@ -572,6 +572,54 @@ class StatusDistributionView(APIView):
             )
 
 
+class StatusDistributionOverTheYearsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request, faculty: str = None,
+            field_of_study: str = None,
+            degree: str = None) -> Response:
+        try:
+            tmp: Any = RecruitmentResult.objects
+
+            if faculty:
+                tmp = tmp.filter(
+                    recruitment__field_of_study__faculty__name=faculty)
+            if field_of_study:
+                tmp = tmp.filter(
+                    recruitment__field_of_study__name=field_of_study)
+            if degree:
+                tmp = tmp.filter(recruitment__field_of_study__degree=degree)
+
+            tmp = (tmp.values(
+                'recruitment__field_of_study__name',
+                'recruitment__year',
+                'result')
+                .annotate(total=Count('result')).
+                order_by('total'))
+
+            result: Dict[Any, Any] = {}
+            for d in tmp:
+                fof = d['recruitment__field_of_study__name']
+                year = d['recruitment__year']
+                rstatus = d['result']
+                total = d['total']
+
+                if fof not in result:
+                    result[fof] = {}
+                if year not in result[fof]:
+                    result[fof][year] = {}
+
+                result[fof][year][rstatus] = total
+
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
 def get_median(values: django.db.models.QuerySet[RecruitmentResult]) -> float:
     sorted_list = sorted(list(map(lambda x: x.points, values)))
     if len(sorted_list) % 2 == 0:
