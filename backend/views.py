@@ -349,19 +349,21 @@ class GetBasicData(APIView):
 class GetThresholdOnField(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, string: str = "faculty+field") -> Response:
+    def get(self, request: Request, degree: str,
+            string: str = "faculty+field") -> Response:
         try:
             result: List[Dict[str, Any]] = []
             faculty, field = string.split('+')
             faculty_obj = Faculty.objects.get(name=faculty)
-            field_obj = FieldOfStudy.objects.get(name=field,
-                                                 faculty=faculty_obj)
-            recruitment = Recruitment.objects.filter(field_of_study=field_obj)
+            field_obj = FieldOfStudy.objects.get(
+                name=field, faculty=faculty_obj,
+                degree=degree, type="stacjonarne")
             recruitment_results = RecruitmentResult.objects.filter(
-                recruitment__in=recruitment, result='signed')
+                result='signed', recruitment__field_of_study=field_obj)
+
             if recruitment_results:
-                result = list(recruitment_results.values(
-                    'recruitment__year').annotate(max_points=Min('points')))
+                result = list(recruitment_results.order_by().values(
+                    'recruitment__year').annotate(min_points=Min('points')))
             return Response(result)
         except Exception as e:
             print(e)
