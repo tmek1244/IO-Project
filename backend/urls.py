@@ -78,10 +78,11 @@ urlpatterns = [
         name='actual_recruitment'),
     path('available-years/', RecruitmentYears.as_view(),
          name='available_years'),
-    path('faculty_threshold/<mode>/<degree>/<int:n>/<int:year>',
+    path('fields-of-study-threshold/<mode>/<degree>/<int:n>/<int:year>',
          FacultyThreshold.as_view(), name='faculty_threshold'),
     path('laureate_stats/<int:n>/<int:year>',
          GetMostLaureate.as_view(), name="laureate_stats"),
-    path('faculty_popularity/<str:pop_type>/<str:degree>/<int:n>/<int:year>/',
-         FacultyPopularity.as_view(), name="faculty_popularity")
+    path('fields-of-study-popularity/<str:pop_type>/'
+         '<str:degree>/<int:n>/<int:year>/',
+         FacultyPopularity.as_view(), name="faculty_popularity"),
 ]
