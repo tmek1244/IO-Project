@@ -82,6 +82,7 @@ urlpatterns = [
          FacultyThreshold.as_view(), name='faculty_threshold'),
     path('laureate_stats/<int:n>/<int:year>',
          GetMostLaureate.as_view(), name="laureate_stats"),
-    path('fields-of-study-popularity/<str:pop_type>/<str:degree>/<int:n>/<int:year>/',
+    path('fields-of-study-popularity/<str:pop_type>/'
+         '<str:degree>/<int:n>/<int:year>/',
          FacultyPopularity.as_view(), name="faculty_popularity"),
 ]
