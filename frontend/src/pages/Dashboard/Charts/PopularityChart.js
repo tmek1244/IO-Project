@@ -3,6 +3,8 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -45,10 +47,10 @@ const PopularityChart = ({ degree, year, number, mode }) => {
         <>
             {
                 loading ?
-                    <p>czekanko</p>
+                    <Spinner />
                     :
                     (error ?
-                        <p>bład</p>
+                        <Error />
                         :
                         <Card  >
                             <CardHeader

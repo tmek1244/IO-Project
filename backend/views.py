@@ -690,8 +690,7 @@ class FacultyThreshold(APIView):
                     recruitment__field_of_study=field,
                     result="signed"
                 ).aggregate(Min('points'))['points__min']
-                result[field.name] = query if query else -1
-                print(query)
+                result[field.name] = query if query else 0
 
             return Response(
                 {k: v for k, v in sorted(

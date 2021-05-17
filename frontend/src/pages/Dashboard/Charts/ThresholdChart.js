@@ -3,6 +3,8 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -19,7 +21,7 @@ const ThresholdChart = ({ degree, year, number, mode }) => {
             labels: [], datasets: [{
                 label: 'Próg na kierunku',
                 data: [],
-                backgroundColor: colors[0]
+                backgroundColor: colors[1]
             }]
         }
 
@@ -33,7 +35,7 @@ const ThresholdChart = ({ degree, year, number, mode }) => {
     }
 
 
-    const [data, loading, error] = useFetch(`/api/backend/faculty_threshold/${mode}/${degree}/${number}/${year}/`, {}, convertResult)
+    const [data, loading, error] = useFetch(`/api/backend/fields-of-study-threshold/${mode}/${degree}/${number}/${year}`, {}, convertResult)
 
     const degreeString = degree === 1 ? "I" : "II"
     const label = mode === 'most' ?
@@ -45,10 +47,10 @@ const ThresholdChart = ({ degree, year, number, mode }) => {
         <>
             {
                 loading ?
-                    <p>czekanko</p>
+                    <Spinner />
                     :
                     (error ?
-                        <p>bład</p>
+                        <Error />
                         :
                         <Card  >
                             <CardHeader

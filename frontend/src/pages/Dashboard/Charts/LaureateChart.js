@@ -3,6 +3,8 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -10,7 +12,7 @@ const options = {
 };
 
 
-const LaureateChart = ({ year, number}) => {
+const LaureateChart = ({ year, number }) => {
     const convertResult = (json) => {
 
 
@@ -18,7 +20,7 @@ const LaureateChart = ({ year, number}) => {
             labels: [], datasets: [{
                 label: 'Liczba laureatów na miejsce',
                 data: [],
-                backgroundColor: colors[0]
+                backgroundColor: colors[2]
             }]
         }
 
@@ -34,15 +36,15 @@ const LaureateChart = ({ year, number}) => {
 
     const [data, loading, error] = useFetch(`api/backend/laureate_stats/${number}/${year}`, {}, convertResult)
 
-   
+
     return (
         <>
             {
                 loading ?
-                    <p>czekanko</p>
+                    <Spinner />
                     :
                     (error ?
-                        <p>bład</p>
+                        <Error />
                         :
                         <Card  >
                             <CardHeader
