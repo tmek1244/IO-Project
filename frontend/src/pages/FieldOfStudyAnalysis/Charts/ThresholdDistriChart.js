@@ -34,18 +34,7 @@ export default function ThresholdDistriChart({ faculty, cycle, field }) {
     }
 
     //TODO add cycle here and delete mock
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${faculty}+${field}/`, {});
-    const fieldsOfStudyData2 = [
-        {
-            "recruitment__year": 2018,
-            "min_points": 151.0
-        },
-        {
-            "recruitment__year": 2019,
-            "min_points": 152.0
-        },
-
-    ]
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${faculty}+${field}`, {});
 
     return (
         <Card  >
@@ -59,7 +48,7 @@ export default function ThresholdDistriChart({ faculty, cycle, field }) {
                         <p>ładowanko</p> // TODO zrobić spinner
                         :
                         <div >
-                            <Line data={convertResult(fieldsOfStudyData2)} options={options} />
+                            <Line data={convertResult(fieldsOfStudyData)} options={options} />
                         </div>
                 }
             </CardContent>
