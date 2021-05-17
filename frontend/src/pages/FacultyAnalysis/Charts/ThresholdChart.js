@@ -3,6 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
+import { GetReducedFields } from '../FacultyAnalysis';
 
 const options = {
     ...commonOptions,
@@ -11,13 +12,25 @@ const options = {
 
 
 
-export default function ThresholdChart({ faculty, cycle }) {
+export default function ThresholdChart({ faculty, cycle, allowedFields }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
-        const result = { labels: Object.keys(json), datasets: [] }
+        let reduced = GetReducedFields(json, allowedFields)
 
-        for (let index = 1; index <= json[result.labels[0]].length; index++) {
+        //usuwanie kierunków które nie mają żadnych cykli
+        reduced = Object.keys(reduced)
+        .filter(key => (reduced[key].length > 0))
+        .reduce((obj,key) => {
+            obj[key] = reduced[key];
+            return obj;
+        }, {});
+
+        const result = { labels: Object.keys(reduced), datasets: [] }
+
+        //musimy znaleźć największą liczbę cykli
+        let maxCycles = Math.max.apply(null,Object.values(reduced).map(value => { return value.length }))
+        for (let index = 1; index <= maxCycles; index++) {
             result.datasets.push({
                 label: `Próg w cyklu ${index}`,
                 data: [],
@@ -25,8 +38,8 @@ export default function ThresholdChart({ faculty, cycle }) {
             })
         }
 
-        Object.keys(json).forEach(key => {
-            json[key].forEach((val, idx) => {
+        Object.keys(reduced).forEach(key => {
+            reduced[key].forEach((val, idx) => {
                 result.datasets[idx].data.push(val)
             })
         })
@@ -34,20 +47,7 @@ export default function ThresholdChart({ faculty, cycle }) {
         return result
     }
 
-    //TODO usnąć po tym jak będzie możliwosć pobierania
-    const fakeData = {
-        informatyka: [960, 960, 960, 960],
-        elektrotechnika: [890, 870, 840, 840],
-        telekomunikacja: [920, 900, 890, 880],
-        cyberbezpieczeństwo: [950, 940, 940, 938],
-        random: [960, 960, 960, 960],
-        org: [890, 870, 840, 840],
-        kolejnykierunek: [920, 900, 890, 880],
-    }
-
-    //TODO odkomentować i sprawdzić, gdy już będzie gotowy endpoint
-    //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/actual_recruitment_faculty_threshold?faculty=${faculty}&cycle=${cycle}`, {}, convertResult)
-
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}/`, {})
 
     return (
         <Card  >
@@ -56,10 +56,15 @@ export default function ThresholdChart({ faculty, cycle }) {
                 title={<Typography variant='h5'>Progi na kierunki</Typography>}
             />
             <CardContent>
-                <div >
-                    {/* TODO change data to real data */}
-                    <Bar data={convertResult(fakeData)} options={options} />
-                </div>
+                {
+                    loading ?
+                        <p>ładowanko</p>
+                        :
+                        <div >
+                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
+                        </div>
+                }
+
             </CardContent>
 
         </Card>

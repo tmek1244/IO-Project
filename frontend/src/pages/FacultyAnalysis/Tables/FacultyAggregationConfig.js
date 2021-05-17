@@ -12,7 +12,7 @@ const options = {
     },
 }
 
-const columns = [
+const basicColumns = [
     {
         name: "year",
         label: "Rok",
@@ -69,6 +69,9 @@ const columns = [
             sort: true,
         }
     },
+]
+
+const laureateColumn = [
     {
         name: "laureate_no",
         label: "Liczba laureatów",
@@ -76,7 +79,10 @@ const columns = [
             filter: false,
             sort: true,
         }
-    },
+    }
+]
+
+const statusColumn = [
     {
         name: "signed_in",
         label: "Zapisani",
@@ -111,4 +117,8 @@ const columns = [
     },
 ]
 
-export { options, columns }
+const firstCycleColumns = basicColumns.concat(laureateColumn, statusColumn)
+
+const secondCycleColumns = basicColumns.concat(statusColumn)
+
+export { options, firstCycleColumns, secondCycleColumns }
