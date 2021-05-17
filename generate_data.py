@@ -1,9 +1,9 @@
-import random
 import datetime
+import random
 import sys
-import pandas as pd
 from typing import Any, Dict, Union
 
+import pandas as pd
 from faker import Faker
 
 fake = Faker()

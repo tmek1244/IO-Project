@@ -380,7 +380,7 @@ class GetThresholdOnField(APIView):
                                                  faculty=faculty_obj)
             recruitment = Recruitment.objects.filter(field_of_study=field_obj)
             recruitment_results = RecruitmentResult.objects.filter(
-                recruitment__in=recruitment, result='Signed')
+                recruitment__in=recruitment, result='signed')
             if recruitment_results:
                 result = list(recruitment_results.values(
                     'recruitment__year').annotate(max_points=Min('points')))
@@ -408,7 +408,7 @@ class CompareFields(APIView):
                 recruitment = Recruitment.objects.filter(
                     field_of_study=field_obj, year=split_request[4*i + 2])
                 recruitment_results = RecruitmentResult.objects.filter(
-                    recruitment__in=recruitment, result='Signed')
+                    recruitment__in=recruitment, result='signed')
                 fun_to_apply = {
                     'MAX': Max,
                     'MIN': Min,
@@ -590,7 +590,7 @@ class AvgAndMedOfFields(APIView):
                     recruitment = Recruitment.objects.filter(
                         field_of_study=field, year=split_request[2 * i + 1])
                     recruitment_results = RecruitmentResult.objects.filter(
-                        recruitment__in=recruitment, result='Signed')
+                        recruitment__in=recruitment, result='signed')
                     if recruitment_results:
                         this_faculty[field.name] = {
                             'AVG': recruitment_results.aggregate(
@@ -622,7 +622,7 @@ class ActualFacultyThreshold(APIView):
                         field_of_study=field, round=cycle,
                         year=datetime.datetime.now().year)
                     recruitment_results = RecruitmentResult.objects.filter(
-                        recruitment__in=recruitment, result='Signed')
+                        recruitment__in=recruitment, result='signed')
                     threshold = recruitment_results.aggregate(
                         Min('points'))['points__min']
 
