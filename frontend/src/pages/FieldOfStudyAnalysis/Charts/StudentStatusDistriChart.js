@@ -2,7 +2,7 @@
 //92 - is this what was meant?
 
 import React from 'react'
-import { Line } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography, Grid } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, borderColors, commonOptions } from './settings'
@@ -70,7 +70,7 @@ export default function StudentStatusDistriChart({ faculty, cycle, field }) {
                         <p>ładowanko</p>
                         :
                         <div >
-                            <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
                         </div>
                 }
             </CardContent>

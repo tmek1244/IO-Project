@@ -34,7 +34,7 @@ export default function ThresholdDistriChart({ faculty, cycle, field }) {
     }
 
     //TODO add cycle here and delete mock
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${faculty}+${field}/`, {});
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${faculty}+${field}/`, {});
     const fieldsOfStudyData2 = [
         {
             "recruitment__year": 2018,
