@@ -356,7 +356,6 @@ class GetThresholdOnField(APIView):
             field_obj = FieldOfStudy.objects.get(
                 name=field, faculty=faculty_obj,
                 degree=degree, type="stacjonarne")
-            # recruitment = Recruitment.objects.filter(field_of_study=field_obj)
             recruitment_results = RecruitmentResult.objects.filter(
                 result='signed', recruitment__field_of_study=field_obj)
 
