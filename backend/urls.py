@@ -2,17 +2,19 @@ from django.urls import path, re_path
 
 from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            AddFieldOfStudy, AvgAndMedOfFields, CompareFields,
+                           FieldConversionView,
+                           FacultyPopularity, FacultyThreshold,
                            FieldOfStudyCandidatesPerPlaceListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
-                           GetFacultiesView, GetFieldsOfStudy,
+                           GetFacultiesView, GetFieldsOfStudy, GetMostLaureate,
                            GetThresholdOnField, LaureatesOnFOFSView,
                            RecruitmentResultFacultiesListView,
                            RecruitmentResultFieldsOfStudyListView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView,
                            RecruitmentStatusAggregateListView,
-                           StatusDistributionView, UploadFieldsOfStudyView,
-                           UploadView)
+                           RecruitmentYears, StatusDistributionView,
+                           UploadFieldsOfStudyView, UploadView)
 
 app_name = 'backend'
 
@@ -36,7 +38,7 @@ urlpatterns = [
          UploadFieldsOfStudyView.as_view(),
          name='upload_fields_of_study'),
     path('faculties/', GetFacultiesView.as_view(), name='faculties'),
-    path('fields_of_studies/',
+    path('fields_of_studies/<degree>/',
          GetFieldsOfStudy.as_view(),
          name='fields_of_studies'),
     path('add/faculty', AddFacultyView.as_view(), name='add_faculty'),
@@ -51,6 +53,13 @@ urlpatterns = [
     re_path(r'^contest-laureates/(?P<string>.+)/$',
             FieldOfStudyContestLaureatesCountView.as_view(),
             name='get_contest_laureates_count'),
+
+    path('field-conversion/<int:year>/',
+         FieldConversionView.as_view(), name='field-conversion'),
+    path('field-conversion/<int:year>/<faculty>/',
+         FieldConversionView.as_view(), name='field-conversion'),
+    path('field-conversion/<int:year>/<faculty>/<field_of_study>/',
+         FieldConversionView.as_view(), name='field-conversion'),
 
     path('laureates-on-fofs/<faculty>/',
          LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
@@ -75,4 +84,13 @@ urlpatterns = [
         r'&cycle=(?P<cycle>.+)$',
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
+    path('available-years/', RecruitmentYears.as_view(),
+         name='available_years'),
+    path('fields-of-study-threshold/<mode>/<degree>/<int:n>/<int:year>',
+         FacultyThreshold.as_view(), name='faculty_threshold'),
+    path('laureate_stats/<int:n>/<int:year>',
+         GetMostLaureate.as_view(), name="laureate_stats"),
+    path('fields-of-study-popularity/<str:pop_type>/'
+         '<str:degree>/<int:n>/<int:year>/',
+         FacultyPopularity.as_view(), name="faculty_popularity"),
 ]
