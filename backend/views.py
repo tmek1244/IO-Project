@@ -431,6 +431,67 @@ class CompareFields(APIView):
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
+class FieldConversionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            year: int = None,
+            faculty: str = None,
+            field_of_study: str = None) -> Response:
+
+        try:
+            year = year or (
+                Recruitment.objects.aggregate(Max('year'))["year__max"])
+
+            rrs = (
+                RecruitmentResult.objects.
+                filter(result__in=["$", "+", "accepted", "signed"]).
+                filter(recruitment__field_of_study__degree__in=["2", "3", "4"])
+                )
+
+            if year:
+                rrs = rrs.filter(recruitment__year=year)
+            if faculty:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__faculty__name=faculty)
+            if field_of_study:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__name=field_of_study)
+
+            result = {"all": {"from-inside": 0, "from-outside": 0}}
+            for rr in rrs:
+                try:
+                    faculty_name = rr.recruitment.field_of_study.faculty.name
+                    fof_name = rr.recruitment.field_of_study.name
+
+                    if fof_name not in result:
+                        result[fof_name] = {"from-inside": 0,
+                                            "from-outside": 0}
+
+                    if (
+                        rr.student.graduatedschool_set.
+                        filter(school_name="AGH").
+                        filter(faculty=faculty_name).
+                        filter(field_of_study=fof_name)
+                    ):
+                        result[fof_name]["from-inside"] += 1
+                        result["all"]["from-inside"] += 1
+                    else:
+                        result[fof_name]["from-outside"] += 1
+                        result["all"]["from-outside"] += 1
+
+                except Exception as e:
+                    print(e)
+
+            return Response(result, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
 class LaureatesOnFOFSView(APIView):
     permission_classes = (IsAuthenticated,)
 
