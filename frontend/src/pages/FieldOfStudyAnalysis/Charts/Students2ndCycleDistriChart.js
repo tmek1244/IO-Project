@@ -16,30 +16,33 @@ export default function Students2ndCycleDistriChart({ faculty, field}) {
 
     const convertResult = (json) => {
         //TODO lepszy opis labeli
-        const result = {
-            labels: Object.keys(json[field]),
-            datasets: [{
-                label: "Kontynuuje",
-                data: [],
-                backgroundColor: colors[0],
-                borderColor: borderColors[0],
-            },
-            {
-                label: "Z zewnątrz",
-                data: [],
-                backgroundColor: colors[1],
-                borderColor: borderColors[1],
-            }]
-        }
+        if(typeof json[field] !== 'undefined') {
+            const result = {
+                labels: Object.keys(json[field]),
+                datasets: [{
+                    label: "Kontynuuje",
+                    data: [],
+                    backgroundColor: colors[0],
+                    borderColor: borderColors[0],
+                },
+                {
+                    label: "Z zewnątrz",
+                    data: [],
+                    backgroundColor: colors[1],
+                    borderColor: borderColors[1],
+                }]
+            }
 
-        Object.keys(json[field]).forEach( key => {
-            var stats = json[field][key]
-            Object.keys(stats).forEach (statusKey => {
-                var points = stats[statusKey];
-                result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
+            Object.keys(json[field]).forEach( key => {
+                var stats = json[field][key]
+                Object.keys(stats).forEach (statusKey => {
+                    var points = stats[statusKey];
+                    result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
+                })
             })
-        })
-        return result
+            return result;
+        }
+        return null;
     }
 
     

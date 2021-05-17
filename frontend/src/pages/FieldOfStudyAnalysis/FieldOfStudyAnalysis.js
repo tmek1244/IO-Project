@@ -43,7 +43,7 @@ const FieldOfStudyAnalysis = () => {
         setField(response[Object.keys(response)[facultyIdx]][0])
         return response
     }
-    const [facultiesStudyFields, loading, error] = useFetch('api/backend/fields_of_studies/', [], onFetch)
+    const [facultiesStudyFields, loading, error] = useFetch(`api/backend/fields_of_studies/${cycle}`, [], onFetch)
 
     const faculties = Object.keys(facultiesStudyFields);
     const allFields = facultiesStudyFields[faculties[facultyIdx]];
