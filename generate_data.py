@@ -1,7 +1,7 @@
 import sys
 import random
 import datetime
-from typing import Any, Dict, Union, List
+from typing import Any, Dict, List, Union
 
 import pandas as pd
 from faker import Faker

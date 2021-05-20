@@ -16,7 +16,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView,
                            RecruitmentStatusAggregateListView,
-                           RecruitmentYears, StatusDistributionView,
+                           RecruitmentYears,
                            StatusDistributionOverTheYearsView,
                            StatusDistributionView, UploadFieldsOfStudyView,
                            UploadView)

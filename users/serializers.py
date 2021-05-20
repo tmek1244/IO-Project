@@ -9,8 +9,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.state import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from backend.models import Faculty
-
 T = TypeVar('T')
 
 

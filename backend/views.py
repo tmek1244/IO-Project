@@ -849,6 +849,8 @@ class FacultyThreshold(APIView):
         except Exception as e:
             print(e)
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
 class FieldConversionOverTheYearsView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -912,6 +914,8 @@ class FieldConversionOverTheYearsView(APIView):
                 {"problem": str(e)},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
+
+
 class PointsDistributionOverTheYearsView(APIView):
     permission_classes = (IsAuthenticated,)
 
