@@ -19,6 +19,7 @@ import Dashboard from './pages/Dashboard/Dashboard'
 import UniversityAnalysis from './pages/UniversityAnalysis/UniversityAnalysis'
 import { useAuthState } from './context/AuthContext'
 import FacultyAnalysis from './pages/FacultyAnalysis/FacultyAnalysis'
+import FieldOfStudyAnalysis from './pages/FieldOfStudyAnalysis/FieldOfStudyAnalysis'
 
 
 const AuthenticatedApp = () => {
@@ -49,6 +50,9 @@ const AuthenticatedApp = () => {
                         </Route>
                         <Route exact path='/podsumowanie_wydzial'>
                             <FacultyAnalysis />
+                        </Route>
+                        <Route exact path='/podsumowanie_kierunek'>
+                            <FieldOfStudyAnalysis />
                         </Route>
                         {
                             authState.is_staff &&

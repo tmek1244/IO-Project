@@ -3,7 +3,7 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
-
+import { GetReducedFields } from '../FacultyAnalysis';
 
 const options = {
     ...commonOptions,
@@ -11,14 +11,15 @@ const options = {
 };
 
 
-export default function LaureateChart({ faculty }) {
+export default function LaureateChart({ faculty, allowedFields }) {
 
     const convertResult = (json) => {
-        const result = { 
-            labels: Object.keys(json),
+        let reduced = GetReducedFields(json, allowedFields) //already deletes json.all
+        const result = {
+            labels: Object.keys(reduced),
             datasets: [{
                 label: "Liczba laureatów kandydujących na kierunek",
-                data: Object.values(json),
+                data: Object.values(reduced),
                 backgroundColor: colors,
             }]
         }
@@ -26,20 +27,7 @@ export default function LaureateChart({ faculty }) {
         return result
     }
 
-    //TODO odkomentować jak będzie endpoint
-    //const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/actual_recruitment_faculty_laureate?faculty=${faculty}`, {}, convertResult)
-
-
-    //TODO usnąć jak będą pobierane dane
-    const fakeData = {
-        informatyka: 100,
-        elektrotechnika: 30,
-        telekomunikacja: 47,
-        cyberbezpieczeństwo: 90,
-        random: 5,
-        org: 13,
-        kolejnykierunek: 17,
-    }
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/`, {})
 
     return (
         <Card  >
@@ -48,10 +36,14 @@ export default function LaureateChart({ faculty }) {
                 title={<Typography variant='h5'>Liczba laureatów na kierunek</Typography>}
             />
             <CardContent>
-                <div >
-                    {/* TODO change data to real data */}
-                    <Bar data={convertResult(fakeData)} options={options} />
-                </div>
+                {
+                    loading ?
+                        <p>ładowanko</p>
+                        :
+                        <div >
+                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
+                        </div>
+                }
             </CardContent>
         </Card>
     )

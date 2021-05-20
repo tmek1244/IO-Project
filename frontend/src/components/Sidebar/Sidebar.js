@@ -12,6 +12,7 @@ import {
     TableChart as TableChartIcon,
     FormatUnderlined as DragHandleIcon,
     Equalizer as EqualizerIcon,
+    Timeline as TimelineIcon
 } from '@material-ui/icons'
 
 import SidebarLink from './components/SidebarLink'
@@ -32,11 +33,12 @@ const Sidebar = ({location}) => {
         { id: 1, label: "Dodaj dane", link: '/dodajDane', icon: <AddBoxIcon /> },
         { id: 2, label: "Podsumowanie", link: '/podsumowanie', icon: <TableChartIcon /> },
         { id: 3, label: "Wydział", link: '/podsumowanie_wydzial', icon: <EqualizerIcon /> },
-        { id: 4, label: "Zmień hasło", link: '/haslo', icon: <DragHandleIcon /> },
+        { id: 4, label: "Kierunek", link: '/podsumowanie_kierunek', icon: <TimelineIcon /> },
+        { id: 5, label: "Zmień hasło", link: '/haslo', icon: <DragHandleIcon /> },
     ]
 
     const adminLinks = [
-        { id: 4, label: "Administracja", link: '/administracja', icon: <PersonAddIcon /> },
+        { id: 6, label: "Administracja", link: '/administracja', icon: <PersonAddIcon /> },
     ]
     
     if (authState.is_staff){
