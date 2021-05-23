@@ -57,6 +57,9 @@ class FieldOfStudyNotFullView(generics.ListAPIView):
     permission_classes = (IsAuthenticated,)
     serializer_class = FieldOfStudyNameSerializer
 
+    def get_recruitment_results_filter(self) -> Dict[str, Any]:
+        return {}
+
     def get_queryset(self) -> Manager[FieldOfStudy]:
         if 'year' in self.kwargs:
             year = self.kwargs.get('year')
@@ -70,6 +73,8 @@ class FieldOfStudyNotFullView(generics.ListAPIView):
                 year=year,
                 field_of_study=field_of_study
             )
+            recruitment_results_filter = self.get_recruitment_results_filter()
+            recruitment_results_filter["recruitment__in"] = recruitments
             candidates = RecruitmentResult.objects.filter(
                 recruitment__in=recruitments).values_list(
                 'student', flat=True).distinct().count()
@@ -80,6 +85,11 @@ class FieldOfStudyNotFullView(generics.ListAPIView):
             if len(places) == 0 or candidates > places[0].places:
                 to_be_deleted.append(field_of_study.id)
         return fields_of_study.exclude(id__in=to_be_deleted)
+
+
+class FieldOfStudyNotFullSignedView(FieldOfStudyNotFullView):
+    def get_recruitment_results_filter(self) -> Dict[str, Any]:
+        return {"result": "signed"}
 
 
 class RecruitmentResultOverviewListView(generics.ListAPIView):
