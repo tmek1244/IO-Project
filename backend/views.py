@@ -916,6 +916,58 @@ class FieldConversionOverTheYearsView(APIView):
             )
 
 
+class FieldOfStudyChangesListView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            faculty: str = None,
+            field_of_study: str = None) -> Response:
+
+        try:
+            faculty_obj = Faculty.objects.filter(name=faculty)
+            field_of_study_first_degree_obj = FieldOfStudy.objects.filter(
+                name=field_of_study, faculty__in=faculty_obj, degree=1
+            )
+            students = RecruitmentResult.objects.filter(
+                recruitment__in=Recruitment.objects.filter(
+                    field_of_study__in=field_of_study_first_degree_obj
+                ),
+                result__in=['$', 'signed']
+            ).values_list('student').distinct()
+            second_degree_fields_of_study = FieldOfStudy.objects.filter(
+                degree=2
+            ).exclude(name=field_of_study, faculty__in=faculty_obj)
+            print(second_degree_fields_of_study)
+            print(students)
+            print(Recruitment.objects.filter(
+                    field_of_study__in=second_degree_fields_of_study
+                ))
+            print(RecruitmentResult.objects.filter(
+                recruitment__in=Recruitment.objects.filter(
+                    field_of_study__in=second_degree_fields_of_study
+                ),
+                student__in=students
+            ))
+            continued_fields_of_study = RecruitmentResult.objects.filter(
+                recruitment__in=Recruitment.objects.filter(
+                    field_of_study__in=second_degree_fields_of_study
+                ),
+                student__in=students
+            ).values(field_of_study=F('recruitment__field_of_study__name'),
+                     faculty=F('recruitment__field_of_study__faculty__name')
+                     ).annotate(
+                count=Count('recruitment__field_of_study')
+            ).order_by('-count')
+            return Response(continued_fields_of_study,
+                            status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
 class PointsDistributionOverTheYearsView(APIView):
     permission_classes = (IsAuthenticated,)
 

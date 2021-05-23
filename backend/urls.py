@@ -7,6 +7,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            FieldConversionOverTheYearsView,
                            FieldConversionView,
                            FieldOfStudyCandidatesPerPlaceListView,
+                           FieldOfStudyChangesListView,
                            FieldOfStudyContestLaureatesCountView, GetBasicData,
                            GetFacultiesView, GetFieldsOfStudy, GetMostLaureate,
                            GetThresholdOnField, LaureatesOnFOFSView,
@@ -143,4 +144,7 @@ urlpatterns = [
     path('fields-of-study-popularity/<str:pop_type>/'
          '<str:degree>/<int:n>/<int:year>/',
          FacultyPopularity.as_view(), name="faculty_popularity"),
+    path('field-of-study-changes-list/<faculty>/<field_of_study>',
+         FieldOfStudyChangesListView.as_view(),
+         name='field_of_study_changes_list'),
 ]
