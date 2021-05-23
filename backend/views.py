@@ -952,7 +952,8 @@ class FieldOfStudyChangesListView(APIView):
                 recruitment__in=Recruitment.objects.filter(
                     field_of_study__in=second_degree_fields_of_study
                 ),
-                student__in=students
+                student__in=students,
+                result__in=['$', 'signed']
             ).values(field_of_study=F('recruitment__field_of_study__name'),
                      faculty=F('recruitment__field_of_study__faculty__name')
                      ).annotate(
