@@ -1,0 +1,1 @@
+Te folder zawiera dane tymczasowe do developmentu oraz na pokaz, przy deployowanu powinien zostać usunięty

@@ -3,49 +3,51 @@ import PageTitle from '../../components/PageTitle/PageTitle';
 import useFetch from '../../hooks/useFetch';
 import { useState } from 'react';
 import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@material-ui/core';
-import ThresholdChart from './Charts/ThresholdChart';
+
 import useStyles from "./styles";
-import LaureateChart from './Charts/LaureateChart';
-import FacultyAggregation from './Tables/FacultyAggregation';
-import CandidatesNumChart from './Charts/CandidatesNumChart';
 
-import SelectFieldsComponent from './../../components/SelectFields/SelectFieldsComponent';
-import AveragesMediansChart from './Charts/AveragesMediandsChart';
-import StudentsStatusChart from './Charts/StudentsStatusChart';
-import Cycle2ndChart from './Charts/Cycle2ndChart';
+import CandidatesPerPlaceDistriChart from './Charts/CandidatesPerPlaceDistriChart';
+import StudentStatusDistriChart from './Charts/StudentStatusDistriChart';
+import Students2ndCycleDistriChart from './Charts/Students2ndCycleDistriChart';
+import PointsDistriChart from './Charts/PointsDistriChart';
+import LaureatesDistriChart from './Charts/LaureatesDistriChart';
+import ThresholdDistriChart from './Charts/ThresholdDistriChart';
+import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
 
 
-export function GetReducedFields(fieldsLiteral, allowedFields) {
-    return Object.keys(fieldsLiteral)
-        .filter(key => allowedFields.includes(key))
-        .reduce((obj,key) => {
-            obj[key] = fieldsLiteral[key];
-            return obj;
-        }, {});
-}
+// export function GetReducedFields(fieldsLiteral, allowedFields) {
+//     return Object.keys(fieldsLiteral)
+//         .filter(key => allowedFields.includes(key))
+//         .reduce((obj,key) => {
+//             obj[key] = fieldsLiteral[key];
+//             return obj;
+//         }, {});
+// }
 
-export function GetReducedArray(fieldsArray, allowedFields) {
-    return fieldsArray.filter(arr => allowedFields.includes(arr["name"]));
-}
+// export function GetReducedArray(fieldsArray, allowedFields) {
+//     return fieldsArray.filter(arr => allowedFields.includes(arr["name"]));
+// }
 
-const FacultyAnalysis = () => {
+const FieldOfStudyAnalysis = () => {
     var classes = useStyles();
-
-    const [facultyIdx, setFacultyIdx] = useState(0);
-    const [cycle, setCycle] = useState(1);
-    const [allowedFields, setAllowedFields] = useState([]);
-
-    //TODO poprawić ten endpoint tak, żeby zwarcał kierunki z podziałem na stopnie
-    const [facultiesStudyFields, loading, error] = useFetch(`api/backend/fields_of_studies/${cycle}`, []);
-
+    
     // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
     // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
     // w momencie ustalania tego parametru nie mamy jeszcze pobranej listy wydziałów, ale wiemy, że będzie miała co najmniej
     // jeden element oraz będziemy się do niej odwoływać dopiero jak będzie pobrana, czyli loading będzie na false
+    const [facultyIdx, setFacultyIdx] = useState(0);
+    const [cycle, setCycle] = useState(1);
+    const [field, setField] = useState();
 
+    const onFetch = (response) => {
+        setField(response[Object.keys(response)[facultyIdx]][0])
+        return response
+    }
+    const [facultiesStudyFields, loading, error] = useFetch(`api/backend/fields_of_studies/${cycle}`, [], onFetch)
 
     const faculties = Object.keys(facultiesStudyFields);
     const allFields = facultiesStudyFields[faculties[facultyIdx]];
+
 
     return (
         <>
@@ -96,31 +98,31 @@ const FacultyAnalysis = () => {
                         </div>
 
                         <div>
-                            <SelectFieldsComponent fields={allFields} setFields={setAllowedFields}/> 
+                            <SelectSingleFieldComponent fields={allFields} setField={setField}/> 
                         </div>
 
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
-                                <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
+                                <CandidatesPerPlaceDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 {cycle == 1 ? 
-                                    <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields}/> :
-                                    <Cycle2ndChart faculty={faculties[facultyIdx]} year={"2020"} allowedFields={allowedFields}/>
+                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field}/> :
+                                    <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field}/>
                                 }
                             </Grid>
-                            <Grid item xs={12}>
-                                <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields}/>
+                            <Grid item xs={12} md={6}>
+                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
-                            <Grid item xs={12} >
-                                <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
-                            </Grid>
-                            <Grid item xs={12}>
-                                <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields}/>
+                            <Grid item xs={12} md={6} >
+                                <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
                             <Grid item xs={12}>
+                                <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                            </Grid>
+                            {/* <Grid item xs={12}>
                                 <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} />
-                            </Grid>
+                            </Grid> */}
                         </Grid>
                     </>
             }
@@ -128,4 +130,4 @@ const FacultyAnalysis = () => {
     )
 }
 
-export default FacultyAnalysis;
+export default FieldOfStudyAnalysis;

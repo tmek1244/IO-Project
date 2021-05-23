@@ -223,7 +223,11 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
         if recruitment_results:
             result = recruitment_results.aggregate(Avg('points')).get(
                 'points__avg')
-            return result
+            if result is None:
+                return None
+            result_value: float = result
+            result_value = round(result_value, 2)
+            return result_value
         return None
 
     def get_median(self, obj: Recruitment) -> Any:
@@ -231,7 +235,6 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
         recruitment_results = RecruitmentResult.objects.filter(
             **recruitment_result_filters)
         count = recruitment_results.count()
-        print(count)
         ordered_results = recruitment_results.values_list(
             'points', flat=True).order_by('points')
         if count == 0:
@@ -246,7 +249,9 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
             recruitment=obj).values_list(
             'student', flat=True).distinct().count()
 
-    def get_laureate_no(self, obj: Recruitment) -> int:
+    def get_laureate_no(self, obj: Recruitment) -> Any:
+        if obj.field_of_study.degree == 2:
+            return None
         candidates = Candidate.objects.exclude(
             contest__isnull=True).exclude(contest__exact='')
         return RecruitmentResult.objects.filter(
@@ -272,7 +277,7 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
         treshold = self.get_treshold(obj)
         try:
             return RecruitmentResult.objects.filter(
-                recruitment=obj, points__lte=treshold
+                recruitment=obj, points__lt=treshold
             ).count()
         except ValueError:
             return 0
@@ -284,36 +289,117 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
         ReadOnlyField(source='field_of_study.faculty.name')
     field_of_study = serializers. \
         ReadOnlyField(source='field_of_study.name')
-    candidates_count = serializers.SerializerMethodField()
-    signed_candidates_count = serializers.SerializerMethodField()
+    candidates_per_place = serializers.SerializerMethodField()
+    signed_in = serializers.SerializerMethodField()
+    resigned = serializers.SerializerMethodField()
+    not_signed_in = serializers.SerializerMethodField()
+    under_treshold = serializers.SerializerMethodField()
     contest_laureates_count = serializers.SerializerMethodField()
+    threshold = serializers.SerializerMethodField()
+    mean = serializers.SerializerMethodField()
+    median = serializers.SerializerMethodField()
 
     class Meta:
         model = Recruitment
         fields = ('field_of_study', 'faculty', 'degree',
-                  'year', 'round', 'candidates_count',
-                  'signed_candidates_count',
-                  'contest_laureates_count')
+                  'year', 'round', 'candidates_per_place',
+                  'signed_in', 'resigned', 'not_signed_in',
+                  'under_treshold', 'contest_laureates_count',
+                  'threshold', 'mean', 'median')
 
     def get_degree(self, obj: Recruitment) -> Optional[str]:
         return str(obj.field_of_study.degree)
 
-    def get_candidates_count(self, obj: Recruitment) -> int:
-        return RecruitmentResult.objects.filter(
+    def get_candidates_per_place(self, obj: Recruitment) -> Any:
+        candidates = RecruitmentResult.objects.filter(
             recruitment=obj).values_list(
             'student', flat=True).distinct().count()
+        places = FieldOfStudyPlacesLimit.objects.filter(
+            field_of_study=obj.field_of_study,
+            year=obj.year
+        )
+        if len(places) > 0:
+            return round(candidates / places[0].places, 2)
+        return None
 
-    def get_signed_candidates_count(self, obj: Recruitment) -> int:
+    def get_signed_in(self, obj: Recruitment) -> int:
         return RecruitmentResult.objects.filter(
-            recruitment=obj, result='Signed').values_list(
+            recruitment=obj,
+            result='signed').values_list(
             'student', flat=True).distinct().count()
 
-    def get_contest_laureates_count(self, obj: Recruitment) -> int:
+    def get_resigned(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment=obj,
+            result='unregistered').values_list(
+            'student', flat=True).distinct().count()
+
+    def get_not_signed_in(self, obj: Recruitment) -> int:
+        return RecruitmentResult.objects.filter(
+            recruitment=obj,
+            result='accepted').values_list(
+            'student', flat=True).distinct().count()
+
+    def get_under_treshold(self, obj: Recruitment) -> Any:
+        threshold = self.get_threshold(obj)
+        if threshold is None:
+            return None
+        return RecruitmentResult.objects.filter(
+            recruitment=obj,
+            points__lt=self.get_threshold(obj)
+        ).values_list('student', flat=True).distinct().count()
+
+    def get_contest_laureates_count(self, obj: Recruitment) -> Any:
+        degree = self.get_degree(obj)
+        if degree is not None:
+            degree_value: int = int(degree)
+            if degree_value == 2:
+                return None
         candidates = Candidate.objects.exclude(
             contest__isnull=True).exclude(contest__exact='')
         return RecruitmentResult.objects.filter(
-            recruitment=obj, student__in=candidates).values_list(
+            recruitment=obj,
+            student__in=candidates).values_list(
             'student', flat=True).distinct().count()
+
+    def get_threshold(self, obj: Recruitment) -> Any:
+        recruitment_results = RecruitmentResult.objects.filter(
+            recruitment=obj,
+            result='signed'
+        )
+        if recruitment_results:
+            result = recruitment_results.aggregate(Min('points')).get(
+                'points__min')
+            return result
+        return None
+
+    def get_mean(self, obj: Recruitment) -> Any:
+        recruitment_results = RecruitmentResult.objects.filter(
+            recruitment=obj
+        )
+        if recruitment_results:
+            result = recruitment_results.aggregate(Avg('points')).get(
+                'points__avg')
+            return result
+        return None
+
+    def get_median(self, obj: Recruitment) -> Any:
+        recruitment_results = RecruitmentResult.objects.filter(
+            recruitment=obj
+        )
+        count = recruitment_results.count()
+        ordered_results = recruitment_results.values_list(
+            'points', flat=True).order_by('points')
+        if count == 0 or len(ordered_results) == 0:
+            return None
+        if count == 1:
+            return ordered_results[0]
+        if count == 2:
+            return (ordered_results[0] + ordered_results[1]) / 2
+        if count % 2 == 0:
+            return (ordered_results[int(count / 2)] +
+                    ordered_results[int(count / 2) + 1]) / 2
+        return ordered_results[int(count / 2)]
 
 
 class FieldOfStudyNameSerializer(serializers.ModelSerializer[Any]):
@@ -333,7 +419,11 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
 
     def create(self, validated_data: Dict[str, Any]) -> Any:
 
+        header = True
         for line in validated_data["file"]:
+            if header:
+                header = False
+                continue
             (degree, faculty_name, field_of_study_name, places,
              second_degree_field_of_study_name) = (
                 line.decode("utf-8").strip().split(","))
@@ -343,7 +433,11 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
                      second_degree_field_of_study_name != '')):
                 return False
 
+        header = True
         for line in validated_data["file"]:
+            if header:
+                header = False
+                continue
             (degree, faculty_name, field_of_study_name, places,
              second_degree_field_of_study_name) = (
                 line.decode("utf-8").strip().split(","))
