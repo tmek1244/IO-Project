@@ -655,7 +655,8 @@ class LastRoundsView(APIView):
             if degree:
                 tmp = tmp.filter(recruitment__field_of_study__degree=degree)
 
-            tmp = (tmp
+            tmp = (
+                tmp
                 .values(
                     'recruitment__field_of_study__name',
                     'recruitment__year',
