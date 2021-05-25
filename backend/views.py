@@ -2,10 +2,10 @@ from typing import Any, Dict, List
 
 import django.db.models
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Avg, F, Manager, Max, Min
+from django.db.models import Avg, F, Manager, Max, Min, Value
 from django.db.models.aggregates import Count
 from django.db.models.fields import IntegerField
-from django.db.models.functions import Cast
+from django.db.models.functions import Cast, Concat
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -972,6 +972,69 @@ class PointsDistributionOverTheYearsView(APIView):
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
+class PreciseFieldConversionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            year: int = None,
+            faculty: str = None,
+            field_of_study: str = None,
+            type: str = None) -> Response:
+
+        try:
+            year = year or (
+                Recruitment.objects.aggregate(Max('year'))["year__max"])
+
+            rrs = (
+                RecruitmentResult.objects
+                .filter(result__in=["accepted", "signed"])
+                .filter(recruitment__year=year)
+                .filter(
+                    recruitment__field_of_study__faculty__name__iexact=faculty)
+                .filter(
+                    recruitment__field_of_study__name__iexact=field_of_study)
+                .filter(recruitment__field_of_study__degree="2")
+            )
+
+            if type:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__type=type)
+
+            result = {"all": {"all":0}}
+            for rr in rrs:
+                try:
+                    gs = rr.student.graduatedschool_set.first()
+                    school_name = gs.school_name
+                    faculty_name = gs.faculty
+                    fof_name = gs.field_of_study
+                    round = rr.recruitment.round
+
+                    name = school_name + ";" + faculty_name + ";" + fof_name
+
+                    if name not in result:
+                        result[name] = {"all":0}
+                    if round not in result["all"]:
+                        result["all"][round] = 0
+                    if round not in result[name]:
+                        result[name][round] = 0
+
+                    result["all"]["all"] += 1
+                    result["all"][round] += 1
+                    result[name]["all"] += 1
+                    result[name][round] += 1
+
+                except Exception as e:
+                    print(e)
+
+            return Response(result, status=status.HTTP_200_OK)
+
+        except Exception as e:
             return Response(
                 {"problem": str(e)},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
