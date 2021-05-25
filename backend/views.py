@@ -2,10 +2,10 @@ from typing import Any, Dict, List
 
 import django.db.models
 from django.core.handlers.wsgi import WSGIRequest
-from django.db.models import Avg, F, Manager, Max, Min, Value
+from django.db.models import Avg, F, Manager, Max, Min
 from django.db.models.aggregates import Count
 from django.db.models.fields import IntegerField
-from django.db.models.functions import Cast, Concat
+from django.db.models.functions import Cast
 from django.http import JsonResponse
 from rest_framework import generics, status
 from rest_framework.generics import CreateAPIView
@@ -1006,10 +1006,10 @@ class PreciseFieldConversionView(APIView):
                 rrs = rrs.filter(
                     recruitment__field_of_study__type=type)
 
-            result = {"all": {"all":0}}
+            result: Dict[Any, Any] = {"all": {"all": 0}}
             for rr in rrs:
                 try:
-                    gs = rr.student.graduatedschool_set.first()
+                    gs: Any = rr.student.graduatedschool_set.first()
                     school_name = gs.school_name
                     faculty_name = gs.faculty
                     fof_name = gs.field_of_study
@@ -1018,7 +1018,7 @@ class PreciseFieldConversionView(APIView):
                     name = school_name + ";" + faculty_name + ";" + fof_name
 
                     if name not in result:
-                        result[name] = {"all":0}
+                        result[name] = {"all": 0}
                     if round not in result["all"]:
                         result["all"][round] = 0
                     if round not in result[name]:
