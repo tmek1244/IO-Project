@@ -21,7 +21,6 @@ from backend.models import (Candidate, Faculty, FieldOfStudy,
                             RecruitmentResult)
 from backend.serializers import (FacultySerializer, FakeFieldOfStudySerializer,
                                  FieldOfStudyCandidatesPerPlaceSerializer,
-                                 FieldOfStudyNameSerializer,
                                  RecruitmentResultFacultiesSerializer,
                                  RecruitmentResultFieldsOfStudySerializer,
                                  RecruitmentResultOverviewSerializer,
@@ -53,21 +52,20 @@ class RecruitmentResultListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
-class FieldOfStudyNotFullView(generics.ListAPIView):
+class FieldOfStudyNotFullView(APIView):
     permission_classes = (IsAuthenticated,)
-    serializer_class = FieldOfStudyNameSerializer
 
     def get_recruitment_results_filter(self) -> Dict[str, Any]:
         return {}
 
-    def get_queryset(self) -> Manager[FieldOfStudy]:
+    def get(self,  request: Request) -> Any:
         if 'year' in self.kwargs:
             year = self.kwargs.get('year')
         else:
             year = Recruitment.objects.aggregate(
                 Max('year')).get('year__max')
         fields_of_study = FieldOfStudy.objects.all()
-        to_be_deleted = []
+        result = []
         for field_of_study in fields_of_study:
             recruitments = Recruitment.objects.filter(
                 year=year,
@@ -82,9 +80,16 @@ class FieldOfStudyNotFullView(generics.ListAPIView):
                 field_of_study=field_of_study,
                 year=year
             )
-            if len(places) == 0 or candidates > places[0].places:
-                to_be_deleted.append(field_of_study.id)
-        return fields_of_study.exclude(id__in=to_be_deleted)
+            if len(places) != 0 and candidates < places[0].places:
+                result.append({
+                    "faculty": field_of_study.faculty.name,
+                    "field_of_study": field_of_study.name,
+                    "degree": field_of_study.degree,
+                    "type": field_of_study.type,
+                    "candidate_per_place": round(
+                        candidates / places[0].places, 2)
+                })
+        return Response(result)
 
 
 class FieldOfStudyNotFullSignedView(FieldOfStudyNotFullView):

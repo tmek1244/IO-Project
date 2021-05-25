@@ -402,15 +402,6 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
         return ordered_results[int(count / 2)]
 
 
-class FieldOfStudyNameSerializer(serializers.ModelSerializer[Any]):
-    faculty = serializers. \
-        ReadOnlyField(source='faculty.name')
-
-    class Meta:
-        model = FieldOfStudy
-        fields = ('name', 'faculty', 'degree', 'type')
-
-
 class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
     file = serializers.FileField()
 
