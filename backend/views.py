@@ -1006,7 +1006,7 @@ class PreciseFieldConversionView(APIView):
                 rrs = rrs.filter(
                     recruitment__field_of_study__type=type)
 
-            result: Dict[Any, Any] = {"all": {"all": 0}}
+            result: Dict[Any, Any] = {}
             for rr in rrs:
                 try:
                     gs: Any = rr.student.graduatedschool_set.first()
@@ -1019,13 +1019,9 @@ class PreciseFieldConversionView(APIView):
 
                     if name not in result:
                         result[name] = {"all": 0}
-                    if round not in result["all"]:
-                        result["all"][round] = 0
                     if round not in result[name]:
                         result[name][round] = 0
 
-                    result["all"]["all"] += 1
-                    result["all"][round] += 1
                     result[name]["all"] += 1
                     result[name][round] += 1
 
