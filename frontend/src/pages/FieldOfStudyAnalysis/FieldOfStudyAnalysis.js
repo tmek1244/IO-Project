@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import PageTitle from '../../components/PageTitle/PageTitle';
 import useFetch from '../../hooks/useFetch';
 import { useState } from 'react';
-import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@material-ui/core';
+import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, Divider, } from '@material-ui/core';
 
 import useStyles from "./styles";
 
@@ -13,6 +13,8 @@ import PointsDistriChart from './Charts/PointsDistriChart';
 import LaureatesDistriChart from './Charts/LaureatesDistriChart';
 import ThresholdDistriChart from './Charts/ThresholdDistriChart';
 import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
+import Spinner from '../../components/Spinner/Spinner';
+import CurrentStatusChanges from './Charts/CurrentStatusChanges';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -30,7 +32,7 @@ import SelectSingleFieldComponent from '../../components/SelectSingleField/Selec
 
 const FieldOfStudyAnalysis = () => {
     var classes = useStyles();
-    
+
     // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
     // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
     // w momencie ustalania tego parametru nie mamy jeszcze pobranej listy wydziałów, ale wiemy, że będzie miała co najmniej
@@ -38,6 +40,10 @@ const FieldOfStudyAnalysis = () => {
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
     const [field, setField] = useState();
+
+    const [selectedYearIdx, setSelectedYearIdx] = useState(0);
+    const [years, loadingYears, errorYears] = useFetch('/api/backend/available-years/', [], json => json.sort((a, b) => b - a)) //sortowaine tablicy w porządku malejącym
+
 
     const onFetch = (response) => {
         setField(response[Object.keys(response)[facultyIdx]][0])
@@ -52,8 +58,8 @@ const FieldOfStudyAnalysis = () => {
     return (
         <>
             {
-                loading ?
-                    <p>loading</p> // TODO zmienić na spinner
+                loading || loadingYears ?
+                    <Spinner />
                     :
                     <>
                         <div className={classes.pageTitleContainer}>
@@ -98,31 +104,41 @@ const FieldOfStudyAnalysis = () => {
                         </div>
 
                         <div>
-                            <SelectSingleFieldComponent fields={allFields} setField={setField}/> 
+                            <SelectSingleFieldComponent fields={allFields} setField={setField} />
                         </div>
 
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={6}>
-                                <CandidatesPerPlaceDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                            <Grid item xs={12}>
+                                <Typography variant='h5'>Rekrutacja w roku {years[selectedYearIdx]}</Typography>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                {cycle == 1 ? 
-                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field}/> :
-                                    <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field}/>
+                                <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={years[selectedYearIdx]} />
+                            </Grid>
+                            <Grid item xs={0} md={6} />
+                            <Grid item xs={12}>
+                                <Divider />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant='h5'>Historia rekrutacji</Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <CandidatesPerPlaceDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                {cycle == 1 ?
+                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field} /> :
+                                    <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field} />
                                 }
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
                             </Grid>
                             <Grid item xs={12} md={6} >
-                                <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                                <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
                             </Grid>
                             <Grid item xs={12}>
-                                <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                                <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
                             </Grid>
-                            {/* <Grid item xs={12}>
-                                <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} />
-                            </Grid> */}
                         </Grid>
                     </>
             }

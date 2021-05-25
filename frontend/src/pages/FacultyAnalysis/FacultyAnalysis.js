@@ -13,6 +13,7 @@ import SelectFieldsComponent from './../../components/SelectFields/SelectFieldsC
 import AveragesMediansChart from './Charts/AveragesMediandsChart';
 import StudentsStatusChart from './Charts/StudentsStatusChart';
 import Cycle2ndChart from './Charts/Cycle2ndChart';
+import Spinner from '../../components/Spinner/Spinner';
 
 
 export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -51,7 +52,7 @@ const FacultyAnalysis = () => {
         <>
             {
                 loading ?
-                    <p>loading</p> // TODO zmienić na spinner
+                    <Spinner />
                     :
                     <>
                         <div className={classes.pageTitleContainer}>
