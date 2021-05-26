@@ -13,6 +13,7 @@ import PointsDistriChart from './Charts/PointsDistriChart';
 import LaureatesDistriChart from './Charts/LaureatesDistriChart';
 import ThresholdDistriChart from './Charts/ThresholdDistriChart';
 import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
+import CyclesNumDistriChart from './Charts/CyclesNumDistriChart';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -120,9 +121,9 @@ const FieldOfStudyAnalysis = () => {
                             <Grid item xs={12}>
                                 <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
-                            {/* <Grid item xs={12}>
-                                <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} />
-                            </Grid> */}
+                            <Grid item xs={12}>
+                                <CyclesNumDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
+                            </Grid>
                         </Grid>
                     </>
             }

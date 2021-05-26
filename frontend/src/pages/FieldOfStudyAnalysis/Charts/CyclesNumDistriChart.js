@@ -12,39 +12,33 @@ const options = {
 };
 
 
-export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field }) {
+export default function CyclesNumDistriChart({ faculty, cycle, field }) {
 
     const convertResult = (json) => {
-        const result = {
-            labels: [],
-            datasets: [{
-                label: field,
-                data: [],
-                backgroundColor: colors[0],
-                borderColor: borderColors[0],
-            }],
+        if(typeof json[field] !== 'undefined') {
+            const result = {
+                labels: Object.keys(json[field]),
+                datasets: [{
+                    label: field,
+                    data: Object.values(json[field]),
+                    backgroundColor: colors[0],
+                    borderColor: borderColors[0],
+                }],
+            }
+
+            return result
         }
-
-        json.forEach(lit => {
-            result.labels.push(lit["year"]);
-            result.datasets[0].data.push(lit["candidates_per_place"]);
-        })
-
-        return result
+        return null
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}/`, []);
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/last-rounds/${faculty}/${field}/${cycle}`, []);
     // const loading = undefined;
-    // const fakeData = [
-    //     {
-    //         "year":2019,
-    //         "candidates_per_place":0.02
+    // const fieldsOfStudyData = {
+    //     "Informatyka": {
+    //         2019: 200,
+    //         2020: 300,
     //     },
-    //     {
-    //         "year":2020,
-    //         "candidates_per_place":0.10
-    //     },
-    // ]
+    // }   
 
     return (
         <Card  >

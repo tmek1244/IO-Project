@@ -18,7 +18,7 @@ export default function LaureatesDistriChart({ faculty, field }) {
         const result = {
             labels: [],
             datasets: [{
-                label: "Liczba laureatów",
+                label: field,
                 data: [],
                 backgroundColor: colors[0],
                 borderColor: borderColors[0],

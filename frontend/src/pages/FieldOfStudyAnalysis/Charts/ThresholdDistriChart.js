@@ -18,7 +18,7 @@ export default function ThresholdDistriChart({ faculty, cycle, field }) {
         const result = {
             labels: [],
             datasets: [{
-                label: "Próg punktowy",
+                label: field,
                 data: [],
                 backgroundColor: colors[0],
                 borderColor: borderColors[0],
