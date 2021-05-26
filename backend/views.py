@@ -762,7 +762,6 @@ class ActualFacultyThreshold(APIView):
             return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
 
 
-
 class RecruitmentYears(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -915,6 +914,7 @@ class FieldConversionOverTheYearsView(APIView):
                 {"problem": str(e)},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
+
 
 class PointsDistributionOverTheYearsView(APIView):
     permission_classes = (IsAuthenticated,)
