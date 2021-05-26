@@ -44,7 +44,7 @@ export default function CyclesNumDistriChart({ faculty, cycle, field }) {
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>Liczba kandydatów na jedno miejsce</Typography>}
+                title={<Typography variant='h5'>Liczba cykli</Typography>}
             />
             <CardContent>
                 {
