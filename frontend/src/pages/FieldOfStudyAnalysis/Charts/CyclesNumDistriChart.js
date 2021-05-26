@@ -8,7 +8,7 @@ import useFetch from '../../../hooks/useFetch';
 
 const options = {
     ...commonOptions,
-    aspectRatio: 3,
+    aspectRatio: 4,
 };
 
 
