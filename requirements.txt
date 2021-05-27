@@ -30,5 +30,3 @@ urllib3==1.26.4
 drf-yasg==1.20
 dj_database_url
 dj-config-url~=0.1.1
-pandas~=1.1.5
-Faker~=8.0.0
