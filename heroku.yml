@@ -2,6 +2,6 @@ build:
   docker:
     backend: Dockerfile
 run:
-  backend: gunicorn hello_django.wsgi:application --bind 0.0.0.0:$PORT
+  backend: gunicorn IOProject.wsgi:application --bind 0.0.0.0:$PORT
 relase:
   image: backend
