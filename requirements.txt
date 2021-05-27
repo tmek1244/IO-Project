@@ -30,3 +30,4 @@ urllib3==1.26.4
 drf-yasg==1.20
 dj_database_url
 dj-config-url~=0.1.1
+gunicorn==20.0.4
