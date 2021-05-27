@@ -2,7 +2,7 @@ build:
   docker:
     backend: Dockerfile
 run:
-  migrate: python manage.py migrate
+  backend: python manage.py migrate
   backend: gunicorn IOProject.wsgi:application --bind 0.0.0.0:$PORT
 release:
   image: backend
