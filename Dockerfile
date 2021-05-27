@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.8-alpine
 
 # Non-root user for security purposes.
 # https://github.com/hexops/dockerfile#run-as-a-non-root-user
@@ -9,21 +9,17 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 WORKDIR /code
 
-RUN apt-get update
-#    && apt-get install postgresql-dev \
-#    && apt-get install .build-deps gcc musl-dev python3-dev \
-#    && apk add --no-cache tini \
-#    && apt-get install bind-tools
+RUN apk update \
+    && apk add postgresql-dev \
+    && apk add --no-cache --virtual .build-deps gcc musl-dev python3-dev \
+    && apk add --no-cache bind-tools
 COPY requirements.txt .
 RUN pip install -r requirements.txt
-#    && apk del .build-deps
 
-COPY /backend backend
-COPY /IOProject IOProject
-COPY /users users
-COPY manage.py manage.py
-#COPY  /IOProject
-#COPY /users
+COPY /backend /backend
+COPY /IOProject /IOProject
+COPY /users /users
+COPY manage.py ./
 
 # Tini allows us to avoid several Docker edge cases,
 # see https://github.com/krallin/tini.
@@ -34,4 +30,6 @@ COPY manage.py manage.py
 #CMD ["manage.py", "migrate"]
 # Use the non-root user to run our application
 #USER nonroot
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+RUN adduser -D myuser
+USER myuser
+CMD gunicorn IOProject.wsgi:application --bind 0.0.0.0:$PORT
