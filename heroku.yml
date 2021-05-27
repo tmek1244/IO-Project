@@ -3,5 +3,5 @@ build:
     backend: Dockerfile
 run:
   backend: gunicorn IOProject.wsgi:application --bind 0.0.0.0:$PORT
-relase:
+release:
   image: backend
