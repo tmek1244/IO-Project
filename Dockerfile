@@ -12,7 +12,7 @@ WORKDIR /code
 RUN apk update \
     && apk add postgresql-dev \
     && apk add --no-cache --virtual .build-deps gcc musl-dev python3-dev \
-    && apk add --no-cache tini \
+#    && apk add --no-cache tini \
     && apk add --no-cache bind-tools
 COPY requirements.txt .
 RUN pip install -r requirements.txt \
@@ -24,7 +24,7 @@ COPY /users /users
 
 # Tini allows us to avoid several Docker edge cases,
 # see https://github.com/krallin/tini.
-ENTRYPOINT ["/sbin/tini", "--", "python"]
+#ENTRYPOINT ["/sbin/tini", "--", "python"]
 #CMD ["manage.py", "makemigrations", "backend"]
 #CMD ["manage.py", "makemigrations", "users"]
 #CMD ["manage.py", "makemigrations"]
