@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 import os
+import dj_database_url
 from datetime import timedelta
 from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -30,7 +31,7 @@ SECRET_KEY = os.environ.get(
 DEBUG = True
 
 ALLOWED_HOSTS: List[str] = os.environ.get(
-    'ALLOWED_HOST', "localhost,127.0.0.1").split(",")
+    'ALLOWED_HOST', "localhost,127.0.0.1,io-projekt.herokuapp.com").split(",")
 LOGIN_URL = '/api/user/login'
 LOGOUT_URL = '/api/user/logout'
 
@@ -96,6 +97,11 @@ DATABASES = {
         'PORT': os.environ.get('DB_PORT', 5433),
     }
 }
+
+DATABASE_URL = os.environ.get('DATABASE_URL')
+db_from_env = dj_database_url.config(
+    default=DATABASE_URL, conn_max_age=500, ssl_require=True)
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
