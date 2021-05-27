@@ -1,10 +1,10 @@
 build:
   docker:
-    backend: Dockerfile
+    web: Dockerfile
 run:
-  backend: python manage.py runserver 0.0.0.0:$PORT
+  web: python manage.py runserver 0.0.0.0:$PORT
 release:
-  image: backend
+  image: web
   command:
     - python manage.py makemigrations
     - python manage.py migrate
