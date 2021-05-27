@@ -16,10 +16,10 @@ RUN apk update \
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-COPY /backend /backend
-COPY /IOProject /IOProject
-COPY /users /users
-COPY manage.py ./
+COPY /backend backend
+COPY /IOProject IOProject
+COPY /users users
+COPY manage.py manage.py
 
 # Tini allows us to avoid several Docker edge cases,
 # see https://github.com/krallin/tini.
