@@ -28,7 +28,7 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'o$e+u#2e8k&5^#g2g3(3ko@hhdl%*mwrso73nl+s4_xfj1f81f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS: List[str] = os.environ.get(
     'ALLOWED_HOST', "localhost,127.0.0.1,io-projekt.herokuapp.com").split(",")
