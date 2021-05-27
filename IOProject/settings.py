@@ -139,7 +139,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
 }
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
