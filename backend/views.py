@@ -515,7 +515,8 @@ class LaureatesOnFOFSView(APIView):
     def get(self, request: Request, year: int = None,
             faculty: str = None) -> Response:
         try:
-            last_year = (year or
+            last_year = (
+                year or
                 Recruitment.objects.aggregate(Max('year'))["year__max"])
             if faculty:
                 tmp = list(RecruitmentResult.objects.
