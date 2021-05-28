@@ -84,10 +84,16 @@ urlpatterns = [
             CompareFields.as_view(), name='compare_fields'),
     re_path(r'^aam/(?P<degree>.+)/(?P<faculty_year_list>.+)/$',
             AvgAndMedOfFields.as_view(), name='get_avg_and_med_of_fileds'),
+
     path(
         r'actual_recruitment_faculty_threshold/faculty=<faculty>'
         r'&cycle=<degree>/',
         ActualFacultyThreshold.as_view(), name='actual_threshold'),
+    path(
+        r'actual_recruitment_faculty_threshold/faculty=<faculty>'
+        r'&cycle=<degree>/<int:year>/',
+        ActualFacultyThreshold.as_view(), name='actual_threshold'),
+
     re_path(
         r'^actual_recruitment_faculty_aggregation/faculty=(?P<faculty>.+)'
         r'&cycle=(?P<cycle>.+)$',

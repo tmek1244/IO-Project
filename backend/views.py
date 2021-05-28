@@ -735,8 +735,12 @@ class AvgAndMedOfFields(APIView):
 class ActualFacultyThreshold(APIView):
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request: Request, faculty: str, degree: str) -> Response:
+    def get(self, request: Request, faculty: str, degree: str,
+            year: int = None) -> Response:
         try:
+            year = year or (
+                Recruitment.objects.aggregate(Max('year'))["year__max"])
+
             faculty_obj = Faculty.objects.get(name=faculty)
             # TODO change after models changes
             result: Dict[str, List[float]] = {}
@@ -747,8 +751,7 @@ class ActualFacultyThreshold(APIView):
                 for cycle in range(5):
                     recruitment = Recruitment.objects.filter(
                         field_of_study=field, round=cycle,
-                        year=Recruitment.objects.aggregate(
-                            Max('year'))["year__max"])
+                        year=year)
                     recruitment_results = RecruitmentResult.objects.filter(
                         recruitment__in=recruitment, result='signed')
                     threshold = recruitment_results.aggregate(
