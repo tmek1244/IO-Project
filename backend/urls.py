@@ -2,8 +2,8 @@ from django.urls import path, re_path
 
 from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            AddFieldOfStudy, AvgAndMedOfFields,
-                           CandidatesPerPlace, CompareFields,
-                           FacultyPopularity, FacultyThreshold,
+                           CandidatesPerPlace, ChangesAfterCycle,
+                           CompareFields, FacultyPopularity, FacultyThreshold,
                            FieldConversionOverTheYearsView,
                            FieldConversionView,
                            FieldOfStudyCandidatesPerPlaceListView,
@@ -147,4 +147,6 @@ urlpatterns = [
     path('field-of-study-changes-list/<faculty>/<field_of_study>',
          FieldOfStudyChangesListView.as_view(),
          name='field_of_study_changes_list'),
+    path('changes_after_cycle/<faculty>/<field_of_study>/<degree>/<year>/',
+         ChangesAfterCycle.as_view(), name="changes_after_cycle"),
 ]

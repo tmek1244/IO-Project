@@ -1029,3 +1029,41 @@ class PointsDistributionOverTheYearsView(APIView):
                 {"problem": str(e)},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE
             )
+
+
+class ChangesAfterCycle(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            faculty: str = None,
+            field_of_study: str = None,
+            degree: str = None,
+            year: int = None) -> Response:
+        try:
+            result: Dict[int, Dict[str, int]] = {}
+            assert year
+            query_result = RecruitmentResult.objects.filter(
+                recruitment__field_of_study__faculty__name=faculty,
+                recruitment__field_of_study__name=field_of_study,
+                recruitment__field_of_study__degree=degree,
+                recruitment__year=year
+            ).values(
+                'result',
+                'recruitment__round'
+            ).order_by().annotate(count=Count("id"))
+
+            for element in query_result:
+                if element['recruitment__round'] in result:
+                    result[element['recruitment__round']][
+                        element['result']] = element['count']
+                else:
+                    result[element['recruitment__round']] = {
+                        element['result']: element['count']}
+
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_400_BAD_REQUEST
+            )
