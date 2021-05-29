@@ -31,7 +31,9 @@ SECRET_KEY = os.environ.get(
 DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS: List[str] = os.environ.get(
-    'ALLOWED_HOST', "localhost,127.0.0.1,io-projekt.herokuapp.com").split(",")
+    'ALLOWED_HOST',
+    "localhost,127.0.0.1,io-projekt.herokuapp.com,"
+    "io-projekt-frontend.herokuapp.com").split(",")
 LOGIN_URL = '/api/user/login'
 LOGOUT_URL = '/api/user/logout'
 
