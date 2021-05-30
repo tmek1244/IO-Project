@@ -1,8 +1,7 @@
 # pull official base image
-FROM node:14.16.1-alpine3.13 as builder
+FROM node:14.16.1-alpine3.13
 
 # set working directory
-RUN npm install -g serve
 WORKDIR /app
 
 # add `/app/node_modules/.bin` to $PATH
