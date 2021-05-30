@@ -52,6 +52,51 @@ class RecruitmentResultListView(generics.ListAPIView):
         return self.list(request, *args, **kwargs)
 
 
+class FieldOfStudyNotFullView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get_recruitment_results_filter(self) -> Dict[str, Any]:
+        return {}
+
+    def get(self,  request: Request) -> Any:
+        if 'year' in self.kwargs:
+            year = self.kwargs.get('year')
+        else:
+            year = Recruitment.objects.aggregate(
+                Max('year')).get('year__max')
+        fields_of_study = FieldOfStudy.objects.all()
+        result = []
+        for field_of_study in fields_of_study:
+            recruitments = Recruitment.objects.filter(
+                year=year,
+                field_of_study=field_of_study
+            )
+            recruitment_results_filter = self.get_recruitment_results_filter()
+            recruitment_results_filter["recruitment__in"] = recruitments
+            candidates = RecruitmentResult.objects.filter(
+                recruitment__in=recruitments).values_list(
+                'student', flat=True).distinct().count()
+            places = FieldOfStudyPlacesLimit.objects.filter(
+                field_of_study=field_of_study,
+                year=year
+            )
+            if len(places) != 0 and candidates < places[0].places:
+                result.append({
+                    "faculty": field_of_study.faculty.name,
+                    "field_of_study": field_of_study.name,
+                    "degree": field_of_study.degree,
+                    "type": field_of_study.type,
+                    "candidate_per_place": round(
+                        candidates / places[0].places, 2)
+                })
+        return Response(result)
+
+
+class FieldOfStudyNotFullSignedView(FieldOfStudyNotFullView):
+    def get_recruitment_results_filter(self) -> Dict[str, Any]:
+        return {"result": "signed"}
+
+
 class RecruitmentResultOverviewListView(generics.ListAPIView):
     queryset = Recruitment.objects.all()
     serializer_class = RecruitmentResultOverviewSerializer
