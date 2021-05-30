@@ -33,7 +33,7 @@ services:
     container_name: front_end
     build:
       context: frontend/
-      dockerfile: Dockerfile
+      dockerfile: frontend/deploy.Dockerfile
     volumes:
       - ./frontend:/app
       - '/app/node_modules'
