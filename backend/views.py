@@ -59,9 +59,12 @@ class FieldOfStudyNotFullView(APIView):
         return {}
 
     def get(self,  request: Request, year: int = None) -> Any:
-        if 'year' is None:
-            year = Recruitment.objects.aggregate(
+        if year is None:
+            year_opt = Recruitment.objects.aggregate(
                 Max('year')).get('year__max')
+            if year_opt is None:
+                return Response(status=status.HTTP_403_FORBIDDEN)
+            year = year_opt
         fields_of_study = FieldOfStudy.objects.all()
         result = []
         for field_of_study in fields_of_study:
