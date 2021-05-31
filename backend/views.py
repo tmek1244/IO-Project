@@ -971,7 +971,6 @@ class PointsDistributionOverTheYearsView(APIView):
         try:
             tmp: Any = (RecruitmentResult.objects.
                         filter(result__in=["$", "+", "accepted", "signed"]))
-
             if faculty:
                 tmp = tmp.filter(
                     recruitment__field_of_study__faculty__name=faculty)
@@ -1013,7 +1012,52 @@ class PointsDistributionOverTheYearsView(APIView):
                     result[fof][year] = {}
 
                 result[fof][year][bucket] = total
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
 
+
+class LastRoundsView(APIView):
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request: Request, year: int = None,
+            faculty: str = None,
+            field_of_study: str = None,
+            degree: str = None) -> Response:
+        try:
+            tmp: Any = RecruitmentResult.objects
+            if faculty:
+                tmp = tmp.filter(
+                    recruitment__field_of_study__faculty__name=faculty)
+            if field_of_study:
+                tmp = tmp.filter(
+                    recruitment__field_of_study__name=field_of_study)
+            if degree:
+                tmp = tmp.filter(recruitment__field_of_study__degree=degree)
+            tmp = (
+                tmp
+                .values(
+                    'recruitment__field_of_study__name',
+                    'recruitment__year',
+                )
+                .annotate(max_round=Max('recruitment__round'))
+                .order_by('max_round'))
+
+            result: Dict[Any, Any] = {}
+
+            for d in tmp:
+                fof = d['recruitment__field_of_study__name']
+                year = d['recruitment__year']
+                max_round = d['max_round']
+
+                if fof not in result:
+                    result[fof] = {}
+
+                result[fof][year] = max_round
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             print(e)

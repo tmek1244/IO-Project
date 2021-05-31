@@ -1,4 +1,4 @@
-//CHA-90 DONE
+//CHA-89 DONETMP
 
 import React from 'react'
 import { Line } from 'react-chartjs-2';
@@ -12,34 +12,39 @@ const options = {
 };
 
 
-export default function LaureatesDistriChart({ faculty, field }) {
+export default function CyclesNumDistriChart({ faculty, cycle, field }) {
 
     const convertResult = (json) => {
-        const result = {
-            labels: [],
-            datasets: [{
-                label: field,
-                data: [],
-                backgroundColor: colors[0],
-                borderColor: borderColors[0],
-            }],
+        if(typeof json[field] !== 'undefined') {
+            const result = {
+                labels: Object.keys(json[field]),
+                datasets: [{
+                    label: field,
+                    data: Object.values(json[field]),
+                    backgroundColor: colors[0],
+                    borderColor: borderColors[0],
+                }],
+            }
+
+            return result
         }
-
-        json.forEach(lit => {
-            result.labels.push(lit["recruitment__year"]);
-            result.datasets[0].data.push(lit["contest_laureates"]);
-        })
-
-        return result
+        return null
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/contest-laureates/${faculty}+${field}`, {});
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/last-rounds/${faculty}/${field}/${cycle}`, []);
+    // const loading = undefined;
+    // const fieldsOfStudyData = {
+    //     "Informatyka": {
+    //         2019: 200,
+    //         2020: 300,
+    //     },
+    // }   
 
     return (
         <Card  >
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>Liczba laureatów</Typography>}
+                title={<Typography variant='h5'>Liczba cykli</Typography>}
             />
             <CardContent>
                 {
