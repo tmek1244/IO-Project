@@ -8,7 +8,7 @@ import { colors, borderColors, commonOptions } from './settings'
 
 const options = {
     ...commonOptions,
-    aspectRatio: 3,
+    aspectRatio: 4,
 };
 
 
