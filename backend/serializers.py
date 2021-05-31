@@ -419,8 +419,8 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
             if header:
                 header = False
                 continue
-            (degree, faculty_name, field_of_study_name, places,
-             second_degree_field_of_study_name) = (
+            (degree, faculty_name, field_of_study_name, type,
+             places, second_degree_field_of_study_name) = (
                 line.decode("utf-8").strip().split(","))
             if (degree == '' or faculty_name == '' or
                 field_of_study_name == '' or places == '') or (
