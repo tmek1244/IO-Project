@@ -197,11 +197,14 @@ class RecruitmentStatusAggregateListView(generics.ListAPIView):
             try:
                 faculty = Faculty.objects.filter(
                     name=self.kwargs.get('faculty'))[0]
+                print(faculty)
                 field_of_study_filters = {'faculty': faculty}
                 if 'cycle' in self.kwargs:
                     field_of_study_filters['degree'] = self.kwargs.get('cycle')
+                    print(field_of_study_filters['degree'])
                 if 'type' in self.kwargs:
                     field_of_study_filters['type'] = self.kwargs.get('type')
+                    print(field_of_study_filters['type'])
                 filters['field_of_study__in'] = FieldOfStudy.objects.filter(
                     **field_of_study_filters)
             except IndexError:
@@ -424,15 +427,17 @@ class GetThresholdOnField(APIView):
     def get(self, request: Request, degree: str, type: str,
             string: str = "faculty+field") -> Response:
         try:
+            print(type)
             result: List[Dict[str, Any]] = []
             faculty, field = string.split('+')
             faculty_obj = Faculty.objects.get(name=faculty)
             field_obj = FieldOfStudy.objects.get(
                 name=field, faculty=faculty_obj,
                 degree=degree, type=type)
+            print(field_obj)
             recruitment_results = RecruitmentResult.objects.filter(
                 result='signed', recruitment__field_of_study=field_obj)
-
+            print(recruitment_results)
             if recruitment_results:
                 result = list(recruitment_results.order_by().values(
                     'recruitment__year').annotate(min_points=Min('points')))
