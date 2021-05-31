@@ -10,12 +10,13 @@ const options = {
     ...commonOptions,
     aspectRatio: 3,
 };
-const NotFilledChart = ({ year, cycle }) => {
 
-    const [data, loading, error] = useFetch(`api/backend/fields-of-study-not-full/`, [])
+const FieldsWithTooLittleCandidatesChart = ({ year, cycle }) => {
+
+    const [data, loading, error] = useFetch(`api/backend/fields-of-study-not-full/${year}/`, [])
 
     const filterCycle = (data) => {
-        return data.filter(fof => fof.degree === cycle)
+        return data.filter(fof => parseInt(fof.degree) === cycle)
     }
 
     const convertData = (data) => {
@@ -28,12 +29,13 @@ const NotFilledChart = ({ year, cycle }) => {
         }
 
         data.forEach(fof => {
-            result.labels.push(fof.name)
+            result.labels.push(fof.field_of_study)
             result.datasets[0].data.push(fof.candidate_per_place)
         });
 
         return result
     }
+
 
     return (
         <>
@@ -62,4 +64,4 @@ const NotFilledChart = ({ year, cycle }) => {
     )
 }
 
-export default NotFilledChart
+export default FieldsWithTooLittleCandidatesChart

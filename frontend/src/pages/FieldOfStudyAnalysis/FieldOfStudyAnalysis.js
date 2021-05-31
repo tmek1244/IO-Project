@@ -14,6 +14,7 @@ import LaureatesDistriChart from './Charts/LaureatesDistriChart';
 import ThresholdDistriChart from './Charts/ThresholdDistriChart';
 import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
 import CyclesNumDistriChart from './Charts/CyclesNumDistriChart';
+import Spinner from '../../components/Spinner/Spinner';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -54,7 +55,7 @@ const FieldOfStudyAnalysis = () => {
         <>
             {
                 loading ?
-                    <p>loading</p> // TODO zmienić na spinner
+                    <Spinner />
                     :
                     <>
                         <div className={classes.pageTitleContainer}>
