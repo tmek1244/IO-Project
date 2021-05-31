@@ -16,6 +16,13 @@ export default makeStyles(theme => ({
   facultySelector: {
     minWidth: "100px",
     marginRight: "5px"
+  },  
+  cycleSelector: {
+    minWidth: "100px",
+    marginRight: "5px"
+  },
+  typeSelector: {
+    minWidth: "100px",
   },
   text: {
     color: theme.palette.text.hint,

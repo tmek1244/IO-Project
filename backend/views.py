@@ -235,7 +235,6 @@ class FieldOfStudyContestLaureatesCountView(APIView):
             candidates = Candidate.objects\
                 .exclude(contest__isnull=True)\
                 .exclude(contest__exact='')
-            print(candidates)
             recruitment_results = RecruitmentResult.objects\
                 .order_by('-recruitment__year')\
                 .filter(recruitment__in=recruitment, student__in=candidates)
@@ -885,7 +884,6 @@ class RecruitmentYears(APIView):
             recruitments = Recruitment.objects.values_list(
                 'year',
                 flat=True).distinct()
-            print(recruitments)
             return Response(recruitments)
         except Exception as e:
             print(e)

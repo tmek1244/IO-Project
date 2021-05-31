@@ -5,6 +5,8 @@ import { Line } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import { colors, borderColors, commonOptions } from './settings'
 import useFetch from '../../../hooks/useFetch';
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -12,10 +14,10 @@ const options = {
 };
 
 
-export default function CyclesNumDistriChart({ faculty, cycle, field }) {
+export default function CyclesNumDistriChart({ faculty, cycle, field, type }) {
 
     const convertResult = (json) => {
-        if(typeof json[field] !== 'undefined') {
+        if (typeof json[field] !== 'undefined') {
             const result = {
                 labels: Object.keys(json[field]),
                 datasets: [{
@@ -31,14 +33,8 @@ export default function CyclesNumDistriChart({ faculty, cycle, field }) {
         return null
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/last-rounds/${faculty}/${field}/${cycle}`, []);
-    // const loading = undefined;
-    // const fieldsOfStudyData = {
-    //     "Informatyka": {
-    //         2019: 200,
-    //         2020: 300,
-    //     },
-    // }   
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/last-rounds/${faculty}/${field}/${cycle}/${type}`, []);
+
 
     return (
         <Card  >
@@ -49,11 +45,14 @@ export default function CyclesNumDistriChart({ faculty, cycle, field }) {
             <CardContent>
                 {
                     loading ?
-                        <p>ładowanko</p> // TODO zrobić spinner
+                        <Spinner />
                         :
-                        <div >
-                            <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        error ?
+                            <Error />
+                            :
+                            <div >
+                                <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                            </div>
                 }
             </CardContent>
         </Card>

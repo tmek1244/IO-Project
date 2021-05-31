@@ -182,7 +182,7 @@ urlpatterns = [
          StatusDistributionOverTheYearsView.as_view(),
          name='status-distribution-over-the-years'),
     path('fields-of-study-popularity/<str:pop_type>/'
-         '<str:degree>/<int:n>/<int:year>/',
+         '<str:degree>/<int:n>/<int:year>/<str:type>',
          FacultyPopularity.as_view(), name="faculty_popularity"),
     path('changes_after_cycle/<faculty>/<field_of_study>/<degree>/<year>/',
          ChangesAfterCycle.as_view(), name="changes_after_cycle"),

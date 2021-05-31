@@ -4,6 +4,8 @@ import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
 import { GetReducedFields } from '../FacultyAnalysis';
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -11,7 +13,7 @@ const options = {
 };
 
 
-export default function LaureateChart({ faculty, allowedFields }) {
+export default function LaureateChart({ faculty, allowedFields, type }) {
 
     const convertResult = (json) => {
         let reduced = GetReducedFields(json, allowedFields) //already deletes json.all
@@ -27,7 +29,7 @@ export default function LaureateChart({ faculty, allowedFields }) {
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/`, {})
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/${type}`, {})
 
     return (
         <Card  >
@@ -38,11 +40,14 @@ export default function LaureateChart({ faculty, allowedFields }) {
             <CardContent>
                 {
                     loading ?
-                        <p>ładowanko</p>
+                        <Spinner />
                         :
-                        <div >
-                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        error ?
+                            <Error />
+                            :
+                            <div >
+                                <Bar data={convertResult(fieldsOfStudyData)} options={options} />
+                            </div>
                 }
             </CardContent>
         </Card>
