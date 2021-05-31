@@ -144,7 +144,7 @@ class RecruitmentResultFieldsOfStudySerializer(
 
     class Meta:
         model = FieldOfStudy
-        fields = ('name', 'faculty', 'degree', 'candidates_count',
+        fields = ('name', 'faculty', 'degree', 'type', 'candidates_count',
                   'thresholds')
 
     def get_recruitments_filters(self, obj: FieldOfStudy) -> Dict[str, Any]:
@@ -162,7 +162,7 @@ class FieldOfStudyCandidatesPerPlaceSerializer(
 
     class Meta:
         model = FieldOfStudy
-        fields = ('name', 'faculty', 'degree', 'year',
+        fields = ('name', 'faculty', 'degree', 'year', 'type',
                   'candidates_per_place')
 
     def get_year(self, obj: FieldOfStudy) -> int:
@@ -189,6 +189,8 @@ class FieldOfStudyCandidatesPerPlaceSerializer(
 
 class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
     field_of_study = serializers.ReadOnlyField(source='field_of_study.name')
+    degree = serializers.ReadOnlyField(source='field_of_study.degree')
+    type = serializers.ReadOnlyField(source='field_of_study.type')
     recruitment_round = serializers.ReadOnlyField(source='round')
     treshold = serializers.SerializerMethodField()
     mean = serializers.SerializerMethodField()
@@ -202,9 +204,10 @@ class RecruitmentStatusAggregateSerializer(serializers.ModelSerializer[Any]):
 
     class Meta:
         model = Recruitment
-        fields = ('year', 'field_of_study', 'recruitment_round', 'treshold',
-                  'mean', 'median', 'candidates_no', 'laureate_no',
-                  'signed_in', 'not_signed_in', 'resigned', 'under_treshold')
+        fields = ('year', 'field_of_study', 'degree', 'type',
+                  'recruitment_round', 'treshold', 'mean', 'median',
+                  'candidates_no', 'laureate_no', 'signed_in',
+                  'not_signed_in', 'resigned', 'under_treshold')
 
     def get_treshold(self, obj: Recruitment) -> Any:
         recruitment_result_filters = {'recruitment': obj, 'result': 'signed'}
@@ -289,6 +292,7 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
         ReadOnlyField(source='field_of_study.faculty.name')
     field_of_study = serializers. \
         ReadOnlyField(source='field_of_study.name')
+    type = serializers.ReadOnlyField(source='field_of_study.type')
     candidates_per_place = serializers.SerializerMethodField()
     signed_in = serializers.SerializerMethodField()
     resigned = serializers.SerializerMethodField()
@@ -301,7 +305,7 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
 
     class Meta:
         model = Recruitment
-        fields = ('field_of_study', 'faculty', 'degree',
+        fields = ('field_of_study', 'faculty', 'degree', 'type',
                   'year', 'round', 'candidates_per_place',
                   'signed_in', 'resigned', 'not_signed_in',
                   'under_treshold', 'contest_laureates_count',
@@ -429,8 +433,8 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
             if header:
                 header = False
                 continue
-            (degree, faculty_name, field_of_study_name, places,
-             second_degree_field_of_study_name) = (
+            (degree, faculty_name, field_of_study_name, type,
+             places, second_degree_field_of_study_name) = (
                 line.decode("utf-8").strip().split(","))
 
             faculty, _ = Faculty.objects.get_or_create(
@@ -439,7 +443,8 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
             field_of_study, _ = FieldOfStudy.objects.get_or_create(
                 faculty=faculty,
                 name=field_of_study_name,
-                degree=degree
+                degree=degree,
+                type=type
             )
             field_of_study_places_limit, _ = (
                 FieldOfStudyPlacesLimit.objects.update_or_create(
@@ -452,7 +457,8 @@ class UploadFieldOfStudySerializer(serializers.Serializer[Any]):
                     FieldOfStudy.objects.get_or_create(
                         faculty=faculty,
                         name=second_degree_field_of_study_name,
-                        degree=2
+                        degree=2,
+                        type=type
                     ))
                 field_of_study_next_degree, _ = (
                     FieldOfStudyNextDegree.objects.update_or_create(

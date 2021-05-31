@@ -147,10 +147,12 @@ class RecruitmentResultFieldsOfStudyListView(
     serializer_class = RecruitmentResultFieldsOfStudySerializer
 
     def get_queryset(self) -> Manager[FieldOfStudy]:
-        queryset = FieldOfStudy.objects.\
-            filter(degree=self.request.data['degree'])\
-            if 'degree' in self.request.data else FieldOfStudy.objects.all()
-        return queryset
+        filters = {}
+        if 'degree' in self.request.data:
+            filters['degree'] = self.request.data['degree']
+        if 'type' in self.request.data:
+            filters['type'] = self.request.data['type']
+        return FieldOfStudy.objects.filter(**filters)
 
 
 class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
@@ -161,6 +163,8 @@ class FieldOfStudyCandidatesPerPlaceListView(generics.ListAPIView):
         filters = {}
         if 'degree' in self.request.data:
             filters['degree'] = self.request.data['degree']
+        if 'type' in self.request.data:
+            filters['type'] = self.request.data['type']
         if 'field_of_study' in self.request.data:
             filters['name'] = self.request.data['field_of_study']
         if 'faculty' in self.request.data:
@@ -196,6 +200,8 @@ class RecruitmentStatusAggregateListView(generics.ListAPIView):
                 field_of_study_filters = {'faculty': faculty}
                 if 'cycle' in self.kwargs:
                     field_of_study_filters['degree'] = self.kwargs.get('cycle')
+                if 'type' in self.kwargs:
+                    field_of_study_filters['type'] = self.kwargs.get('type')
                 filters['field_of_study__in'] = FieldOfStudy.objects.filter(
                     **field_of_study_filters)
             except IndexError:
@@ -207,14 +213,24 @@ class RecruitmentStatusAggregateListView(generics.ListAPIView):
 class FieldOfStudyContestLaureatesCountView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, string: str = "faculty+field") -> Response:
+    def get(self, request: Request,
+            string: str = "faculty+field+type") -> Response:
         try:
             result: List[Dict[str, Any]] = []
-            faculty, field = string.split('+')
+            type = None
+            try:
+                faculty, field, type = string.split('+')
+            except Exception:
+                faculty, field = string.split('+')
             faculty_obj = Faculty.objects.get(name=faculty)
-            field_obj = FieldOfStudy.objects.get(name=field,
-                                                 faculty=faculty_obj,
-                                                 degree=1)
+            field_filters = {
+                "name": field,
+                "faculty": faculty_obj,
+                "degree": 1
+            }
+            if type is not None:
+                field_filters["type"] = type
+            field_obj = FieldOfStudy.objects.get(**field_filters)
             recruitment = Recruitment.objects.filter(field_of_study=field_obj)
             candidates = Candidate.objects\
                 .exclude(contest__isnull=True)\
@@ -281,6 +297,17 @@ class GetFieldsOfStudy(APIView):
     def get(self, request: Request, degree: str) -> Response:
         result: Dict[str, List[str]] = {}
         for field in FieldOfStudy.objects.filter(degree=degree):
+            if field.faculty.name in result:
+                result[field.faculty.name].append(field.name)
+            else:
+                result[field.faculty.name] = [field.name]
+        return Response(result, status=status.HTTP_200_OK)
+
+
+class GetFieldsOfStudyByType(APIView):
+    def get(self, request: Request, degree: str, type: str) -> Response:
+        result: Dict[str, List[str]] = {}
+        for field in FieldOfStudy.objects.filter(degree=degree, type=type):
             if field.faculty.name in result:
                 result[field.faculty.name].append(field.name)
             else:
@@ -394,7 +421,7 @@ class GetBasicData(APIView):
 class GetThresholdOnField(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, degree: str,
+    def get(self, request: Request, degree: str, type: str,
             string: str = "faculty+field") -> Response:
         try:
             result: List[Dict[str, Any]] = []
@@ -402,7 +429,7 @@ class GetThresholdOnField(APIView):
             faculty_obj = Faculty.objects.get(name=faculty)
             field_obj = FieldOfStudy.objects.get(
                 name=field, faculty=faculty_obj,
-                degree=degree, type="stacjonarne")
+                degree=degree, type=type)
             recruitment_results = RecruitmentResult.objects.filter(
                 result='signed', recruitment__field_of_study=field_obj)
 
@@ -419,13 +446,14 @@ class CandidatesPerPlace(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request,
-            string: str = "faculty+field+degree") -> Response:
+            string: str = "faculty+field+degree+type") -> Response:
         try:
             result: List[Dict[str, Any]] = []
-            faculty, field, degree = string.split('+')
+            faculty, field, degree, type = string.split('+')
             faculty_obj = Faculty.objects.get(name=faculty)
             field_obj = FieldOfStudy.objects.get(
-                name=field, faculty=faculty_obj, degree=degree)
+                name=field, faculty=faculty_obj, degree=degree,
+                type=type)
             recruitments = Recruitment.objects.filter(
                 field_of_study=field_obj, round=1)
             for recruitment in recruitments:
@@ -499,7 +527,8 @@ class FieldConversionView(APIView):
     def get(self, request: Request,
             year: int = None,
             faculty: str = None,
-            field_of_study: str = None) -> Response:
+            field_of_study: str = None,
+            type: str = None) -> Response:
 
         try:
             year = year or (
@@ -519,6 +548,9 @@ class FieldConversionView(APIView):
             if field_of_study:
                 rrs = rrs.filter(
                     recruitment__field_of_study__name=field_of_study)
+            if type:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__type=type)
 
             result = {"all": {"from-inside": 0, "from-outside": 0}}
             for rr in rrs:
@@ -558,10 +590,29 @@ class LaureatesOnFOFSView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request, year: int = None,
-            faculty: str = None) -> Response:
+            faculty: str = None, type: str = None) -> Response:
         try:
             last_year = Recruitment.objects.aggregate(Max('year'))["year__max"]
-            if faculty:
+            if faculty and type:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=(year or last_year)).
+                           filter(result__in=["+", "accepted", "signed"]).
+                           exclude(student__contest__isnull=True).
+                           exclude(student__contest__exact='').
+                           filter(
+                            recruitment__field_of_study__faculty__name=faculty,
+                            recruitment__field_of_study__faculty__type=type
+                            ).
+                           exclude(
+                                recruitment__field_of_study__degree__in=[
+                                    "2", "3", "4"]
+                            ).
+                           values(
+                                'recruitment__field_of_study__name')
+                           .annotate(total=Count(
+                                'recruitment__field_of_study__name')).
+                           order_by('total'))
+            elif faculty:
                 tmp = list(RecruitmentResult.objects.
                            filter(recruitment__year=(year or last_year)).
                            filter(result__in=["+", "accepted", "signed"]).
@@ -614,9 +665,24 @@ class StatusDistributionView(APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request: Request, year: int,
-            faculty: str = None, degree: str = None) -> Response:
+            faculty: str = None, degree: str = None,
+            type: str = None) -> Response:
         try:
-            if faculty and degree:
+            if faculty and degree and type:
+                tmp = list(RecruitmentResult.objects.
+                           filter(recruitment__year=year).
+                           filter(
+                             recruitment__field_of_study__faculty__name=faculty
+                           ).
+                           filter(recruitment__field_of_study__degree=degree).
+                           filter(recruitment__field_of_study__type=type).
+                           values(
+                               'recruitment__field_of_study__name',
+                               'recruitment__round',
+                               'result')
+                           .annotate(total=Count('result')).
+                           order_by('total'))
+            elif faculty and degree:
                 tmp = list(RecruitmentResult.objects.
                            filter(recruitment__year=year).
                            filter(
@@ -685,7 +751,7 @@ class StatusDistributionOverTheYearsView(APIView):
 
     def get(self, request: Request, faculty: str = None,
             field_of_study: str = None,
-            degree: str = None) -> Response:
+            degree: str = None, type: str = None) -> Response:
         try:
             tmp: Any = RecruitmentResult.objects
 
@@ -697,6 +763,8 @@ class StatusDistributionOverTheYearsView(APIView):
                     recruitment__field_of_study__name=field_of_study)
             if degree:
                 tmp = tmp.filter(recruitment__field_of_study__degree=degree)
+            if type:
+                tmp = tmp.filter(recruitment__field_of_study__type=type)
 
             tmp = (tmp.values(
                 'recruitment__field_of_study__name',
@@ -743,8 +811,8 @@ class AvgAndMedOfFields(APIView):
     permission_classes = (IsAuthenticated, )
     """Need faculty+year"""
 
-    def get(self, request: Request, degree: str, faculty_year_list: str
-            ) -> Response:
+    def get(self, request: Request, degree: str, faculty_year_list: str,
+            type: str = None) -> Response:
         try:
             result: Dict[str, Dict[str, Any]] = {}
             split_request = faculty_year_list.split('+')
@@ -756,6 +824,8 @@ class AvgAndMedOfFields(APIView):
                 faculty_obj = Faculty.objects.get(name=split_request[2*i])
                 field_obj = FieldOfStudy.objects.filter(
                     faculty=faculty_obj, degree=degree)
+                if type is not None:
+                    field_obj.filter(type=type)
                 for field in field_obj:
                     recruitment = Recruitment.objects.filter(
                         field_of_study=field, year=split_request[2 * i + 1])
@@ -825,10 +895,14 @@ class RecruitmentYears(APIView):
 class GetMostLaureate(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request: Request, n: int, year: int) -> Response:
+    def get(self, request: Request, n: int, year: int,
+            type: str = None) -> Response:
         try:
             result: Dict[str, float] = {}
-            for field in FieldOfStudy.objects.filter(degree="1"):
+            field_filters: Dict[str, Any] = {"degree": 1}
+            if type is not None:
+                field_filters["type"] = type
+            for field in FieldOfStudy.objects.filter(**field_filters):
                 query = RecruitmentResult.objects.filter(
                     recruitment__year=year,
                     recruitment__field_of_study=field,
@@ -850,10 +924,13 @@ class FacultyPopularity(APIView):
 
     def get(
             self, request: Request, pop_type: str,
-            degree: str, n: int, year: int) -> Response:
+            degree: str, n: int, year: int, type: str = None) -> Response:
         try:
             result: Dict[str, float] = {}
-            for field in FieldOfStudy.objects.filter(degree=degree):
+            field_filters = {"degree": degree}
+            if type is not None:
+                field_filters["type"] = type
+            for field in FieldOfStudy.objects.filter(**field_filters):
                 query = RecruitmentResult.objects.filter(
                     recruitment__year=year,
                     recruitment__field_of_study=field
@@ -876,10 +953,13 @@ class FacultyThreshold(APIView):
 
     def get(
             self, request: Request, mode: str,
-            degree: str, n: int, year: int) -> Response:
+            degree: str, n: int, year: int, type: str = None) -> Response:
         try:
             result: Dict[str, float] = {}
-            for field in FieldOfStudy.objects.filter(degree=degree):
+            field_filters = {"degree": degree}
+            if type is not None:
+                field_filters["type"] = type
+            for field in FieldOfStudy.objects.filter(**field_filters):
                 query = RecruitmentResult.objects.filter(
                     recruitment__year=year,
                     recruitment__field_of_study=field,
@@ -901,7 +981,8 @@ class FieldConversionOverTheYearsView(APIView):
 
     def get(self, request: Request,
             faculty: str = None,
-            field_of_study: str = None) -> Response:
+            field_of_study: str = None,
+            type: str = None) -> Response:
 
         try:
 
@@ -917,6 +998,10 @@ class FieldConversionOverTheYearsView(APIView):
             if field_of_study:
                 rrs = rrs.filter(
                     recruitment__field_of_study__name=field_of_study)
+
+            if type:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__type=type)
 
             rrs.values(
                 'recruitment__field_of_study__faculty__name',
@@ -967,7 +1052,8 @@ class PointsDistributionOverTheYearsView(APIView):
     def get(self, request: Request, step: int = 100,
             faculty: str = None,
             field_of_study: str = None,
-            degree: str = None) -> Response:
+            degree: str = None,
+            type: str = None) -> Response:
         try:
             tmp: Any = (RecruitmentResult.objects.
                         filter(result__in=["$", "+", "accepted", "signed"]))
@@ -979,6 +1065,8 @@ class PointsDistributionOverTheYearsView(APIView):
                     recruitment__field_of_study__name=field_of_study)
             if degree:
                 tmp = tmp.filter(recruitment__field_of_study__degree=degree)
+            if type:
+                tmp = tmp.filter(recruitment__field_of_study__type=type)
 
             tmp = (tmp.values(
                     'recruitment__field_of_study__name',
@@ -1027,7 +1115,8 @@ class LastRoundsView(APIView):
     def get(self, request: Request, year: int = None,
             faculty: str = None,
             field_of_study: str = None,
-            degree: str = None) -> Response:
+            degree: str = None,
+            type: str = None) -> Response:
         try:
             tmp: Any = RecruitmentResult.objects
             if faculty:
@@ -1038,6 +1127,8 @@ class LastRoundsView(APIView):
                     recruitment__field_of_study__name=field_of_study)
             if degree:
                 tmp = tmp.filter(recruitment__field_of_study__degree=degree)
+            if type:
+                tmp = tmp.filter(recruitment__field_of_study__type=type)
             tmp = (
                 tmp
                 .values(
@@ -1074,16 +1165,22 @@ class ChangesAfterCycle(APIView):
             faculty: str = None,
             field_of_study: str = None,
             degree: str = None,
-            year: int = None) -> Response:
+            year: int = None,
+            type: int = None) -> Response:
         try:
             result: Dict[int, Dict[str, int]] = {}
             assert year
+            recruitment_result_filters = {
+                "recruitment__field_of_study__faculty__name": faculty,
+                "recruitment__field_of_study__name": field_of_study,
+                "recruitment__field_of_study__degree": degree,
+                "recruitment__year": year
+            }
+            if type is not None:
+                recruitment_result_filters[
+                    "recruitment__field_of_study__type"] = type
             query_result = RecruitmentResult.objects.filter(
-                recruitment__field_of_study__faculty__name=faculty,
-                recruitment__field_of_study__name=field_of_study,
-                recruitment__field_of_study__degree=degree,
-                recruitment__year=year
-            ).values(
+                **recruitment_result_filters).values(
                 'result',
                 'recruitment__round'
             ).order_by().annotate(count=Count("id"))

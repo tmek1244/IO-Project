@@ -14,6 +14,7 @@ class FieldOfStudyListFilters:
         self.faculty_name_filter = data.get("faculty")
         self.name_filter = data.get("field_of_study")
         self.degree_filter = data.get("study_cycle")
+        self.type_filter = data.get("type")
 
     def get_all_arguments(self) -> Dict[str, Any]:
         field_of_study_filters: Dict[str, Any] = {}
@@ -27,6 +28,9 @@ class FieldOfStudyListFilters:
         if self.degree_filter is not None:
             field_of_study_filters["degree"] = \
                 self.degree_filter
+
+        if self.type_filter is not None:
+            field_of_study_filters["type"] = self.type_filter
 
         return field_of_study_filters
 
