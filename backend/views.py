@@ -72,7 +72,7 @@ class FieldOfStudyNotFullView(APIView):
             recruitment_results_filter = self.get_recruitment_results_filter()
             recruitment_results_filter["recruitment__in"] = recruitments
             candidates = RecruitmentResult.objects.filter(
-                recruitment__in=recruitments).values_list(
+                **recruitment_results_filter).values_list(
                 'student', flat=True).distinct().count()
             places = FieldOfStudyPlacesLimit.objects.filter(
                 field_of_study=field_of_study,
