@@ -58,13 +58,15 @@ class FieldOfStudyNotFullView(APIView):
     def get_recruitment_results_filter(self) -> Dict[str, Any]:
         return {}
 
-    def get(self,  request: Request) -> Any:
+    def get(self,  request: Request, type: str = None) -> Any:
         if 'year' in self.kwargs:
             year = self.kwargs.get('year')
         else:
             year = Recruitment.objects.aggregate(
                 Max('year')).get('year__max')
         fields_of_study = FieldOfStudy.objects.all()
+        if type is not None:
+            fields_of_study = fields_of_study.filter(type=type)
         result = []
         for field_of_study in fields_of_study:
             recruitments = Recruitment.objects.filter(
