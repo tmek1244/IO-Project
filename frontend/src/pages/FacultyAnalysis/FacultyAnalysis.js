@@ -132,7 +132,7 @@ const FacultyAnalysis = () => {
                                     </Grid>
                                     <Grid item xs={12} md={6}>
                                         {cycle == 1 ?
-                                            <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields} /> :
+                                            <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields} type={type} /> :
                                             <Cycle2ndChart faculty={faculties[facultyIdx]} year={"2020"} allowedFields={allowedFields} type={type} />
                                         }
                                     </Grid>
