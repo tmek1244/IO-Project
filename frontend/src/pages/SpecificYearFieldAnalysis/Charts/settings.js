@@ -1,4 +1,3 @@
-
 //TODO dodać sensowne kolory w ilości wystarczjącej na wszystkie cykle
 export const colors = [
     'rgb(27,89,196)', 'rgb(108, 182, 115)', 'rgb(183, 78, 80)',
@@ -21,8 +20,12 @@ export const commonOptions = {
             },
         ],
     },
-    //TODO: REMOVE?
     animation: {
         duration: 0
-    }
+    },
+    // elements: {
+    //     bar: {
+    //       borderWidth: 2,
+    //     },
+    // },
 };

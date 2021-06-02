@@ -7,7 +7,8 @@ import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@m
 import useStyles from "./styles";
 
 import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
-import IncomersChart from './Charts/IncomersChart';
+import Incomers2DegreeChart from './Charts/Incomers2DegreeChart';
+import Outcomers1DegreeChart from './Charts/Outcomers1DegreeChart';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -124,16 +125,16 @@ const SpecificYearFieldAnalysis = () => {
                         </div>
 
                         <Grid container spacing={2}>
-                            <Grid item xs={12} md={6}>
-                                <IncomersChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
-                            </Grid>
                             {/* <Grid item xs={12} md={6}>
+                                <Incomers2DegreeChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
+                            </Grid> */}
+                            <Grid item xs={12} md={6}>
                                 {cycle == 1 ? 
-                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field}/> :
-                                    <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field}/>
+                                    <Outcomers1DegreeChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/> :
+                                    <Incomers2DegreeChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
                                 }
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            {/* <Grid item xs={12} md={6}>
                                 <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
                             <Grid item xs={12} md={6} >
