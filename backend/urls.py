@@ -62,7 +62,7 @@ urlpatterns = [
     path('add/faculty', AddFacultyView.as_view(), name='add_faculty'),
     path('add/field-of-study', AddFieldOfStudy.as_view(), name='add_fof'),
     path('basic-data/<string>/', GetBasicData.as_view(), name='basic_data'),
-    path('threshold/<degree>/<string>',
+    path('threshold/<degree>/<type>/<string>/',
          GetThresholdOnField.as_view(), name='threshold'),
     # re_path(r'^threshold/(?P<string>.+)/$', GetThresholdOnField.as_view(),
     #         name='get_basic_data'),
@@ -84,6 +84,8 @@ urlpatterns = [
          FieldConversionView.as_view(), name='field-conversion'),
     path('field-conversion/<int:year>/<faculty>/<field_of_study>/<type>/',
          FieldConversionView.as_view(), name='field-conversion'),
+    path('field-conversion/<faculty>/<type>/<int:year>/',
+         FieldConversionView.as_view(), name='field-conversion'),
 
     path('laureates-on-fofs/<faculty>/',
          LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
@@ -99,22 +101,22 @@ urlpatterns = [
          StatusDistributionView.as_view(), name='status-distribution'),
     re_path(r'^compare/(?P<string>.+)/$',
             CompareFields.as_view(), name='compare_fields'),
-    re_path(r'^aam/(?P<degree>.+)/(?P<faculty_year_list>.+)/$',
-            AvgAndMedOfFields.as_view(), name='get_avg_and_med_of_fileds'),
-    re_path(r'^aam/(?P<degree>.+)/(?P<faculty_year_list>.+)/(?P<type>.+)/$',
-            AvgAndMedOfFields.as_view(), name='get_avg_and_med_of_fileds'),
+    path('aam/<degree>/<faculty_year_list>/',
+         AvgAndMedOfFields.as_view(), name='get_avg_and_med_of_fileds'),
+    path('aam/<degree>/<faculty_year_list>/<type>/',
+         AvgAndMedOfFields.as_view(), name='get_avg_and_med_of_fileds'),
     path(
         r'actual_recruitment_faculty_threshold/faculty=<faculty>'
         r'&cycle=<degree>/',
         ActualFacultyThreshold.as_view(), name='actual_threshold'),
-    re_path(
-        r'^actual_recruitment_faculty_aggregation/faculty=(?P<faculty>.+)'
-        r'&cycle=(?P<cycle>.+)$',
+    path(
+        'actual_recruitment_faculty_aggregation/faculty=<faculty>'
+        '&cycle=<int:cycle>',
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
-    re_path(
-        r'^actual_recruitment_faculty_aggregation/faculty=(?P<faculty>.+)'
-        r'&cycle=(?P<cycle>.+)&type=(?P<type>.+)$',
+    path(
+        'actual_recruitment_faculty_aggregation/faculty=<faculty>'
+        '&cycle=<int:cycle>&type=<type>',
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
     path('available-years/', RecruitmentYears.as_view(),
@@ -153,15 +155,16 @@ urlpatterns = [
     path('points-distribution-over-the-years/<int:step>/<faculty>/',
          PointsDistributionOverTheYearsView.as_view(),
          name='points-distribution-over-the-years'),
-    path('points-distribution-over-the-years/<int:step>/<faculty>/<type>/',
-         PointsDistributionOverTheYearsView.as_view(),
-         name='points-distribution-over-the-years'),
     path('points-distribution-over-the-years/<int:step>/' +
          '<faculty>/<field_of_study>/',
          PointsDistributionOverTheYearsView.as_view(),
          name='points-distribution-over-the-years'),
     path('points-distribution-over-the-years/<int:step>/' +
          '<faculty>/<field_of_study>/<degree>/',
+         PointsDistributionOverTheYearsView.as_view(),
+         name='points-distribution-over-the-years'),
+    path('points-distribution-over-the-years/<int:step>/' +
+         '<faculty>/<field_of_study>/<degree>/<type>/',
          PointsDistributionOverTheYearsView.as_view(),
          name='points-distribution-over-the-years'),
     path('status-distribution-over-the-years/',
