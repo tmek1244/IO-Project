@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import useStyles from "./styles";
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import { Typography, MenuItem, Select } from '@material-ui/core';
+import { Typography, MenuItem, Select, Grid } from '@material-ui/core';
 
 import AggragationTable from './Tables/AggragationTable';
 import useFetch from '../../hooks/useFetch';
 import Spinner from '../../components/Spinner/Spinner';
+import NotFilledChart from './Charts/NotFilledChart';
 
 
 const UniversityAnalysis = () => {
@@ -66,8 +67,14 @@ const UniversityAnalysis = () => {
 
                             </div>
                         </div>
-
-                        <AggragationTable year={years[selectedYearIdx]} cycle={cycle} />
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                                <NotFilledChart year={years[selectedYearIdx]} cycle={cycle} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <AggragationTable year={years[selectedYearIdx]} cycle={cycle} />
+                            </Grid>
+                        </Grid>
 
                     </>
             }
