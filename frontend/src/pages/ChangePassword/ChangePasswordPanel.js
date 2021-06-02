@@ -9,7 +9,7 @@ import useStyles from "./styles";
 function ChangePasswordPanel(props) {
     const classes = useStyles();
     const authState = useAuthState();
-    
+
     const [old_password, setOld] = useState("");
     const [new_password, setNew] = useState("");
     const [status, setStatus] = useState("");
@@ -25,64 +25,70 @@ function ChangePasswordPanel(props) {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${authState.access}`,
                 },
-                body: JSON.stringify({old_password, new_password})
+                body: JSON.stringify({ old_password, new_password })
             })
             setStatus(await response.status);
             setOld("");
-            if(await response.status==="200") setOldCheck(false);
+            if (await response.status === "200") setOldCheck(false);
         }
         catch (error) {
             console.log(error)
         }
     }
 
-    const onKeyUp = (event)  => {
-        if(event.charCode === 13 && validate(old_password) && validate(new_password)) {
+    const onKeyUp = (event) => {
+        if (event.charCode === 13 && validate(old_password) && validate(new_password)) {
             handlePasswordChange();
         }
     }
 
     const validate = (password) => {
-        if(password.length < 4) {
+        if (password.length < 4) {
             return false;
         }
         return true;
     }
 
     return (
-        <div className={classes.root}>
-            <Grid container className={classes.container}>
+        <>
+            <div className={classes.pageTitleContainer}>
+                <Typography className={classes.text} variant="h3" size="sm">
+                    Zmiana hasła
+                            </Typography>
+
+            </div>
+            <Grid container >
                 <Grid item xs={1} sm={2} lg={4} />
                 <Grid item xs={10} sm={8} lg={4} >
                     <Card>
-                        <CardHeader 
-                            title={<Typography variant='h5' > Zmiana hasła </Typography>}
-                            style={{ 'backgroundColor': '#fafafa'}}
+                        <CardHeader
+                            title={<Typography variant='h5' > Wprowadź stare i nowe hasło </Typography>}
+                            style={{ 'backgroundColor': '#fafafa' }}
                         />
                         <CardContent >
                             <Grid container>
                                 <Grid item xs={12} className={(classes.margin, classes.center)}>
                                     {
-                                        (status==="400" || status==="500") ?
-                                        <Typography
-                                            variant='body1'
-                                            color='error'
-                                            align="center"
-                                        >
-                                            {(status==="400") ? "Nie zmieniono hasła. Poprawnie wpisałeś stare hasło?" :
-                                            "Brak połączenia z serwerem"}
+                                        (status === "400" || status === "500") ?
+                                            <Typography
+                                                variant='body1'
+                                                color='error'
+                                                align="center"
+                                            >
+                                                {(status === "400") ? "Nie zmieniono hasła. Poprawnie wpisałeś stare hasło?" :
+                                                    "Brak połączenia z serwerem"}
+                                            </Typography> :
+                                            (status === "200" ?
+                                                <Typography
+                                                    variant='body1'
+                                                    color='primary'
+                                                    align="center"
+                                                >
+                                                    Udało się zmienić hasło!
                                         </Typography> :
-                                        (status==="200" ?
-                                        <Typography
-                                            variant='body1'
-                                            color='primary'
-                                            align="center"
-                                        >
-                                            Udało się zmienić hasło!
-                                        </Typography> :
-                                        null)
+                                                null)
                                     }
-                                </Grid> 
+                                </Grid>
                                 <Grid item xs={12} className={classes.margin}>
                                     <TextField
                                         label="Stare hasło"
@@ -91,7 +97,7 @@ function ChangePasswordPanel(props) {
                                         type="password"
                                         variant="outlined"
                                         value={old_password}
-                                        onChange={(e)=>setOld(e.target.value)}
+                                        onChange={(e) => setOld(e.target.value)}
                                         onFocus={(e) => setOldCheck(false)}
                                         onBlur={(e) => setOldCheck(true)}
                                         error={!validate(old_password) && oldCheck}
@@ -106,21 +112,21 @@ function ChangePasswordPanel(props) {
                                         type="password"
                                         variant="outlined"
                                         value={new_password}
-                                        onChange={(e)=>setNew(e.target.value)}
+                                        onChange={(e) => setNew(e.target.value)}
                                         onKeyPress={onKeyUp}
-                                        onFocus={(e)=> setNewCheck(false)}
-                                        onBlur={(e)=> setNewCheck(true)}
-                                        helperText={validate(new_password)?null:"Hasła muszą mieć przynajmniej 4 znaki"}
+                                        onFocus={(e) => setNewCheck(false)}
+                                        onBlur={(e) => setNewCheck(true)}
+                                        helperText={validate(new_password) ? null : "Hasła muszą mieć przynajmniej 4 znaki"}
                                         error={!validate(new_password) && newCheck}
                                         fullWidth={true}
                                     />
                                 </Grid>
                                 <Grid item container xs={12} className={classes.button}>
-                                    <Button 
+                                    <Button
                                         className={classes.margin}
-                                        variant="contained" 
-                                        color="primary" 
-                                        onClick={handlePasswordChange} 
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={handlePasswordChange}
                                         disabled={!(validate(old_password) && validate(new_password))}
                                     >
                                         Zmień hasło
@@ -132,7 +138,7 @@ function ChangePasswordPanel(props) {
                 </Grid>
                 <Grid item xs={1} sm={2} lg={4} />
             </Grid>
-        </div>
+        </>
     )
 }
 
