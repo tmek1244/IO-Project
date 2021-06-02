@@ -854,13 +854,20 @@ class AvgAndMedOfFields(APIView):
 class ActualFacultyThreshold(APIView):
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request: Request, faculty: str, degree: str) -> Response:
+    def get(self, request: Request, faculty: str, degree: str,
+            type: str = None) -> Response:
         try:
             faculty_obj = Faculty.objects.get(name=faculty)
             # TODO change after models changes
             result: Dict[str, List[float]] = {}
+            field_of_study_filters = {
+                "faculty": faculty_obj,
+                "degree": degree
+            }
+            if type is not None:
+                field_of_study_filters["type"] = type
             for field in FieldOfStudy.objects.filter(
-                    faculty=faculty_obj, degree=degree):
+                    **field_of_study_filters):
                 field_list: List[float] = []
 
                 for cycle in range(5):
