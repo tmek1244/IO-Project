@@ -15,6 +15,7 @@ import ThresholdDistriChart from './Charts/ThresholdDistriChart';
 import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
 import Spinner from '../../components/Spinner/Spinner';
 import CurrentStatusChanges from './Charts/CurrentStatusChanges';
+import CyclesNumDistriChart from './Charts/CyclesNumDistriChart';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -64,7 +65,7 @@ const FieldOfStudyAnalysis = () => {
                     <>
                         <div className={classes.pageTitleContainer}>
                             <Typography className={classes.text} variant="h3" size="sm">
-                                Podsumowanie: {faculties[facultyIdx]} stopień {cycle}
+                                {field}, {faculties[facultyIdx]}, stopień {cycle}
                             </Typography>
                             <div className={classes.formContainer}>
                                 <div className={classes.facultySelector}>
@@ -125,16 +126,19 @@ const FieldOfStudyAnalysis = () => {
                                 <CandidatesPerPlaceDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                {cycle == 1 ?
-                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field} /> :
-                                    <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field} />
-                                }
+                                <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
+                                <CyclesNumDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
                             </Grid>
                             <Grid item xs={12} md={6} >
-                                <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
+                                {cycle == 1 ? 
+                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field}/> :
+                                    <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field}/>
+                                }
                             </Grid>
                             <Grid item xs={12}>
                                 <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />

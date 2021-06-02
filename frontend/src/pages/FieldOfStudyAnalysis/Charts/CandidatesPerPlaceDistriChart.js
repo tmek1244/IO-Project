@@ -9,7 +9,7 @@ import Spinner from '../../../components/Spinner/Spinner';
 
 const options = {
     ...commonOptions,
-    aspectRatio: 3,
+    aspectRatio: 4,
 };
 
 
@@ -19,7 +19,7 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field })
         const result = {
             labels: [],
             datasets: [{
-                label: "Liczba kandydatów na jedno miejsce",
+                label: field,
                 data: [],
                 backgroundColor: colors[0],
                 borderColor: borderColors[0],
