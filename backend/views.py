@@ -606,7 +606,7 @@ class LaureatesOnFOFSView(APIView):
                            exclude(student__contest__exact='').
                            filter(
                             recruitment__field_of_study__faculty__name=faculty,
-                            recruitment__field_of_study__faculty__type=type
+                            recruitment__field_of_study__type=type
                             ).
                            exclude(
                                 recruitment__field_of_study__degree__in=[

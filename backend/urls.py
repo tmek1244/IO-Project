@@ -91,6 +91,8 @@ urlpatterns = [
          LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
     path('laureates-on-fofs/<faculty>/<int:year>/',
          LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
+    path('laureates-on-fofs/<faculty>/<int:year>/<type>/',
+         LaureatesOnFOFSView.as_view(), name='laureates-on-fofs'),
     path('status-distribution/<int:year>/',
          StatusDistributionView.as_view(), name='status-distribution'),
     path('status-distribution/<int:year>/<faculty>/',
@@ -107,7 +109,11 @@ urlpatterns = [
          AvgAndMedOfFields.as_view(), name='get_avg_and_med_of_fileds'),
     path(
         r'actual_recruitment_faculty_threshold/faculty=<faculty>'
-        r'&cycle=<degree>/',
+        r'&cycle=<int:degree>/',
+        ActualFacultyThreshold.as_view(), name='actual_threshold'),
+    path(
+        r'actual_recruitment_faculty_threshold/faculty=<faculty>'
+        r'&cycle=<int:degree>&type=<type>/',
         ActualFacultyThreshold.as_view(), name='actual_threshold'),
     path(
         'actual_recruitment_faculty_aggregation/faculty=<faculty>'
