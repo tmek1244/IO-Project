@@ -58,13 +58,15 @@ class FieldOfStudyNotFullView(APIView):
     def get_recruitment_results_filter(self) -> Dict[str, Any]:
         return {}
 
-    def get(self,  request: Request) -> Any:
+    def get(self,  request: Request, type: str = None) -> Any:
         if 'year' in self.kwargs:
             year = self.kwargs.get('year')
         else:
             year = Recruitment.objects.aggregate(
                 Max('year')).get('year__max')
         fields_of_study = FieldOfStudy.objects.all()
+        if type is not None:
+            fields_of_study = fields_of_study.filter(type=type)
         result = []
         for field_of_study in fields_of_study:
             recruitments = Recruitment.objects.filter(
@@ -605,7 +607,7 @@ class LaureatesOnFOFSView(APIView):
                            exclude(student__contest__exact='').
                            filter(
                             recruitment__field_of_study__faculty__name=faculty,
-                            recruitment__field_of_study__faculty__type=type
+                            recruitment__field_of_study__type=type
                             ).
                            exclude(
                                 recruitment__field_of_study__degree__in=[
@@ -853,13 +855,20 @@ class AvgAndMedOfFields(APIView):
 class ActualFacultyThreshold(APIView):
     permission_classes = (IsAuthenticated, )
 
-    def get(self, request: Request, faculty: str, degree: str) -> Response:
+    def get(self, request: Request, faculty: str, degree: str,
+            type: str = None) -> Response:
         try:
             faculty_obj = Faculty.objects.get(name=faculty)
             # TODO change after models changes
             result: Dict[str, List[float]] = {}
+            field_of_study_filters = {
+                "faculty": faculty_obj,
+                "degree": degree
+            }
+            if type is not None:
+                field_of_study_filters["type"] = type
             for field in FieldOfStudy.objects.filter(
-                    faculty=faculty_obj, degree=degree):
+                    **field_of_study_filters):
                 field_list: List[float] = []
 
                 for cycle in range(5):
