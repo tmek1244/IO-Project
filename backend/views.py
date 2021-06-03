@@ -58,19 +58,24 @@ class FieldOfStudyNotFullView(APIView):
     def get_recruitment_results_filter(self) -> Dict[str, Any]:
         return {}
 
-    def get(self,  request: Request, type: str = None) -> Any:
-        if 'year' in self.kwargs:
-            year = self.kwargs.get('year')
-        else:
-            year = Recruitment.objects.aggregate(
+    def get(self,  request: Request, type: str = None,
+            year: int = None) -> Any:
+        year_val: int
+        if year is None:
+            year_optional = Recruitment.objects.aggregate(
                 Max('year')).get('year__max')
+            if not year_optional:
+                return Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+            year_val = year_optional
+        else:
+            year_val = year
         fields_of_study = FieldOfStudy.objects.all()
         if type is not None:
             fields_of_study = fields_of_study.filter(type=type)
         result = []
         for field_of_study in fields_of_study:
             recruitments = Recruitment.objects.filter(
-                year=year,
+                year=year_val,
                 field_of_study=field_of_study
             )
             recruitment_results_filter = self.get_recruitment_results_filter()
@@ -80,7 +85,7 @@ class FieldOfStudyNotFullView(APIView):
                 'student', flat=True).distinct().count()
             places = FieldOfStudyPlacesLimit.objects.filter(
                 field_of_study=field_of_study,
-                year=year
+                year=year_val
             )
             if len(places) != 0 and candidates < places[0].places:
                 result.append({
