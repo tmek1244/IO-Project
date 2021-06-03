@@ -47,10 +47,9 @@ class FieldOfStudy:
         [self.faculty_name, self.fof_name] = random.choice(
             first_cycle_studies
             if self.degree == 1
-            else random.choice(second_cycle_studies)
+            else second_cycle_studies
         )
-        self.mode = "stacjonarne"  # na razie skupny się na
-        # stacjonarnych, bo nie rozróżniamy tego nawet potem
+        self.mode = random.choice(["stacjonarne"]*2 + ["niestacjonarne"])
 
 
 class GraduadedSchool:
@@ -172,7 +171,8 @@ if __name__ == '__main__':
     records = int(sys.argv[1])
     parameters_file = sys.argv[2]
     year = int(sys.argv[3])
+    file = sys.argv[4] if len(sys.argv) > 4 else 'new_generated_data.csv'
 
     process_parameters(parameters_file)
 
-    main(persons=records, file_name='new_generated_data.csv', year=year)
+    main(persons=records, file_name=file, year=year)
