@@ -9,20 +9,9 @@ import useStyles from "./styles";
 import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
 import Incomers2DegreeChart from './Charts/Incomers2DegreeChart';
 import Outcomers1DegreeChart from './Charts/Outcomers1DegreeChart';
+import CycleFlowFromChart from './Charts/CycleFlowFromChart';
+import CycleFlowToChart from './Charts/CycleFlowToChart';
 
-
-// export function GetReducedFields(fieldsLiteral, allowedFields) {
-//     return Object.keys(fieldsLiteral)
-//         .filter(key => allowedFields.includes(key))
-//         .reduce((obj,key) => {
-//             obj[key] = fieldsLiteral[key];
-//             return obj;
-//         }, {});
-// }
-
-// export function GetReducedArray(fieldsArray, allowedFields) {
-//     return fieldsArray.filter(arr => allowedFields.includes(arr["name"]));
-// }
 
 const SpecificYearFieldAnalysis = () => {
     var classes = useStyles();
@@ -59,7 +48,7 @@ const SpecificYearFieldAnalysis = () => {
                     <>
                         <div className={classes.pageTitleContainer}>
                             <Typography className={classes.text} variant="h3" size="sm">
-                               ZMIEN MNIEEEE
+                               Podsumowanie rekrutacji
                             </Typography>
                             <div className={classes.formContainer}>
                                 <div className={classes.facultySelector}>
@@ -125,19 +114,19 @@ const SpecificYearFieldAnalysis = () => {
                         </div>
 
                         <Grid container spacing={2}>
-                            {/* <Grid item xs={12} md={6}>
-                                <Incomers2DegreeChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
-                            </Grid> */}
+                            <Grid item xs={12} md={6}>
+                                <CycleFlowToChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <CycleFlowFromChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
+                            </Grid>
                             <Grid item xs={12} md={6}>
                                 {cycle == 1 ? 
                                     <Outcomers1DegreeChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/> :
                                     <Incomers2DegreeChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
                                 }
                             </Grid>
-                            {/* <Grid item xs={12} md={6}>
-                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
-                            </Grid>
-                            <Grid item xs={12} md={6} >
+                            {/* <Grid item xs={12} md={6} >
                                 <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
                             </Grid>
                             <Grid item xs={12}>

@@ -16,7 +16,7 @@ const options = {
 };
 
 
-export default function IncomersChart({ faculty, cycle, field, year}) {
+export default function CycleFlowToChart({ faculty, cycle, field, year}) {
 
     const modifyJsonStructure = (json) => {
         //find max cycle num
@@ -94,7 +94,7 @@ export default function IncomersChart({ faculty, cycle, field, year}) {
         <Card variant="outlined" style={{backgroundColor: "#fefefe"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>Kierunki skąd studenci przychodzą</Typography>}
+                title={<Typography variant='h6'>Na jakie kierunki studenci aplikują rezygnując z {field}</Typography>}
             />
             <CardContent>
             {
