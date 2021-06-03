@@ -86,10 +86,10 @@ const UniversityAnalysis = () => {
                         </div>
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
-                                <FieldsWithTooLittleCandidatesChart year={years[selectedYearIdx]} cycle={cycle} />
+                                <FieldsWithTooLittleCandidatesChart year={years[selectedYearIdx]} cycle={cycle} type={type} />
                             </Grid>
                             <Grid xs={12} md={6}>
-                                <NotFullyFilledFieldsChart year={years[selectedYearIdx]} cycle={cycle} />
+                                <NotFullyFilledFieldsChart year={years[selectedYearIdx]} cycle={cycle} type={type} />
                             </Grid>
                             <Grid item xs={12}>
                                 <AggragationTable year={years[selectedYearIdx]} cycle={cycle} type={type}/>

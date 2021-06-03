@@ -11,9 +11,9 @@ const options = {
     aspectRatio: 3,
 };
 
-const FieldsWithTooLittleCandidatesChart = ({ year, cycle }) => {
+const FieldsWithTooLittleCandidatesChart = ({ year, cycle, type }) => {
 
-    const [data, loading, error] = useFetch(`api/backend/fields-of-study-not-full/${year}/`, [])
+    const [data, loading, error] = useFetch(`api/backend/fields-of-study-not-full/${year}/${type}`, [])
 
     const filterCycle = (data) => {
         return data.filter(fof => parseInt(fof.degree) === cycle)
