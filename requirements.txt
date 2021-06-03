@@ -9,15 +9,12 @@ django-stubs==1.7.0
 djangorestframework==3.12.2
 djangorestframework-simplejwt==4.6.0
 djangorestframework-stubs==1.4.0
-Faker==8.0.0
 idna==2.10
 itypes==1.2.0
 Jinja2==2.11.3
 MarkupSafe==1.1.1
 mypy==0.812
 mypy-extensions==0.4.3
-numpy==1.19.5
-pandas==1.1.5
 psycopg2==2.8.6
 PyJWT==2.0.1
 python-dateutil==2.8.1
@@ -31,3 +28,6 @@ typing-extensions==3.7.4.3
 uritemplate==3.0.1
 urllib3==1.26.4
 drf-yasg==1.20
+dj_database_url
+dj-config-url~=0.1.1
+gunicorn==20.0.4

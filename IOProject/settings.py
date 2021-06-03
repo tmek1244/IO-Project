@@ -16,6 +16,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from typing import List
 
+import dj_database_url
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Quick-start development settings - unsuitable for production
@@ -27,10 +29,12 @@ SECRET_KEY = os.environ.get(
     'SECRET_KEY', 'o$e+u#2e8k&5^#g2g3(3ko@hhdl%*mwrso73nl+s4_xfj1f81f')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", False)
 
 ALLOWED_HOSTS: List[str] = os.environ.get(
-    'ALLOWED_HOST', "localhost,127.0.0.1").split(",")
+    'ALLOWED_HOST',
+    "localhost,127.0.0.1,io-projekt.herokuapp.com,"
+    "io-projekt-frontend.herokuapp.com").split(",")
 LOGIN_URL = '/api/user/login'
 LOGOUT_URL = '/api/user/logout'
 
@@ -97,6 +101,12 @@ DATABASES = {
     }
 }
 
+DATABASE_URL = os.environ.get('DATABASE_URL')
+db_from_env = dj_database_url.config(
+    default=DATABASE_URL)
+DATABASES['default'].update(db_from_env)
+# DATABASES['default'].update(dj_database_url.config(ssl_require=True))
+
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
 
@@ -133,7 +143,7 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=15),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=15),
 }
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
