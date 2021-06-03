@@ -15,3 +15,19 @@ stopien,wydzial,kierunek,typ,limit,kontynuacja
 2,Wydział Fizyki i Informatyki Stosowanej,Fizyka Techniczna,niestacjonarne,60,
 2,Wydział Fizyki i Informatyki Stosowanej,Informatyka Stosowana,niestacjonarne,80,
 2,Wydział Fizyki i Informatyki Stosowanej,Mikro- i nanotechnologie w biofizyce,niestacjonarne,40,
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Cyberbezpieczeństwo,stacjonarne,80,
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika,stacjonarne,150,
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika i Telekomunikacja,stacjonarne,180,Elektronika i Telekomunikacja
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Informatyka,stacjonarne,320,Informatyka
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Teleinformatyka,stacjonarne,200,Teleinformatyka
+2,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika i Telekomunikacja,stacjonarne,100,
+2,Wydział Informatyki Elektroniki i Telekomunikacji,Informatyka,stacjonarne,200,
+2,Wydział Informatyki Elektroniki i Telekomunikacji,Teleinformatyka,stacjonarne,90,
+1,Wydział Fizyki i Informatyki Stosowanej,Fizyka Medyczna,stacjonarne,90,Fizyka Medyczna
+1,Wydział Fizyki i Informatyki Stosowanej,Fizyka Techniczna,stacjonarne,100,Fizyka Techniczna
+1,Wydział Fizyki i Informatyki Stosowanej,Informatyka Stosowana,stacjonarne,140,Informatyka Stosowana
+1,Wydział Fizyki i Informatyki Stosowanej,Mikro- i nanotechnologie w biofizyce,stacjonarne,50,Mikro- i nanotechnologie w biofizyce
+2,Wydział Fizyki i Informatyki Stosowanej,Fizyka Medyczna,stacjonarne,40,
+2,Wydział Fizyki i Informatyki Stosowanej,Fizyka Techniczna,stacjonarne,60,
+2,Wydział Fizyki i Informatyki Stosowanej,Informatyka Stosowana,stacjonarne,80,
+2,Wydział Fizyki i Informatyki Stosowanej,Mikro- i nanotechnologie w biofizyce,stacjonarne,40,
