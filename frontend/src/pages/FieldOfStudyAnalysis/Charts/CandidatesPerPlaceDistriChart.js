@@ -5,6 +5,8 @@ import { Line } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import { colors, borderColors, commonOptions } from './settings'
 import useFetch from '../../../hooks/useFetch';
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -12,7 +14,7 @@ const options = {
 };
 
 
-export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field }) {
+export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field, type }) {
 
     const convertResult = (json) => {
         const result = {
@@ -33,18 +35,7 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field })
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}/`, []);
-    // const loading = undefined;
-    // const fakeData = [
-    //     {
-    //         "year":2019,
-    //         "candidates_per_place":0.02
-    //     },
-    //     {
-    //         "year":2020,
-    //         "candidates_per_place":0.10
-    //     },
-    // ]
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}+${type}/`, []);
 
     return (
         <Card  >
@@ -55,11 +46,14 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field })
             <CardContent>
                 {
                     loading ?
-                        <p>ładowanko</p> // TODO zrobić spinner
+                        <Spinner />
                         :
-                        <div >
-                            <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        error && !fieldsOfStudyData.length === 0 ? // nie wiem czemu, ale trzeba zrobić takie obejście na ten warunek 
+                            <Error />
+                            :
+                            <div >
+                                <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                            </div>
                 }
             </CardContent>
         </Card>

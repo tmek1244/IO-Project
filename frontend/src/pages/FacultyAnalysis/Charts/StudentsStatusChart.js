@@ -10,7 +10,7 @@ const options = {
     aspectRatio: 4,
 };
 
-export default function StudentsStatusChart({ faculty, cycle, year, allowedFields }) {
+export default function StudentsStatusChart({ faculty, cycle, year, allowedFields, type }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
@@ -55,7 +55,7 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
         return result
     }
 
-    const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/status-distribution/${year}/${faculty}/${cycle}/`, {})
+    const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/status-distribution/${year}/${faculty}/${cycle}/${type}`, {})
     return (
         <Card>
             <CardHeader
