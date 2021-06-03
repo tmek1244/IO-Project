@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import PageTitle from '../../components/PageTitle/PageTitle';
 import useFetch from '../../hooks/useFetch';
 import { useState } from 'react';
-import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@material-ui/core';
+import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, Divider, } from '@material-ui/core';
 
 import useStyles from "./styles";
 
@@ -13,8 +13,9 @@ import PointsDistriChart from './Charts/PointsDistriChart';
 import LaureatesDistriChart from './Charts/LaureatesDistriChart';
 import ThresholdDistriChart from './Charts/ThresholdDistriChart';
 import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
-import CyclesNumDistriChart from './Charts/CyclesNumDistriChart';
 import Spinner from '../../components/Spinner/Spinner';
+import CurrentStatusChanges from './Charts/CurrentStatusChanges';
+import CyclesNumDistriChart from './Charts/CyclesNumDistriChart';
 
 
 // export function GetReducedFields(fieldsLiteral, allowedFields) {
@@ -42,6 +43,10 @@ const FieldOfStudyAnalysis = () => {
     const [field, setField] = useState();
     const [type, setType] = useState('stacjonarne')
 
+    const [selectedYearIdx, setSelectedYearIdx] = useState(0);
+    const [years, loadingYears, errorYears] = useFetch('/api/backend/available-years/', [], json => json.sort((a, b) => b - a)) //sortowaine tablicy w porządku malejącym
+
+
     const onFetch = (response) => {
         setField(response[Object.keys(response)[facultyIdx]][0])
         return response
@@ -58,7 +63,7 @@ const FieldOfStudyAnalysis = () => {
     return (
         <>
             {
-                loading ?
+                loading || loadingYears ?
                     <Spinner />
                     :
                     <>
@@ -127,6 +132,19 @@ const FieldOfStudyAnalysis = () => {
                         </div>
 
                         <Grid container spacing={2}>
+                            <Grid item xs={12}>
+                                <Typography variant='h5'>Rekrutacja w roku {years[selectedYearIdx]}</Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={years[selectedYearIdx]} type={type} />
+                            </Grid>
+                            <Grid item xs={0} md={6} />
+                            <Grid item xs={12}>
+                                <Divider />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Typography variant='h5'>Historia rekrutacji</Typography>
+                            </Grid>
                             <Grid item xs={12} md={6}>
                                 <CandidatesPerPlaceDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} type={type}/>
                             </Grid>
