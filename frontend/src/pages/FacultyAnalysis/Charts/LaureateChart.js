@@ -13,7 +13,7 @@ const options = {
 };
 
 
-export default function LaureateChart({ faculty, allowedFields, type }) {
+export default function LaureateChart({ faculty, allowedFields, type, year }) {
 
     const convertResult = (json) => {
         let reduced = GetReducedFields(json, allowedFields) //already deletes json.all
@@ -29,7 +29,7 @@ export default function LaureateChart({ faculty, allowedFields, type }) {
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/${type}`, {})
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/${year}/${type}`, {})
 
     return (
         <Card  >

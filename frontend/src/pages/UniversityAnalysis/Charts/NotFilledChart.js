@@ -15,7 +15,7 @@ const NotFilledChart = ({ year, cycle, type }) => {
     const [data, loading, error] = useFetch(`api/backend/fields-of-study-not-full/${type}`, [])
 
     const filterCycle = (data) => {
-        return data.filter(fof => fof.degree === cycle)
+        return data.filter(fof => parseInt(fof.degree) === cycle)
     }
 
     const convertData = (data) => {
@@ -28,7 +28,7 @@ const NotFilledChart = ({ year, cycle, type }) => {
         }
 
         data.forEach(fof => {
-            result.labels.push(fof.name)
+            result.labels.push(fof.field_of_study)
             result.datasets[0].data.push(fof.candidate_per_place)
         });
 
