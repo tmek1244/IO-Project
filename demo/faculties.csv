@@ -1,17 +1,17 @@
-stopien,wydzial,kierunek,limit,kontynuacja
-1,Wydział Informatyki Elektroniki i Telekomunikacji,Cyberbezpieczeństwo,80,
-1,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika,150,
-1,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika i Telekomunikacja,180,Elektronika i Telekomunikacja
-1,Wydział Informatyki Elektroniki i Telekomunikacji,Informatyka,320,Informatyka
-1,Wydział Informatyki Elektroniki i Telekomunikacji,Teleinformatyka,200,Teleinformatyka
-2,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika i Telekomunikacja,100,
-2,Wydział Informatyki Elektroniki i Telekomunikacji,Informatyka,200,
-2,Wydział Informatyki Elektroniki i Telekomunikacji,Teleinformatyka,90,
-1,Wydział Fizyki i Informatyki Stosowanej,Fizyka Medyczna,90,Fizyka Medyczna
-1,Wydział Fizyki i Informatyki Stosowanej,Fizyka Techniczna,100,Fizyka Techniczna
-1,Wydział Fizyki i Informatyki Stosowanej,Informatyka Stosowana,140,Informatyka Stosowana
-1,Wydział Fizyki i Informatyki Stosowanej,Mikro- i nanotechnologie w biofizyce,50,Mikro- i nanotechnologie w biofizyce
-2,Wydział Fizyki i Informatyki Stosowanej,Fizyka Medyczna,40,
-2,Wydział Fizyki i Informatyki Stosowanej,Fizyka Techniczna,60,
-2,Wydział Fizyki i Informatyki Stosowanej,Informatyka Stosowana,80,
-2,Wydział Fizyki i Informatyki Stosowanej,Mikro- i nanotechnologie w biofizyce,40,
+stopien,wydzial,kierunek,typ,limit,kontynuacja
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Cyberbezpieczeństwo,niestacjonarne,80,
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika,niestacjonarne,150,
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika i Telekomunikacja,niestacjonarne,180,Elektronika i Telekomunikacja
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Informatyka,niestacjonarne,320,Informatyka
+1,Wydział Informatyki Elektroniki i Telekomunikacji,Teleinformatyka,niestacjonarne,200,Teleinformatyka
+2,Wydział Informatyki Elektroniki i Telekomunikacji,Elektronika i Telekomunikacja,niestacjonarne,100,
+2,Wydział Informatyki Elektroniki i Telekomunikacji,Informatyka,niestacjonarne,200,
+2,Wydział Informatyki Elektroniki i Telekomunikacji,Teleinformatyka,niestacjonarne,90,
+1,Wydział Fizyki i Informatyki Stosowanej,Fizyka Medyczna,niestacjonarne,90,Fizyka Medyczna
+1,Wydział Fizyki i Informatyki Stosowanej,Fizyka Techniczna,niestacjonarne,100,Fizyka Techniczna
+1,Wydział Fizyki i Informatyki Stosowanej,Informatyka Stosowana,niestacjonarne,140,Informatyka Stosowana
+1,Wydział Fizyki i Informatyki Stosowanej,Mikro- i nanotechnologie w biofizyce,niestacjonarne,50,Mikro- i nanotechnologie w biofizyce
+2,Wydział Fizyki i Informatyki Stosowanej,Fizyka Medyczna,niestacjonarne,40,
+2,Wydział Fizyki i Informatyki Stosowanej,Fizyka Techniczna,niestacjonarne,60,
+2,Wydział Fizyki i Informatyki Stosowanej,Informatyka Stosowana,niestacjonarne,80,
+2,Wydział Fizyki i Informatyki Stosowanej,Mikro- i nanotechnologie w biofizyce,niestacjonarne,40,

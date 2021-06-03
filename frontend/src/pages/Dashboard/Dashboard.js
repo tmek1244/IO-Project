@@ -1,5 +1,5 @@
 import React from 'react'
-import { Grid } from '@material-ui/core';
+import { Grid, Divider, Typography } from '@material-ui/core';
 import PageTitle from '../../components/PageTitle/PageTitle';
 import PopularityChart from './Charts/PopularityChart';
 import LaureateChart from './Charts/LaureateChart'
@@ -16,6 +16,8 @@ const Dashboard = () => {
     const number = 5
     const modeMost = "most"
     const modeLeast = "least"
+    const regularType = "stacjonarne"
+    const weekendType = "niestacjonarne"
 
     return (
         <>
@@ -29,32 +31,71 @@ const Dashboard = () => {
                             <Error />
                             :
                             <Grid item container spacing={2}>
-                                <Grid item xs={12} sm={6} >
-                                    <PopularityChart degree={1} year={years[0]} number={number} mode={modeMost} />
+                                <Grid item xs={12}>
+                                    <Divider />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Typography variant='h5'>Studia stacjonarne</Typography>
                                 </Grid>
                                 <Grid item xs={12} sm={6} >
-                                    <PopularityChart degree={1} year={years[0]} number={number} mode={modeLeast} />
+                                    <PopularityChart degree={1} year={years[0]} number={number} mode={modeMost} type={regularType} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} >
-                                    <ThresholdChart degree={1} year={years[0]} number={number} mode={modeMost} />
+                                    <PopularityChart degree={1} year={years[0]} number={number} mode={modeLeast} type={regularType} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} >
-                                    <ThresholdChart degree={1} year={years[0]} number={number} mode={modeLeast} />
+                                    <ThresholdChart degree={1} year={years[0]} number={number} mode={modeMost} type={regularType} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <ThresholdChart degree={1} year={years[0]} number={number} mode={modeLeast} type={regularType} />
                                 </Grid>
                                 <Grid item xs={12}  >
-                                    <LaureateChart year={years[0]} number={number} />
+                                    <LaureateChart year={years[0]} number={number} type={regularType} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} >
-                                    <PopularityChart degree={2} year={years[0]} number={number} mode={modeMost} />
+                                    <PopularityChart degree={2} year={years[0]} number={number} mode={modeMost} type={regularType} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} >
-                                    <PopularityChart degree={2} year={years[0]} number={number} mode={modeLeast} />
+                                    <PopularityChart degree={2} year={years[0]} number={number} mode={modeLeast} type={regularType} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} >
-                                    <ThresholdChart degree={2} year={years[0]} number={number} mode={modeMost} />
+                                    <ThresholdChart degree={2} year={years[0]} number={number} mode={modeMost} type={regularType} />
                                 </Grid>
                                 <Grid item xs={12} sm={6} >
-                                    <ThresholdChart degree={2} year={years[0]} number={number} mode={modeLeast} />
+                                    <ThresholdChart degree={2} year={years[0]} number={number} mode={modeLeast} type={regularType} />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Divider />
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Typography variant='h5'>Studia niestacjonarne</Typography>
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <PopularityChart degree={1} year={years[0]} number={number} mode={modeMost} type={weekendType} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <PopularityChart degree={1} year={years[0]} number={number} mode={modeLeast} type={weekendType} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <ThresholdChart degree={1} year={years[0]} number={number} mode={modeMost} type={weekendType} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <ThresholdChart degree={1} year={years[0]} number={number} mode={modeLeast} type={weekendType} />
+                                </Grid>
+                                <Grid item xs={12}  >
+                                    <LaureateChart year={years[0]} number={number} type={weekendType} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <PopularityChart degree={2} year={years[0]} number={number} mode={modeMost} type={weekendType} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <PopularityChart degree={2} year={years[0]} number={number} mode={modeLeast} type={weekendType} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <ThresholdChart degree={2} year={years[0]} number={number} mode={modeMost} type={weekendType} />
+                                </Grid>
+                                <Grid item xs={12} sm={6} >
+                                    <ThresholdChart degree={2} year={years[0]} number={number} mode={modeLeast} type={weekendType} />
                                 </Grid>
                             </Grid>
                     )

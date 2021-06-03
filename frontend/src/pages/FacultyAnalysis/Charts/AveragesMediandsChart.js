@@ -12,7 +12,7 @@ const options = {
 };
 
 
-export default function AveragesMediansChart({ faculty, cycle, year, allowedFields }) {
+export default function AveragesMediansChart({ faculty, cycle, year, allowedFields, type}) {
 
     const convertResult = (json) => {
         if(typeof json[`${faculty} ${year}`] !== 'undefined') {
@@ -46,7 +46,7 @@ export default function AveragesMediansChart({ faculty, cycle, year, allowedFiel
         return null;
     }
 
-    const [fetchedData, loading, error] = useFetch(`/api/backend/aam/${cycle}/${faculty}+${year}/`, {})
+    const [fetchedData, loading, error] = useFetch(`/api/backend/aam/${cycle}/${faculty}+${year}/${type}/`, {})
 
     return (
         <Card  >

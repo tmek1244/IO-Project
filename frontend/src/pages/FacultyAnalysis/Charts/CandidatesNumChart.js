@@ -11,7 +11,7 @@ const options = {
 };
 
 
-export default function CandidatesNumChart({ faculty, cycle, year, allowedFields }) {
+export default function CandidatesNumChart({ faculty, cycle, year, allowedFields, type }) {
 
     const convertResult = (json) => {
         
@@ -36,7 +36,8 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
     const payload = {
         "year": year,
         "degree": cycle,
-        "faculty": faculty
+        "faculty": faculty,
+        "type": type
     }
     const [fieldsOfStudyData, loading, error] = useFetchPost('/api/backend/fields-of-study-candidates-per-place/', payload, []);
 
