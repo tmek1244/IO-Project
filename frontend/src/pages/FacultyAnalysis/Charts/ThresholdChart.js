@@ -4,6 +4,7 @@ import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
 import { GetReducedFields } from '../FacultyAnalysis';
+import Spinner from '../../../components/Spinner/Spinner';
 
 const options = {
     ...commonOptions,
@@ -12,7 +13,7 @@ const options = {
 
 
 
-export default function ThresholdChart({ faculty, cycle, allowedFields }) {
+export default function ThresholdChart({ faculty, cycle, allowedFields, type }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
@@ -47,7 +48,7 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}/`, {})
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}&type=${type}/`, {})
 
     return (
         <Card  >
@@ -58,7 +59,7 @@ export default function ThresholdChart({ faculty, cycle, allowedFields }) {
             <CardContent>
                 {
                     loading ?
-                        <p>ładowanko</p>
+                        <Spinner />
                         :
                         <div >
                             <Bar data={convertResult(fieldsOfStudyData)} options={options} />

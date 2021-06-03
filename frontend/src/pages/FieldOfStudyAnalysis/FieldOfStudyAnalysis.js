@@ -41,6 +41,7 @@ const FieldOfStudyAnalysis = () => {
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
     const [field, setField] = useState();
+    const [type, setType] = useState('stacjonarne')
 
     const [selectedYearIdx, setSelectedYearIdx] = useState(0);
     const [years, loadingYears, errorYears] = useFetch('/api/backend/available-years/', [], json => json.sort((a, b) => b - a)) //sortowaine tablicy w porządku malejącym
@@ -50,11 +51,14 @@ const FieldOfStudyAnalysis = () => {
         setField(response[Object.keys(response)[facultyIdx]][0])
         return response
     }
-    const [facultiesStudyFields, loading, error] = useFetch(`api/backend/fields_of_studies/${cycle}`, [], onFetch)
+    const [facultiesStudyFields, loading, error] = useFetch(`api/backend/fields_of_studies/${cycle}/${type}`, [], onFetch)
 
     const faculties = Object.keys(facultiesStudyFields);
     const allFields = facultiesStudyFields[faculties[facultyIdx]];
 
+    const shortenFaculty = (name) => {
+        return name.split(' ').map(part => part[0])
+    }
 
     return (
         <>
@@ -65,7 +69,7 @@ const FieldOfStudyAnalysis = () => {
                     <>
                         <div className={classes.pageTitleContainer}>
                             <Typography className={classes.text} variant="h3" size="sm">
-                                {field}, {faculties[facultyIdx]}, stopień {cycle}
+                                {field}, {shortenFaculty(faculties[facultyIdx])}, stopień {cycle}
                             </Typography>
                             <div className={classes.formContainer}>
                                 <div className={classes.facultySelector}>
@@ -87,21 +91,40 @@ const FieldOfStudyAnalysis = () => {
                                         </Select>
                                     </FormControl>
                                 </div>
-                                <FormControl variant="outlined" fullWidth  >
-                                    <InputLabel id="cycle-input-label">Stopień</InputLabel>
-                                    <Select
-                                        labelId="cycle-input-label"
-                                        label="Stopień"
-                                        id="cycle-input"
-                                        name='cycle'
-                                        defaultValue={1}
-                                        onChange={e => { setCycle(e.target.value) }}
-                                    >
-                                        <MenuItem key={1} value={1}>I</MenuItem>
-                                        <MenuItem key={2} value={2}>II</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                <div className={classes.cycleSelector} >
+                                    <FormControl variant="outlined" fullWidth  >
+                                        <InputLabel id="cycle-input-label">Stopień</InputLabel>
+                                        <Select
+                                            labelId="cycle-input-label"
+                                            label="Stopień"
+                                            id="cycle-input"
+                                            name='cycle'
+                                            defaultValue={1}
+                                            onChange={e => { setCycle(e.target.value) }}
+                                        >
+                                            <MenuItem key={1} value={1}>I</MenuItem>
+                                            <MenuItem key={2} value={2}>II</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                                <div className={classes.typeSelector} >
+                                    <FormControl variant="outlined" fullWidth  >
+                                        <InputLabel id="type-input-label">Typ</InputLabel>
+                                        <Select
+                                            labelId="type-input-label"
+                                            label="Typ"
+                                            id="type-input"
+                                            name='type'
+                                            defaultValue={type}
+                                            onChange={e => { setType(e.target.value) }}
+                                        >
+                                            <MenuItem key={1} value="stacjonarne">Stacjonarne</MenuItem>
+                                            <MenuItem key={2} value="niestacjonarne">Niestacjonarne</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
                             </div>
+
                         </div>
 
                         <div>
@@ -113,7 +136,7 @@ const FieldOfStudyAnalysis = () => {
                                 <Typography variant='h5'>Rekrutacja w roku {years[selectedYearIdx]}</Typography>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={years[selectedYearIdx]} />
+                                <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={years[selectedYearIdx]} type={type} />
                             </Grid>
                             <Grid item xs={0} md={6} />
                             <Grid item xs={12}>
@@ -123,25 +146,25 @@ const FieldOfStudyAnalysis = () => {
                                 <Typography variant='h5'>Historia rekrutacji</Typography>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <CandidatesPerPlaceDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
+                                <CandidatesPerPlaceDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} type={type}/>
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                                <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} type={type} />
                             </Grid>
                             <Grid item xs={12}>
-                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                                <PointsDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} type={type} />
                             </Grid>
                             <Grid item xs={12} md={6}>
-                                <CyclesNumDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
+                                <CyclesNumDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} type={type} />
                             </Grid>
                             <Grid item xs={12} md={6} >
-                                {cycle == 1 ? 
-                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field}/> :
-                                    <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field}/>
+                                {cycle == 1 ?
+                                    <LaureatesDistriChart faculty={faculties[facultyIdx]} field={field} type={type} /> :
+                                    <Students2ndCycleDistriChart faculty={faculties[facultyIdx]} field={field} type={type} />
                                 }
                             </Grid>
                             <Grid item xs={12}>
-                                <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} />
+                                <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} type={type} />
                             </Grid>
                         </Grid>
                     </>

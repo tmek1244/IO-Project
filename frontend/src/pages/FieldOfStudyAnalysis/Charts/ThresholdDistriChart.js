@@ -5,6 +5,8 @@ import { Line } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import { colors, borderColors, commonOptions } from './settings'
 import useFetch from '../../../hooks/useFetch';
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -12,7 +14,7 @@ const options = {
 };
 
 
-export default function ThresholdDistriChart({ faculty, cycle, field }) {
+export default function ThresholdDistriChart({ faculty, cycle, field, type }) {
 
     const convertResult = (json) => {
         const result = {
@@ -34,7 +36,8 @@ export default function ThresholdDistriChart({ faculty, cycle, field }) {
     }
 
     //TODO add cycle here and delete mock
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${faculty}+${field}`, {});
+    console.log(encodeURIComponent(faculty))
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${type}/${encodeURIComponent(faculty)}+${field}`, []);
 
     return (
         <Card  >
@@ -45,11 +48,17 @@ export default function ThresholdDistriChart({ faculty, cycle, field }) {
             <CardContent>
                 {
                     loading ?
-                        <p>ładowanko</p> // TODO zrobić spinner
+                        <Spinner />
                         :
-                        <div >
-                            <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        (
+                            error ?
+                                <Error />
+                                :
+                                <div >
+                                    <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                                </div>
+                        )
+
                 }
             </CardContent>
         </Card>

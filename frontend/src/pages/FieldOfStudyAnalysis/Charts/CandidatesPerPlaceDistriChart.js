@@ -6,6 +6,7 @@ import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import { colors, borderColors, commonOptions } from './settings'
 import useFetch from '../../../hooks/useFetch';
 import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -13,7 +14,7 @@ const options = {
 };
 
 
-export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field }) {
+export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field, type }) {
 
     const convertResult = (json) => {
         const result = {
@@ -34,8 +35,7 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field })
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}/`, []);
-
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}+${type}/`, []);
 
     return (
         <Card  >
@@ -46,11 +46,14 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field })
             <CardContent>
                 {
                     loading ?
-                        <Spinner /> // TODO zrobić spinner
+                        <Spinner />
                         :
-                        <div >
-                            <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        error && !fieldsOfStudyData.length === 0 ? // nie wiem czemu, ale trzeba zrobić takie obejście na ten warunek 
+                            <Error />
+                            :
+                            <div >
+                                <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                            </div>
                 }
             </CardContent>
         </Card>

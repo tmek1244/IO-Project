@@ -11,7 +11,7 @@ const options = {
     aspectRatio: 3,
 };
 
-const CurrentStatusChanges = ({ faculty, degree, field_of_study, year }) => {
+const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) => {
 
     const convertResult = (json) => {
         const result = {
@@ -61,7 +61,7 @@ const CurrentStatusChanges = ({ faculty, degree, field_of_study, year }) => {
         return result;
     }
 
-    const [data, loading, error] = useFetch(`/api/backend/changes_after_cycle/${faculty}/${field_of_study}/${degree}/${year}/`, {}, convertResult);
+    const [data, loading, error] = useFetch(`/api/backend/changes_after_cycle/${faculty}/${field_of_study}/${degree}/${year}/${type}`, {}, convertResult);
 
     return (
         <Card  >

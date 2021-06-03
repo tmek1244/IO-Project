@@ -5,10 +5,10 @@ import MUIDataTable from 'mui-datatables'
 import useFetch from '../../../hooks/useFetch'
 
 
-const FacultyAggregation = ({ faculty, cycle }) => {
+const FacultyAggregation = ({ faculty, cycle, type }) => {
 
     //TODO odkomentować i sprawdzić, gdy już będzie gotowy endpoint
-    const [data, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_aggregation/faculty=${faculty}&cycle=${cycle}`, [])
+    const [data, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_aggregation/faculty=${faculty}&cycle=${cycle}&type=${type}`, [])
 
     var columns = []
     if(cycle == 1){

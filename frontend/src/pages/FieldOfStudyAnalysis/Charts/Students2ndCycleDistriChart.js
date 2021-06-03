@@ -5,6 +5,8 @@ import { Line } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, borderColors, commonOptions } from './settings'
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -12,11 +14,11 @@ const options = {
 };
 
 
-export default function Students2ndCycleDistriChart({ faculty, field}) {
+export default function Students2ndCycleDistriChart({ faculty, field, type }) {
 
     const convertResult = (json) => {
         //TODO lepszy opis labeli
-        if(typeof json[field] !== 'undefined') {
+        if (typeof json[field] !== 'undefined') {
             const result = {
                 labels: Object.keys(json[field]),
                 datasets: [{
@@ -33,9 +35,9 @@ export default function Students2ndCycleDistriChart({ faculty, field}) {
                 }]
             }
 
-            Object.keys(json[field]).forEach( key => {
+            Object.keys(json[field]).forEach(key => {
                 var stats = json[field][key]
-                Object.keys(stats).forEach (statusKey => {
+                Object.keys(stats).forEach(statusKey => {
                     var points = stats[statusKey];
                     result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
                 })
@@ -45,21 +47,9 @@ export default function Students2ndCycleDistriChart({ faculty, field}) {
         return null;
     }
 
-    
-    const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-conversion-over-the-years/${faculty}/${field}`, {})
-    // const loading = undefined
-    // const fakeData = {
-    //     "Informatyka": {
-    //         2019: {
-    //             "from-inside": 200,
-    //             "from-outside": 100,
-    //         },
-    //         2020: {
-    //             "from-inside": 20,
-    //             "from-outside": 10,
-    //         },
-    //     },
-    // }        
+
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/field-conversion-over-the-years/${faculty}/${field}/${type}`, {})
+
 
     return (
         <Card  >
@@ -68,14 +58,17 @@ export default function Students2ndCycleDistriChart({ faculty, field}) {
                 title={<Typography variant='h5'>Liczba studentów kontynuująca kierunek oraz z zewnątrz</Typography>}
             />
             <CardContent>
-            {
-                loading ?
-                    <p>ładowanko</p>
-                    :
-                    <div >
-                        <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                    </div>
-            }
+                {
+                    loading ?
+                        <Spinner />
+                        :
+                        error ?
+                            <Error />
+                            :
+                            <div >
+                                <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                            </div>
+                }
             </CardContent>
         </Card>
     )
