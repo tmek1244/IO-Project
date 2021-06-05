@@ -3,6 +3,8 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography, Grid } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -10,7 +12,7 @@ const options = {
 };
 
 
-export default function Incomers2DegreeChart({ faculty, cycle, field, year}) {
+export default function Incomers2DegreeChart({ faculty, field, year, type}) {
 
     const modifyJsonStructure = (json) => {
         //find max cycle num
@@ -42,7 +44,7 @@ export default function Incomers2DegreeChart({ faculty, cycle, field, year}) {
         //sort
         var sortable = [];
         for(var fof in json) {
-            sortable.push([fof, json[fof]["all"]]);
+            sortable.push([fof.split(';')[2], json[fof]["all"]]);
         }
         sortable.sort(function(a,b) {return b[1]-a[1]});
 
@@ -60,32 +62,32 @@ export default function Incomers2DegreeChart({ faculty, cycle, field, year}) {
     }
 
     
-    // const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-conversion-over-the-years/${faculty}/${field}`, {})
-    const loading = undefined
-    const fieldsOfStudyData = {
-        Informatyka: {
-            "all": 120,
-            1: 20,
-            2: 30,
-            3: 50,
-            4: 1,
-            5: 2
-        },
-        Elektronika: {
-            "all": 90,
-            1: 2,
-            2: 3,
-            3: 5,
-            4 : 1
-        },
-        Gornictwo: {
-            "all": 100,
-            1: 20,
-            2: 30,
-            3: 50,
-            5: 2
-        },
-    }
+    var [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/precise-field-conversion/${year}/${faculty}/${field}/${type}/`, {});    
+    // const loading = undefined
+    // const fieldsOfStudyData = {
+    //     Informatyka: {
+    //         "all": 120,
+    //         1: 20,
+    //         2: 30,
+    //         3: 50,
+    //         4: 1,
+    //         5: 2
+    //     },
+    //     Elektronika: {
+    //         "all": 90,
+    //         1: 2,
+    //         2: 3,
+    //         3: 5,
+    //         4 : 1
+    //     },
+    //     Gornictwo: {
+    //         "all": 100,
+    //         1: 20,
+    //         2: 30,
+    //         3: 50,
+    //         5: 2
+    //     },
+    // }
 
     return (
         <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
@@ -96,11 +98,17 @@ export default function Incomers2DegreeChart({ faculty, cycle, field, year}) {
             <CardContent>
                 {
                     loading ?
-                        <p>ładowanko</p>
+                        <Spinner />
                         :
-                        <div >
-                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        error  ?
+                            <Error />
+                            :
+                            (fieldsOfStudyData && Object.keys(fieldsOfStudyData).length === 0) ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div >
+                                    <Bar data={convertResult(fieldsOfStudyData)} options={options} />
+                                </div>
                 }
             </CardContent>
         </Card>
