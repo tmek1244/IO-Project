@@ -1068,44 +1068,34 @@ class FieldOfStudyChangesListView(APIView):
 
         try:
             faculty_obj = Faculty.objects.filter(name=faculty)
-            field_of_study_first_degree_obj = FieldOfStudy.objects.filter(
-                name=field_of_study, faculty__in=faculty_obj, degree=1
-            )
+            field_of_study_first_degree_filters = {
+                "name": field_of_study,
+                "faculty__in": faculty_obj,
+                "degree": 1
+            }
             if type is not None:
-                field_of_study_first_degree_obj = (
-                    field_of_study_first_degree_obj.filter(
-                        type=type
-                    ))
+                field_of_study_first_degree_filters["type"] = type
+            field_of_study_first_degree_obj = FieldOfStudy.objects.filter(
+                **field_of_study_first_degree_filters
+            )
             students = RecruitmentResult.objects.filter(
                 recruitment__in=Recruitment.objects.filter(
-                    field_of_study__in=field_of_study_first_degree_obj,
-                    year=year
+                    field_of_study__in=field_of_study_first_degree_obj
                 ),
                 result__in=['$', 'signed']
             ).values_list('student').distinct()
-            second_degree_fields_of_study = FieldOfStudy.objects.filter(
-                degree=2
-            ).exclude(name=field_of_study, faculty__in=faculty_obj)
+            field_of_study_second_degree_filters: Dict[str, Any] = {
+                "degree": 2,
+            }
             if type is not None:
-                second_degree_fields_of_study = (
-                    second_degree_fields_of_study.filter(
-                        type=type
-                    ))
-            print(second_degree_fields_of_study)
-            print(students)
-            print(Recruitment.objects.filter(
-                    field_of_study__in=second_degree_fields_of_study,
-                    year=year
-                ))
-            print(RecruitmentResult.objects.filter(
-                recruitment__in=Recruitment.objects.filter(
-                    field_of_study__in=second_degree_fields_of_study
-                ),
-                student__in=students
-            ))
+                field_of_study_second_degree_filters["type"] = type
+            second_degree_fields_of_study = FieldOfStudy.objects.filter(
+                **field_of_study_second_degree_filters
+            ).exclude(name=field_of_study, faculty__in=faculty_obj)
             continued_fields_of_study = RecruitmentResult.objects.filter(
                 recruitment__in=Recruitment.objects.filter(
-                    field_of_study__in=second_degree_fields_of_study
+                    field_of_study__in=second_degree_fields_of_study,
+                    year=year
                 ),
                 student__in=students,
                 result__in=['$', 'signed']
@@ -1279,7 +1269,7 @@ class ChangesAfterCycle(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-            
+
 class PreciseFieldConversionView(APIView):
     permission_classes = (IsAuthenticated,)
 
