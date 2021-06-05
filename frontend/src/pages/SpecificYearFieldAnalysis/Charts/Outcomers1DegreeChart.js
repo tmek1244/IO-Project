@@ -3,6 +3,8 @@ import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography, Grid } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
+import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -15,7 +17,7 @@ const options = {
 };
 
 
-export default function Outcomers1DegreeChart({ faculty, cycle, field, year}) {
+export default function Outcomers1DegreeChart({ faculty, field, year, type}) {
 
     
     const convertResult = (json) => {
@@ -25,8 +27,6 @@ export default function Outcomers1DegreeChart({ faculty, cycle, field, year}) {
             sortable.push([element["field_of_study"], element["count"]]);
         })
         sortable.sort(function(a,b) {return b[1]-a[1]});
-
-
 
         const result = {
             labels: sortable.map(function (value,index) { return value[0]; }),
@@ -40,25 +40,28 @@ export default function Outcomers1DegreeChart({ faculty, cycle, field, year}) {
     }
 
     
-    // const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-of-study-changes-list/{wydział}/{kierunek}`, {}) FIXME brakuje roku
-    const loading = undefined
-    const fieldsOfStudyData = [
-        {
-           "field_of_study": "Informatyka",
-           "faculty": "WH",
-           "count": 3,
-        },
-        {
-            "field_of_study": "Elektronika",
-            "faculty": "WH",
-            "count": 5,
-         },
-         {
-            "field_of_study": "Teleinfa",
-            "faculty": "WH",
-            "count": 6,
-         },
-    ]
+    const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-of-study-changes-list/${faculty}/${field}/${year}/${type}/`, [])
+    //not working
+
+    // empty: []
+    // const loading = undefined
+    // const fieldsOfStudyData = [
+    //     {
+    //        "field_of_study": "Informatyka",
+    //        "faculty": "WH",
+    //        "count": 3,
+    //     },
+    //     {
+    //         "field_of_study": "Elektronika",
+    //         "faculty": "WH",
+    //         "count": 5,
+    //      },
+    //      {
+    //         "field_of_study": "Teleinfa",
+    //         "faculty": "WH",
+    //         "count": 6,
+    //      },
+    // ]
 
     return (
         <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
@@ -69,11 +72,17 @@ export default function Outcomers1DegreeChart({ faculty, cycle, field, year}) {
             <CardContent>
                 {
                     loading ?
-                        <p>ładowanko</p>
+                        <Spinner />
                         :
-                        <div >
-                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        error  ?
+                            <Error />
+                            :
+                            fieldsOfStudyData.length === 0 ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div >
+                                    <Bar data={convertResult(fieldsOfStudyData)} options={options} />
+                                </div>
                 }
             </CardContent>
         </Card>

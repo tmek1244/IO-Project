@@ -13,6 +13,7 @@ import CycleFlowFromChart from './Charts/CycleFlowFromChart';
 import CycleFlowToChart from './Charts/CycleFlowToChart';
 import Spinner from '../../components/Spinner/Spinner';
 import Error from '../../components/Error/Error';
+import CurrentStatusChanges from './Charts/CurrentStatusChanges';
 
 
 const SpecificYearFieldAnalysis = () => {
@@ -146,19 +147,13 @@ const SpecificYearFieldAnalysis = () => {
                                 </Grid>
                                 <Grid item xs={12} md={6}>
                                     {cycle == 1 ? 
-                                        <Outcomers1DegreeChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/> :
+                                        <Outcomers1DegreeChart faculty={faculties[facultyIdx]} field={field} year={availableYears[yearIdx]} type={type}/> :
                                         <Incomers2DegreeChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
                                     }
                                 </Grid>
-                                {/* <Grid item xs={12} md={6} >
-                                    <ThresholdDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
+                                <Grid item xs={12} md={6}>
+                                    <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={availableYears[yearIdx]} type={type} />
                                 </Grid>
-                                <Grid item xs={12}>
-                                    <StudentStatusDistriChart faculty={faculties[facultyIdx]} cycle={cycle} field={field}/>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} />
-                                </Grid> */}
                             </Grid>
                         </>
                     )

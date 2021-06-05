@@ -14,7 +14,6 @@ import LaureatesDistriChart from './Charts/LaureatesDistriChart';
 import ThresholdDistriChart from './Charts/ThresholdDistriChart';
 import SelectSingleFieldComponent from '../../components/SelectSingleField/SelectSingleFieldComponent';
 import Spinner from '../../components/Spinner/Spinner';
-import CurrentStatusChanges from './Charts/CurrentStatusChanges';
 import CyclesNumDistriChart from './Charts/CyclesNumDistriChart';
 
 
@@ -132,16 +131,6 @@ const FieldOfStudyAnalysis = () => {
                         </div>
 
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
-                                <Typography variant='h5'>Rekrutacja w roku {years[selectedYearIdx]}</Typography>
-                            </Grid>
-                            <Grid item xs={12} md={6}>
-                                <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={years[selectedYearIdx]} type={type} />
-                            </Grid>
-                            <Grid item xs={0} md={6} />
-                            <Grid item xs={12}>
-                                <Divider />
-                            </Grid>
                             <Grid item xs={12}>
                                 <Typography variant='h5'>Historia rekrutacji</Typography>
                             </Grid>
