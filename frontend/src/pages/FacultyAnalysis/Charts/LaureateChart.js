@@ -15,8 +15,7 @@ const options = {
 
 export default function LaureateChart({ faculty, allowedFields, type, year }) {
 
-    const convertResult = (json) => {
-        let reduced = GetReducedFields(json, allowedFields) //already deletes json.all
+    const convertResult = (reduced) => {
         const result = {
             labels: Object.keys(reduced),
             datasets: [{
@@ -30,6 +29,7 @@ export default function LaureateChart({ faculty, allowedFields, type, year }) {
     }
 
     const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/${year}/${type}`, {})
+    let reducedFields = GetReducedFields(fieldsOfStudyData, allowedFields);
 
     return (
         <Card  >
@@ -45,9 +45,12 @@ export default function LaureateChart({ faculty, allowedFields, type, year }) {
                         error ?
                             <Error />
                             :
-                            <div >
-                                <Bar data={convertResult(fieldsOfStudyData)} options={options} />
-                            </div>
+                            reducedFields && Object.keys(reducedFields).length === 0 ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div >
+                                    <Bar data={convertResult(reducedFields)} options={options} />
+                                </div>
                 }
             </CardContent>
         </Card>

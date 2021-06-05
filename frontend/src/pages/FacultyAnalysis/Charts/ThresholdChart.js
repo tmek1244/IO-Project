@@ -5,6 +5,7 @@ import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
 import { GetReducedFields } from '../FacultyAnalysis';
 import Spinner from '../../../components/Spinner/Spinner';
+import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
@@ -15,10 +16,16 @@ const options = {
 
 export default function ThresholdChart({ faculty, cycle, allowedFields, type }) {
 
-    //converts the result of fetched json to format accepted by chart component
-    const convertResult = (json) => {
-        let reduced = GetReducedFields(json, allowedFields)
+    const isEmpty = (json) => {
+        var empty = true;
+        Object.values(json).forEach(val => {
+            if(val.length !== 0) {empty = false;}
+        })
+        return empty;
+    }
 
+    //converts the result of fetched json to format accepted by chart component
+    const convertResult = (reduced) => {
         //usuwanie kierunków które nie mają żadnych cykli
         reduced = Object.keys(reduced)
         .filter(key => (reduced[key].length > 0))
@@ -49,6 +56,7 @@ export default function ThresholdChart({ faculty, cycle, allowedFields, type }) 
     }
 
     const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}&type=${type}/`, {})
+    let reducedFields = GetReducedFields(fieldsOfStudyData, allowedFields);
 
     return (
         <Card  >
@@ -61,9 +69,15 @@ export default function ThresholdChart({ faculty, cycle, allowedFields, type }) 
                     loading ?
                         <Spinner />
                         :
-                        <div >
-                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        error ?
+                            <Error />
+                            :
+                            isEmpty(reducedFields) ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div >
+                                    <Bar data={convertResult(reducedFields)} options={options} />
+                                </div>
                 }
 
             </CardContent>

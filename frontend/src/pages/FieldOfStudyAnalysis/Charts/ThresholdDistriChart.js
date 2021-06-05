@@ -35,8 +35,6 @@ export default function ThresholdDistriChart({ faculty, cycle, field, type }) {
         return result
     }
 
-    //TODO add cycle here and delete mock
-    console.log(encodeURIComponent(faculty))
     const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${type}/${encodeURIComponent(faculty)}+${field}`, []);
 
     return (
