@@ -10,38 +10,30 @@ const options = {
     ...commonOptions,
     aspectRatio: 3,
 };
+const NotFilledChart = ({ year, cycle, type }) => {
 
+    const [data, loading, error] = useFetch(`api/backend/fields-of-study-not-full/${type}`, [])
 
-const PopularityChart = ({ degree, year, number, mode, type}) => {
-    //converts the result of fetched json to format accepted by chart component
-    const convertResult = (json) => {
+    const filterCycle = (data) => {
+        return data.filter(fof => parseInt(fof.degree) === cycle)
+    }
 
-
+    const convertData = (data) => {
         const result = {
             labels: [], datasets: [{
-                label: 'Liczba kandydatów na miejsce',
+                label: 'Kierunki o zbyt małej liczbie zgłoszeń',
                 data: [],
-                backgroundColor: colors[0]
+                backgroundColor: colors[2]
             }]
         }
 
-        for (let key of Object.keys(json)) {
-            result.labels.push(key)
-            result.datasets[0].data.push(json[key])
-        }
-
+        data.forEach(fof => {
+            result.labels.push(fof.field_of_study)
+            result.datasets[0].data.push(fof.candidate_per_place)
+        });
 
         return result
     }
-
-
-    const [data, loading, error] = useFetch(`api/backend/fields-of-study-popularity/${mode}/${degree}/${number}/${year}/${type}`, {}, convertResult)
-
-    const degreeString = degree === 1 ? "I" : "II"
-    const label = mode === 'most' ?
-        `Top ${number} najbardziej obleganych kierunków na studiach ${degreeString} stopnia`
-        :
-        `Top ${number} najmniej obleganych kierunków na studiach ${degreeString} stopnia`
 
     return (
         <>
@@ -55,11 +47,11 @@ const PopularityChart = ({ degree, year, number, mode, type}) => {
                         <Card  >
                             <CardHeader
                                 style={{ textAlign: 'center' }}
-                                title={<Typography variant='h5'>{label}</Typography>}
+                                title={<Typography variant='h5'>Kierunki o zbyt małej liczbie zgłoszeń</Typography>}
                             />
                             <CardContent>
                                 <div >
-                                    <Bar data={data} options={options} />
+                                    <Bar data={convertData(filterCycle(data))} options={options} /> {/* TODO zrobić skalę 0-1 */}
                                 </div>
                             </CardContent>
 
@@ -67,8 +59,7 @@ const PopularityChart = ({ degree, year, number, mode, type}) => {
                     )
             }
         </>
-
     )
 }
 
-export default PopularityChart
+export default NotFilledChart

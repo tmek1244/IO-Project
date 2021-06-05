@@ -4,6 +4,7 @@ import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
 import { GetReducedFields } from '../FacultyAnalysis';
+import Spinner from '../../../components/Spinner/Spinner';
 
 const options = {
     ...commonOptions,
@@ -11,7 +12,7 @@ const options = {
 };
 
 
-export default function Cycle2ndChart({ faculty, year, allowedFields}) {
+export default function Cycle2ndChart({ faculty, year, allowedFields, type}) {
 
     const convertResult = (json) => {
         let reduced = GetReducedFields(json, allowedFields)
@@ -41,8 +42,8 @@ export default function Cycle2ndChart({ faculty, year, allowedFields}) {
         return result
     }
 
-    //TODO check endpoint
-    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/field-conversion/${year}/${faculty}/`, {})  
+    //TODO backend musi dodać taki endpoint
+    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/field-conversion/${year}/${faculty}/${type}`, {})  
 
     return (
         <Card  >
@@ -53,7 +54,7 @@ export default function Cycle2ndChart({ faculty, year, allowedFields}) {
             <CardContent>
             {
                 loading ?
-                    <p>ładowanko</p>
+                    <Spinner />
                     :
                     <div >
                         <Bar data={convertResult(fieldsOfStudyData)} options={options} />

@@ -12,7 +12,7 @@ const options = {
 };
 
 
-const ThresholdChart = ({ degree, year, number, mode }) => {
+const ThresholdChart = ({ degree, year, number, mode, type }) => {
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
 
@@ -35,7 +35,7 @@ const ThresholdChart = ({ degree, year, number, mode }) => {
     }
 
 
-    const [data, loading, error] = useFetch(`/api/backend/fields-of-study-threshold/${mode}/${degree}/${number}/${year}`, {}, convertResult)
+    const [data, loading, error] = useFetch(`/api/backend/fields-of-study-threshold/${mode}/${degree}/${number}/${year}/${type}`, {}, convertResult)
 
     const degreeString = degree === 1 ? "I" : "II"
     const label = mode === 'most' ?

@@ -1,14 +1,6 @@
 import { makeStyles } from '@material-ui/styles';
 
 export default makeStyles(theme => ({
-    container: {
-        height: "40vh",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        top: 0,
-        left: 0,
-    },
     center: {
         display: "flex",
         justifyContent: "center",
@@ -26,7 +18,16 @@ export default makeStyles(theme => ({
         },
     },
     button: {
-        justifyContent:'center',
+        justifyContent: 'center',
         margin: theme.spacing(.5),
+    },
+    pageTitleContainer: {
+        display: "flex",
+        justifyContent: "space-between",
+        marginBottom: theme.spacing(4),
+        marginTop: theme.spacing(8),
+    },
+    text: {
+        color: theme.palette.text.hint,
     },
 }));

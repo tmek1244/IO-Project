@@ -12,7 +12,7 @@ const options = {
 };
 
 
-const LaureateChart = ({ year, number }) => {
+const LaureateChart = ({ year, number, type }) => {
     const convertResult = (json) => {
 
 
@@ -34,7 +34,7 @@ const LaureateChart = ({ year, number }) => {
     }
 
 
-    const [data, loading, error] = useFetch(`api/backend/laureate_stats/${number}/${year}`, {}, convertResult)
+    const [data, loading, error] = useFetch(`api/backend/laureate_stats/${number}/${year}/${type}`, {}, convertResult)
 
 
     return (

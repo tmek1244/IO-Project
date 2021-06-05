@@ -5,7 +5,7 @@ import Spinner from '../../../components/Spinner/Spinner'
 import Error from '../../../components/Error/Error'
 import useFetchPost from '../../../hooks/useFetchPost'
 
-const AggragationTable = ({ year, cycle }) => {
+const AggragationTable = ({ year, cycle, type }) => {
 
     var columns = []
     if (cycle === 1) {
@@ -17,7 +17,8 @@ const AggragationTable = ({ year, cycle }) => {
 
     const payload = {
         year: year,
-        study_cycle: cycle
+        study_cycle: cycle,
+        type: type,
     }
 
     const [data, loading, error] = useFetchPost(`/api/backend/recruitment-result-overview/`, payload, [])

@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import useStyles from "./styles";
 import InputLabel from '@material-ui/core/InputLabel';
 import FormControl from '@material-ui/core/FormControl';
-import { Typography, MenuItem, Select } from '@material-ui/core';
+import { Typography, MenuItem, Select, Grid } from '@material-ui/core';
 
 import AggragationTable from './Tables/AggragationTable';
 import useFetch from '../../hooks/useFetch';
 import Spinner from '../../components/Spinner/Spinner';
+import NotFilledChart from './Charts/NotFilledChart';
 
 
 const UniversityAnalysis = () => {
@@ -14,6 +15,7 @@ const UniversityAnalysis = () => {
 
     const [cycle, setCycle] = useState(1);
     const [selectedYearIdx, setSelectedYearIdx] = useState(0);
+    const [type, setType] = useState("stacjonarne")
     const [years, loading, _error] = useFetch('/api/backend/available-years/', [], json => json.sort((a, b) => b - a)) //sortowaine tablicy w porządku malejącym
 
     return (
@@ -47,7 +49,7 @@ const UniversityAnalysis = () => {
                                         </Select>
                                     </FormControl>
                                 </div>
-                                <div >
+                                <div className={classes.cycleSelector} >
                                     <FormControl variant="outlined" fullWidth  >
                                         <InputLabel id="cycle-input-label">Stopień</InputLabel>
                                         <Select
@@ -63,11 +65,32 @@ const UniversityAnalysis = () => {
                                         </Select>
                                     </FormControl>
                                 </div>
-
+                                <div className={classes.typeSelector} >
+                                    <FormControl variant="outlined" fullWidth  >
+                                        <InputLabel id="type-input-label">Typ</InputLabel>
+                                        <Select
+                                            labelId="type-input-label"
+                                            label="Typ"
+                                            id="type-input"
+                                            name='type'
+                                            defaultValue={type}
+                                            onChange={e => { setType(e.target.value) }}
+                                        >
+                                            <MenuItem key={1} value="stacjonarne">Stacjonarne</MenuItem>
+                                            <MenuItem key={2} value="niestacjonarne">Niestacjonarne</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
                             </div>
                         </div>
-
-                        <AggragationTable year={years[selectedYearIdx]} cycle={cycle} />
+                        <Grid container spacing={2}>
+                            <Grid item xs={12} md={6}>
+                                <NotFilledChart year={years[selectedYearIdx]} cycle={cycle} type={type} />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <AggragationTable year={years[selectedYearIdx]} cycle={cycle} type={type}/>
+                            </Grid>
+                        </Grid>
 
                     </>
             }
