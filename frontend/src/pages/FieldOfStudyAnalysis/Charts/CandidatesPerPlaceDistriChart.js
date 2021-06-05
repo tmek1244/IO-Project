@@ -36,6 +36,7 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field, t
     }
 
     const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}+${type}/`, []);
+    let isEmpty = fieldsOfStudyData.length === 0;
 
     return (
         <Card  >
@@ -51,9 +52,12 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field, t
                         error && !fieldsOfStudyData.length === 0 ? // nie wiem czemu, ale trzeba zrobić takie obejście na ten warunek 
                             <Error />
                             :
-                            <div >
-                                <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                            </div>
+                            isEmpty ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div>
+                                    <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                                </div>
                 }
             </CardContent>
         </Card>

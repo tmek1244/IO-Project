@@ -52,11 +52,12 @@ export default function LaureatesDistriChart({ faculty, field, type }) {
                             error && !fieldsOfStudyData.length === 0 ? // tu tak samo potrzeba tego dziwnego obejścia
                                 <Error />
                                 :
-                                <>
-                                    < div >
+                                fieldsOfStudyData.length === 0 ?
+                                    <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                    :
+                                    <div>
                                         <Line data={convertResult(fieldsOfStudyData)} options={options} />
                                     </div>
-                                </>
                         )
 
                 }
