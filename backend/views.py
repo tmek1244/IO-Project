@@ -1278,3 +1278,62 @@ class ChangesAfterCycle(APIView):
                 {"problem": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
             )
+
+            
+class PreciseFieldConversionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            year: int = None,
+            faculty: str = None,
+            field_of_study: str = None,
+            type: str = None) -> Response:
+
+        try:
+            year = year or (
+                Recruitment.objects.aggregate(Max('year'))["year__max"])
+
+            rrs = (
+                RecruitmentResult.objects
+                .filter(result__in=["accepted", "signed"])
+                .filter(recruitment__year=year)
+                .filter(
+                    recruitment__field_of_study__faculty__name__iexact=faculty)
+                .filter(
+                    recruitment__field_of_study__name__iexact=field_of_study)
+                .filter(recruitment__field_of_study__degree="2")
+            )
+
+            if type:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__type=type)
+
+            result: Dict[Any, Any] = {}
+            for rr in rrs:
+                try:
+                    gs: Any = rr.student.graduatedschool_set.first()
+                    school_name = gs.school_name
+                    faculty_name = gs.faculty
+                    fof_name = gs.field_of_study
+                    round = rr.recruitment.round
+
+                    name = school_name + ";" + faculty_name + ";" + fof_name
+
+                    if name not in result:
+                        result[name] = {"all": 0}
+                    if round not in result[name]:
+                        result[name][round] = 0
+
+                    result[name]["all"] += 1
+                    result[name][round] += 1
+
+                except Exception as e:
+                    print(e)
+
+            return Response(result, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
