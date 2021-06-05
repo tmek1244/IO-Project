@@ -36,10 +36,11 @@ const FacultyAnalysis = () => {
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
     const [allowedFields, setAllowedFields] = useState([]);
+    const [yearIdx, setYearIdx] = useState(0);
     const [type, setType] = useState("stacjonarne")
 
     const [facultiesStudyFields, loading, error] = useFetch(`api/backend/fields_of_studies/${cycle}/${type}/`, {});
-    const [years, loadingYears, errorYears] = useFetch('/api/backend/available-years/', [], json => json.sort((a, b) => b - a)) //sortowaine tablicy w porządku malejącym
+    const [availableYears, loadingYears, errorYears] = useFetch('/api/backend/available-years/', [], e => e.sort().reverse());
     
 
     // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
@@ -105,6 +106,25 @@ const FacultyAnalysis = () => {
                                                 </Select>
                                             </FormControl>
                                         </div>
+                                        <div className={classes.facultySelector}>
+                                            <FormControl variant="outlined" fullWidth  >
+                                                <InputLabel id="year-input-label">Rok</InputLabel>
+                                                <Select
+                                                    labelId="year-input-label"
+                                                    label="Rok"
+                                                    id="year-input"
+                                                    name='year'
+                                                    defaultValue={yearIdx}
+                                                    onChange={e => setYearIdx(e.target.value)}
+                                                >
+                                                    {
+                                                        availableYears.map((element, idx) => {
+                                                            return <MenuItem key={idx} value={idx}>{element}</MenuItem>
+                                                        })
+                                                    }
+                                                </Select>
+                                            </FormControl>
+                                        </div>
                                         <div className={classes.typeSelector} >
                                             <FormControl variant="outlined" fullWidth  >
                                                 <InputLabel id="type-input-label">Typ</InputLabel>
@@ -130,25 +150,25 @@ const FacultyAnalysis = () => {
 
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} md={6}>
-                                        <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields} type={type} />
+                                        <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
                                     </Grid>
                                     <Grid item xs={12} md={6}>
                                         {cycle == 1 ?
-                                            <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields} type={type} year={years[0]} /> :
-                                            <Cycle2ndChart faculty={faculties[facultyIdx]} year={"2020"} allowedFields={allowedFields} type={type} />
+                                            <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields} type={type} year={availableYears[yearIdx]} /> :
+                                            <Cycle2ndChart faculty={faculties[facultyIdx]} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
                                         }
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields} type={type} />
+                                        <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields} type={type} year={availableYears[yearIdx]}/>
                                     </Grid>
                                     <Grid item xs={12} >
-                                        <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields} type={type} />
+                                        <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={"2020"} allowedFields={allowedFields} type={type} />
+                                        <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
                                     </Grid>
                                     <Grid item xs={12}>
-                                        <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} type={type} />
+                                        <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} type={type} year={availableYears[yearIdx]}/>
                                     </Grid>
                                 </Grid>
 

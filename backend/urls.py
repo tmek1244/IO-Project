@@ -121,6 +121,10 @@ urlpatterns = [
         r'actual_recruitment_faculty_threshold/faculty=<faculty>'
         r'&cycle=<int:degree>&type=<type>/',
         ActualFacultyThreshold.as_view(), name='actual_threshold'),
+     path(
+        r'actual_recruitment_faculty_threshold/faculty=<faculty>'
+        r'&cycle=<int:degree>&type=<type>/<int:year>/',
+        ActualFacultyThreshold.as_view(), name='actual_threshold'),
     path(
         'actual_recruitment_faculty_aggregation/faculty=<faculty>'
         '&cycle=<int:cycle>',
@@ -129,6 +133,11 @@ urlpatterns = [
     path(
         'actual_recruitment_faculty_aggregation/faculty=<faculty>'
         '&cycle=<int:cycle>&type=<type>',
+        RecruitmentStatusAggregateListView.as_view(),
+        name='actual_recruitment'),
+     path(
+        'actual_recruitment_faculty_aggregation/faculty=<faculty>'
+        '&cycle=<int:cycle>&year=<int:year>&type=<type>',
         RecruitmentStatusAggregateListView.as_view(),
         name='actual_recruitment'),
     path('available-years/', RecruitmentYears.as_view(),
