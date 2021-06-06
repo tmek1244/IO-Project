@@ -1,4 +1,4 @@
-name: deploy_frontend
+name: deploy_frontend_testing
 on:
   push:
     tags:

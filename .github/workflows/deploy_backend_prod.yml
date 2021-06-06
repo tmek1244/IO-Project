@@ -1,0 +1,19 @@
+name: deploy_backend_production
+on:
+  push:
+    tags:
+      - backend.production.*
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: backend_production_deploy
+        uses: gonuit/heroku-docker-deploy@v1.3.3
+        with:
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "io-projekt"
+          email: tmek1244@wp.pl
+          dockerfile_directory: ./
+          dockerfile_name: backend.Dockerfile
+
