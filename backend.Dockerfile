@@ -17,5 +17,6 @@ COPY /users users
 COPY manage.py manage.py
 
 RUN adduser -D myuser
+RUN python manage.py collectstatic --noinput
 USER myuser
 CMD gunicorn IOProject.wsgi:application --bind 0.0.0.0:$PORT
