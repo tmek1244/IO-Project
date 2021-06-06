@@ -17,5 +17,5 @@ jobs:
           dockerfile_directory: ./
           dockerfile_name: backend.Dockerfile
         env:
-          ALLOWED_HOST: "https://io-backend-testing.herokuapp.com/"
+          ALLOWED_HOST: "io-backend-testing.herokuapp.com"
 
