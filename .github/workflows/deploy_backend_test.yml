@@ -16,6 +16,5 @@ jobs:
           email: tmek1244@wp.pl
           dockerfile_directory: ./
           dockerfile_name: backend.Dockerfile
-        env:
-          ALLOWED_HOST: "io-backend-testing.herokuapp.com"
+
 
