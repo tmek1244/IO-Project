@@ -384,7 +384,7 @@ class RecruitmentResultOverviewSerializer(serializers.ModelSerializer[Any]):
         if recruitment_results:
             result = recruitment_results.aggregate(Avg('points')).get(
                 'points__avg')
-            return result
+            return round(result, 2)
         return None
 
     def get_median(self, obj: Recruitment) -> Any:
