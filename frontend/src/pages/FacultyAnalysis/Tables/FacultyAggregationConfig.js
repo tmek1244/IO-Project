@@ -13,14 +13,14 @@ const options = {
 }
 
 const basicColumns = [
-    {
-        name: "year",
-        label: "Rok",
-        options: {
-            filter: false,
-            sort: false
-        }
-    },
+    // {
+    //     name: "year",
+    //     label: "Rok",
+    //     options: {
+    //         filter: false,
+    //         sort: false
+    //     }
+    // },
     {
         name: "field_of_study",
         label: "Kierunek",

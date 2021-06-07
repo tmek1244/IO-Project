@@ -13,7 +13,7 @@ const options = {
 
 
 
-export default function ThresholdChart({ faculty, cycle, allowedFields, type }) {
+export default function ThresholdChart({ faculty, cycle, allowedFields, type, year }) {
 
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
@@ -48,7 +48,7 @@ export default function ThresholdChart({ faculty, cycle, allowedFields, type }) 
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}&type=${type}/`, {})
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/actual_recruitment_faculty_threshold/faculty=${faculty}&cycle=${cycle}&type=${type}/${year}`, {})
 
     return (
         <Card  >
