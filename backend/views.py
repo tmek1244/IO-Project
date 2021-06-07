@@ -1063,6 +1063,62 @@ class FieldConversionOverTheYearsView(APIView):
             )
 
 
+class FieldOfStudyChangesListView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            faculty: str = None,
+            field_of_study: str = None,
+            year: int = None, type: str = None) -> Response:
+
+        try:
+            faculty_obj = Faculty.objects.filter(name=faculty)
+            field_of_study_first_degree_filters = {
+                "name": field_of_study,
+                "faculty__in": faculty_obj,
+                "degree": 1
+            }
+            if type is not None:
+                field_of_study_first_degree_filters["type"] = type
+            field_of_study_first_degree_obj = FieldOfStudy.objects.filter(
+                **field_of_study_first_degree_filters
+            )
+            students = RecruitmentResult.objects.filter(
+                recruitment__in=Recruitment.objects.filter(
+                    field_of_study__in=field_of_study_first_degree_obj
+                ),
+                result__in=['$', 'signed']
+            ).values_list('student').distinct()
+            field_of_study_second_degree_filters: Dict[str, Any] = {
+                "degree": 2,
+            }
+            if type is not None:
+                field_of_study_second_degree_filters["type"] = type
+            second_degree_fields_of_study = FieldOfStudy.objects.filter(
+                **field_of_study_second_degree_filters
+            ).exclude(name=field_of_study, faculty__in=faculty_obj)
+            continued_fields_of_study = RecruitmentResult.objects.filter(
+                recruitment__in=Recruitment.objects.filter(
+                    field_of_study__in=second_degree_fields_of_study,
+                    year=year
+                ),
+                student__in=students,
+                result__in=['$', 'signed']
+            ).values(field_of_study=F('recruitment__field_of_study__name'),
+                     faculty=F('recruitment__field_of_study__faculty__name')
+                     ).annotate(
+                count=Count('recruitment__field_of_study')
+            ).order_by('-count')
+            return Response(continued_fields_of_study,
+                            status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
 class PointsDistributionOverTheYearsView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -1216,4 +1272,63 @@ class ChangesAfterCycle(APIView):
             return Response(
                 {"problem": str(e)},
                 status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class PreciseFieldConversionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            year: int = None,
+            faculty: str = None,
+            field_of_study: str = None,
+            type: str = None) -> Response:
+
+        try:
+            year = year or (
+                Recruitment.objects.aggregate(Max('year'))["year__max"])
+
+            rrs = (
+                RecruitmentResult.objects
+                .filter(result__in=["accepted", "signed"])
+                .filter(recruitment__year=year)
+                .filter(
+                    recruitment__field_of_study__faculty__name__iexact=faculty)
+                .filter(
+                    recruitment__field_of_study__name__iexact=field_of_study)
+                .filter(recruitment__field_of_study__degree="2")
+            )
+
+            if type:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__type=type)
+
+            result: Dict[Any, Any] = {}
+            for rr in rrs:
+                try:
+                    gs: Any = rr.student.graduatedschool_set.first()
+                    school_name = gs.school_name
+                    faculty_name = gs.faculty
+                    fof_name = gs.field_of_study
+                    round = rr.recruitment.round
+
+                    name = school_name + ";" + faculty_name + ";" + fof_name
+
+                    if name not in result:
+                        result[name] = {"all": 0}
+                    if round not in result[name]:
+                        result[name][round] = 0
+
+                    result[name]["all"] += 1
+                    result[name][round] += 1
+
+                except Exception as e:
+                    print(e)
+
+            return Response(result, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
             )

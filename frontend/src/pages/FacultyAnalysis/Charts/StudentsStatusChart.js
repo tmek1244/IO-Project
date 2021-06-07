@@ -63,27 +63,26 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
                 title={<Typography variant='h5'>Status studentów dla danego kierunku w cyklach</Typography>}
             />
             <CardContent>
-                <Grid container spacing={1}>
-
-            {Object.keys(GetReducedFields(fieldsOfStudyData, allowedFields)).map((name) => {
-                let amount = 1;
-                let keys = Object.keys(GetReducedFields(fieldsOfStudyData, allowedFields))
-                if(keys.indexOf(name) == keys.length - 1 && keys.length % 2 == 1) {
-                        amount = 2;
-                    }
-                return(
-                <Grid item xs={12} md={6*amount}>
-                    <Card variant="outlined">
-                    <CardHeader
-                        style={{ textAlign: 'center', backgroundColor: "#fcfcfc", paddingBottom:0, paddingTop:5}}
-                        title={<Typography variant='subtitle1'>{name}</Typography>}
-                    />
-                    <CardContent style={{backgroundColor: "#fcfcfc",padding:0}}>
-                        <Bar data={convertResult(fieldsOfStudyData[name])} options={options} />
-                    </CardContent>
-                    </Card>
-                </Grid>)
-            })}
+            <Grid container spacing={1}>
+                {Object.keys(GetReducedFields(fieldsOfStudyData, allowedFields)).map((name) => {
+                    let amount = 1;
+                    let keys = Object.keys(GetReducedFields(fieldsOfStudyData, allowedFields))
+                    if(keys.indexOf(name) == keys.length - 1 && keys.length % 2 == 1) {
+                            amount = 2;
+                        }
+                    return(
+                    <Grid item xs={12} md={6*amount}>
+                        <Card variant="outlined">
+                        <CardHeader
+                            style={{ textAlign: 'center', backgroundColor: "#fcfcfc", paddingBottom:0, paddingTop:5}}
+                            title={<Typography variant='subtitle1'>{name}</Typography>}
+                        />
+                        <CardContent style={{backgroundColor: "#fcfcfc",padding:0}}>
+                            <Bar data={convertResult(fieldsOfStudyData[name])} options={options} />
+                        </CardContent>
+                        </Card>
+                    </Grid>)
+                })}
             </Grid>
             </CardContent>
         </Card>
