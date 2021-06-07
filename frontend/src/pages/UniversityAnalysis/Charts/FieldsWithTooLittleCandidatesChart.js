@@ -10,9 +10,10 @@ const options = {
     ...commonOptions,
     aspectRatio: 3,
 };
-const NotFilledChart = ({ year, cycle, type }) => {
 
-    const [data, loading, error] = useFetch(`api/backend/fields-of-study-not-full/${type}`, [])
+const FieldsWithTooLittleCandidatesChart = ({ year, cycle, type }) => {
+
+    const [data, loading, error] = useFetch(`api/backend/fields-of-study-not-full/${year}/${type}`, [])
 
     const filterCycle = (data) => {
         return data.filter(fof => parseInt(fof.degree) === cycle)
@@ -34,6 +35,7 @@ const NotFilledChart = ({ year, cycle, type }) => {
 
         return result
     }
+
 
     return (
         <>
@@ -62,4 +64,4 @@ const NotFilledChart = ({ year, cycle, type }) => {
     )
 }
 
-export default NotFilledChart
+export default FieldsWithTooLittleCandidatesChart

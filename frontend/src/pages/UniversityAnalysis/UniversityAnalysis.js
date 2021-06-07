@@ -7,7 +7,8 @@ import { Typography, MenuItem, Select, Grid } from '@material-ui/core';
 import AggragationTable from './Tables/AggragationTable';
 import useFetch from '../../hooks/useFetch';
 import Spinner from '../../components/Spinner/Spinner';
-import NotFilledChart from './Charts/NotFilledChart';
+import FieldsWithTooLittleCandidatesChart from './Charts/FieldsWithTooLittleCandidatesChart';
+import NotFullyFilledFieldsChart from './Charts/NotFullyFilledFieldsChart';
 
 
 const UniversityAnalysis = () => {
@@ -85,11 +86,15 @@ const UniversityAnalysis = () => {
                         </div>
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
-                                <NotFilledChart year={years[selectedYearIdx]} cycle={cycle} type={type} />
+                                <FieldsWithTooLittleCandidatesChart year={years[selectedYearIdx]} cycle={cycle} type={type} />
+                            </Grid>
+                            <Grid xs={12} md={6}>
+                                <NotFullyFilledFieldsChart year={years[selectedYearIdx]} cycle={cycle} type={type} />
                             </Grid>
                             <Grid item xs={12}>
                                 <AggragationTable year={years[selectedYearIdx]} cycle={cycle} type={type}/>
                             </Grid>
+                            
                         </Grid>
 
                     </>
