@@ -1047,10 +1047,6 @@ class SameYearFieldConversion(APIView):
                 rrs = rrs.filter(
                     recruitment__field_of_study__degree=degree)
 
-            if type:
-                rrs = rrs.filter(
-                    recruitment__field_of_study__type=type)
-
             result: Dict[Any, Any] = {}
             for rr in rrs:
                 try:
@@ -1069,7 +1065,7 @@ class SameYearFieldConversion(APIView):
                         other_faculty = (
                             other_rr.recruitment.field_of_study.faculty.name)
                         other_fof = other_rr.recruitment.field_of_study.name
-                        name = other_faculty + other_fof
+                        name = other_faculty + ";" + other_fof
                         if round not in result:
                             result[round] = {}
                         if name not in result[round]:
