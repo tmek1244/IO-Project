@@ -16,7 +16,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            RecruitmentResultListView,
                            RecruitmentResultOverviewListView,
                            RecruitmentStatusAggregateListView,
-                           RecruitmentYears,
+                           RecruitmentYears, SameYearFieldConversion,
                            StatusDistributionOverTheYearsView,
                            StatusDistributionView, UploadFieldsOfStudyView,
                            UploadView)
@@ -145,4 +145,10 @@ urlpatterns = [
          FacultyPopularity.as_view(), name="faculty_popularity"),
     path('changes_after_cycle/<faculty>/<field_of_study>/<degree>/<year>/',
          ChangesAfterCycle.as_view(), name="changes_after_cycle"),
+    
+    path('same-year-field-conversion/<int:year>/<faculty>/<field_of_study>/',
+         SameYearFieldConversion.as_view(), name='same-year-field-conversion'),
+    path('same-year-field-conversion/<int:year>/<faculty>/<field_of_study>/'
+         '<type>/<degree>/',
+         SameYearFieldConversion.as_view(), name='same-year-field-conversion'),
 ]
