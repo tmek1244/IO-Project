@@ -145,7 +145,7 @@ urlpatterns = [
          FacultyPopularity.as_view(), name="faculty_popularity"),
     path('changes_after_cycle/<faculty>/<field_of_study>/<degree>/<year>/',
          ChangesAfterCycle.as_view(), name="changes_after_cycle"),
-    
+
     path('same-year-field-conversion/<int:year>/<faculty>/<field_of_study>/',
          SameYearFieldConversion.as_view(), name='same-year-field-conversion'),
     path('same-year-field-conversion/<int:year>/<faculty>/<field_of_study>/'

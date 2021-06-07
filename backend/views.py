@@ -1057,8 +1057,8 @@ class SameYearFieldConversion(APIView):
                     round = rr.recruitment.round
                     student = rr.student
                     other_rrs = (
-                        student.recruitmentresult__set
-                        # nie wiem czy potrzebne 
+                        student.recruitmentresult_set
+                        # nie wiem czy potrzebne
                         # .filter(result__in=["rejected", "unregistered"])
                         .filter(recruitment__year=year)
                         # nie wiem czy ma być mniejsze czy n-1
@@ -1066,7 +1066,8 @@ class SameYearFieldConversion(APIView):
                     )
 
                     for other_rr in other_rrs:
-                        other_faculty = other_rr.recruitment.field_of_study.faculty.name
+                        other_faculty = (
+                            other_rr.recruitment.field_of_study.faculty.name)
                         other_fof = other_rr.recruitment.field_of_study.name
                         name = other_faculty + other_fof
                         if round not in result:
