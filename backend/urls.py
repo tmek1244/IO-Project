@@ -7,6 +7,7 @@ from backend.views import (ActualFacultyThreshold, AddFacultyView,
                            FieldConversionOverTheYearsView,
                            FieldConversionView,
                            FieldOfStudyCandidatesPerPlaceListView,
+                           FieldOfStudyChangesCycleListView,
                            FieldOfStudyChangesListView,
                            FieldOfStudyContestLaureatesCountView,
                            FieldOfStudyNotFullSignedView,
@@ -223,6 +224,10 @@ urlpatterns = [
          '<type>/',
          FieldOfStudyChangesListView.as_view(),
          name='field_of_study_changes_list'),
+    path('field-of-study-changes-cycle-list/<faculty>/<field_of_study>/'
+         '<degree>/<year>/<type>/',
+         FieldOfStudyChangesCycleListView.as_view(),
+         name='field_of_study_changes_cycle_list'),
     path('changes_after_cycle/<faculty>/<field_of_study>/<degree>/<year>/',
          ChangesAfterCycle.as_view(), name="changes_after_cycle"),
     path('changes_after_cycle/<faculty>/<field_of_study>/<degree>/<year>/'

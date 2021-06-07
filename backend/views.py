@@ -1119,6 +1119,68 @@ class FieldOfStudyChangesListView(APIView):
             )
 
 
+class FieldOfStudyChangesCycleListView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            faculty: str = None,
+            field_of_study: str = None,
+            degree: int = None, year: int = None,
+            type: str = None) -> Response:
+
+        try:
+            faculty_obj = Faculty.objects.filter(name=faculty)
+            field_of_study_obj = FieldOfStudy.objects.filter(
+                    name=field_of_study,
+                    degree=degree,
+                    type=type,
+                    faculty__in=faculty_obj
+                )
+            cycles: Any = Recruitment.objects.filter(
+                field_of_study__in=field_of_study_obj,
+                year=year
+            )
+            cycles = cycles.exclude(
+                round=cycles.aggregate(Max('round'))['round__max']).values(
+                "round").order_by('round')
+            response = {}
+
+            for cycle in cycles:
+                cycle = int(cycle['round'])
+                students = RecruitmentResult.objects.filter(
+                    recruitment__in=Recruitment.objects.filter(
+                        field_of_study__in=field_of_study_obj,
+                        round=cycle,
+                        year=year
+                    ),
+                    result__in=['accepted', 'unregistered']
+                ).values_list('student').distinct()
+                continued_fields_of_study = RecruitmentResult.objects.filter(
+                    recruitment__in=Recruitment.objects.filter(
+                        field_of_study__in=FieldOfStudy.objects.exclude(
+                            name=field_of_study, faculty__in=faculty_obj
+                        ),
+                        round=cycle + 1,
+                        year=year
+                    ),
+                    student__in=students,
+                    result__in=['$', 'signed']
+                ).values(field_of_study=F('recruitment__field_of_study__name'),
+                         faculty=F(
+                             'recruitment__field_of_study__faculty__name')
+                         ).annotate(
+                    count=Count('recruitment__field_of_study')
+                ).order_by('-count')
+                response[cycle] = continued_fields_of_study
+            return Response(response, status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
 class PointsDistributionOverTheYearsView(APIView):
     permission_classes = (IsAuthenticated,)
 
