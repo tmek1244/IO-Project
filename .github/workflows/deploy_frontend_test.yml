@@ -9,15 +9,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: frontend_testing_deploy
-        uses: akhileshns/heroku-deploy@v3.12.12
+        uses: gonuit/heroku-docker-deploy@v1.3.3
         env:
           proxy_name: 'https://io-backend-testing.herokuapp.com'
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
           heroku_app_name: "io-frontend-testing"
-          email: tmek1244@wp.pl
-          dockerfile_directory: ./frontend
-          dockerfile_name: deploy.Dockerfile
+          heroku_email: tmek1244@wp.pl
+          usedocker: true
+          appdir: frontend
           docker_build_args: |
             proxy_name
 
