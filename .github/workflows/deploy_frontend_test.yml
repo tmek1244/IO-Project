@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: frontend_testing_deploy
-        uses: gonuit/heroku-docker-deploy@v1.3.3
+        uses: akhileshns/heroku-deploy@v3.12.12
         env:
           proxy_name: 'https://io-backend-testing.herokuapp.com'
         with:
