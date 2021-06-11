@@ -14,10 +14,11 @@ const options = {
 const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) => {
 
     const convertResult = (json) => {
-        const result = {
-            labels: Object.keys(json),
-            datasets: []
-        }
+        const result = { labels: [], datasets: [] }
+
+        Object.keys(json).forEach(key => {
+            result.labels.push('Cykl ' + key);
+        })        
         
         const acceptedDataset = {
             label: "Zaakceptowani",

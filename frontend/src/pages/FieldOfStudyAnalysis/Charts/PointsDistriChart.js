@@ -47,8 +47,7 @@ export default function PointsDistriChart({ faculty, cycle, field, type }) {
         return null;
     }
 
-    //TODO maybe add setStep somewhere?
-    const [step, setStep] = useState(200)
+    const step = 200;
     const [fieldsOfStudyData, loading, error] = useFetch(`api/backend/points-distribution-over-the-years/${step}/${faculty}/${field}/${cycle}/${type}`, {})
 
     return (
@@ -65,9 +64,12 @@ export default function PointsDistriChart({ faculty, cycle, field, type }) {
                         error ?
                             <Error />
                             :
-                            <div >
-                                <Bar data={convertResult(fieldsOfStudyData)} options={options} />
-                            </div>
+                            fieldsOfStudyData && Object.keys(fieldsOfStudyData).length === 0 ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div>
+                                    <Bar data={convertResult(fieldsOfStudyData)} options={options} />
+                                </div>
                 }
             </CardContent>
         </Card>

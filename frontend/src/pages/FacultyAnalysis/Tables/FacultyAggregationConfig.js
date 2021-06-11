@@ -135,7 +135,7 @@ const statusColumn = [
     },
     {
         name: "under_treshold",
-        label: "Ponieżej progu",
+        label: "Poniżej progu",
         options: {
             filter: false,
             sort: true,

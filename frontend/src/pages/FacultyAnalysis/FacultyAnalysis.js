@@ -26,10 +26,6 @@ export function GetReducedFields(fieldsLiteral, allowedFields) {
         }, {});
 }
 
-export function GetReducedArray(fieldsArray, allowedFields) {
-    return fieldsArray.filter(arr => allowedFields.includes(arr["name"]));
-}
-
 const FacultyAnalysis = () => {
     var classes = useStyles();
 

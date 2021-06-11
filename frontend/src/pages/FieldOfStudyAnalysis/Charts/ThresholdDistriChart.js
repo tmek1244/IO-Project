@@ -49,12 +49,15 @@ export default function ThresholdDistriChart({ faculty, cycle, field, type }) {
                         <Spinner />
                         :
                         (
-                            error ?
+                            error  && !fieldsOfStudyData.length === 0 ? // tu tez jest potrzebne
                                 <Error />
                                 :
-                                <div >
-                                    <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                                </div>
+                                fieldsOfStudyData.length === 0 ?
+                                    <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                    :
+                                    <div>
+                                        <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                                    </div>
                         )
 
                 }
