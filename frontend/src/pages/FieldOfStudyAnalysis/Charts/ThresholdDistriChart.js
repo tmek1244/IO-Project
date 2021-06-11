@@ -35,8 +35,7 @@ export default function ThresholdDistriChart({ faculty, cycle, field, type }) {
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${type}/${faculty}+${field}`, []);
-    
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${type}/${faculty}+${field}`, [], e => e.sort((a,b) => {return a["recruitment__year"] > b["recruitment__year"] ? 1 : -1;}));
     return (
         <Card  >
             <CardHeader

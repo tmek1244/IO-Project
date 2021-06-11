@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react'
-import PageTitle from '../../components/PageTitle/PageTitle';
+import React from 'react'
 import useFetch from '../../hooks/useFetch';
 import { useState } from 'react';
 import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, Divider, } from '@material-ui/core';
@@ -16,35 +15,13 @@ import SelectSingleFieldComponent from '../../components/SelectSingleField/Selec
 import Spinner from '../../components/Spinner/Spinner';
 import CyclesNumDistriChart from './Charts/CyclesNumDistriChart';
 
-
-// export function GetReducedFields(fieldsLiteral, allowedFields) {
-//     return Object.keys(fieldsLiteral)
-//         .filter(key => allowedFields.includes(key))
-//         .reduce((obj,key) => {
-//             obj[key] = fieldsLiteral[key];
-//             return obj;
-//         }, {});
-// }
-
-// export function GetReducedArray(fieldsArray, allowedFields) {
-//     return fieldsArray.filter(arr => allowedFields.includes(arr["name"]));
-// }
-
 const FieldOfStudyAnalysis = () => {
     var classes = useStyles();
 
-    // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
-    // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
-    // w momencie ustalania tego parametru nie mamy jeszcze pobranej listy wydziałów, ale wiemy, że będzie miała co najmniej
-    // jeden element oraz będziemy się do niej odwoływać dopiero jak będzie pobrana, czyli loading będzie na false
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
     const [field, setField] = useState();
     const [type, setType] = useState('stacjonarne')
-
-    const [selectedYearIdx, setSelectedYearIdx] = useState(0);
-    const [years, loadingYears, errorYears] = useFetch('/api/backend/available-years/', [], json => json.sort((a, b) => b - a)) //sortowaine tablicy w porządku malejącym
-
 
     const onFetch = (response) => {
         setField(response[Object.keys(response)[facultyIdx]][0])
@@ -62,7 +39,7 @@ const FieldOfStudyAnalysis = () => {
     return (
         <>
             {
-                loading || loadingYears ?
+                loading ?
                     <Spinner />
                     :
                     <>
@@ -125,12 +102,8 @@ const FieldOfStudyAnalysis = () => {
                                         </Select>
                                     </FormControl>
                                 </div>
+                                <SelectSingleFieldComponent fields={allFields} setField={setField} />
                             </div>
-
-                        </div>
-
-                        <div>
-                            <SelectSingleFieldComponent fields={allFields} setField={setField} />
                         </div>
 
                         <Grid container spacing={2}>

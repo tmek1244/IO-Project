@@ -1,51 +1,48 @@
 import React from 'react';
-// import useStyles from "./styles";
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
-
-//TODO change to radio buttons?
+import {FormControl, InputLabel, MenuItem, Select} from '@material-ui/core';
+import { makeStyles } from "@material-ui/styles";
+import { useState } from 'react';
 
 function SelectSingleFieldComponent({fields, setField}) {
-    // const classes = useStyles();
+    const classes = makeStyles(theme => ({
+        facultySelector: {
+          minWidth: "100px",
+          marginRight: "5px"
+        },
+    }));
 
-    const [chosenField, setChosenField] = React.useState(fields[0]);
+    const [fieldIdx, setFieldIdx] = useState(0);
 
-    React.useEffect(() => { 
-        if (!fields.includes(chosenField)) {
-            setChosenField(fields[0])
-            setField(fields[0])
-        } else {
-            setField(chosenField)
-        }
-    });
+    React.useEffect(() => {
+        setFieldIdx(0);
+        setField(fields[0]);
+    }, fields);
 
-    const handleFieldsChange = (event) => {
-        let name = event.target.checked ?
-            event.target.name :
-            chosenField
-
-        setChosenField(name)
-        setField(name)
+    const handleFieldsChange = (idx) => {
+        setFieldIdx(idx);
+        setField(fields[idx]);
     };
 
     return(
-        <>
-            <FormControl component="fieldset">
-                <FormLabel component="legend">Kierunki</FormLabel>
-                <FormGroup row={true}>
-                    {fields.map((name) => (
-                        <FormControlLabel
-                            control={<Checkbox checked={chosenField===name} onChange={handleFieldsChange} name={name} color="primary"/>}
-                            label={name}
-                        />
-                    ))}
-
-                </FormGroup>
+        <div className={classes.facultySelector}>
+            <FormControl variant="outlined" fullWidth >
+                <InputLabel id="field-input-label">Kierunek</InputLabel>
+                <Select
+                    labelId="field-input-label"
+                    label="Kierunek"
+                    id="field-input"
+                    name='field'
+                    value={fieldIdx}
+                    onChange={e => handleFieldsChange(e.target.value)}
+                >
+                    {
+                        fields.map((element, idx) => {
+                            return <MenuItem key={idx} value={idx}>{element}</MenuItem>
+                        })
+                    }
+                </Select>
             </FormControl>
-        </>
+        </div>
     );
 }
 

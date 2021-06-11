@@ -35,8 +35,7 @@ export default function LaureatesDistriChart({ faculty, field, type }) {
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/contest-laureates/${faculty}+${field}+${type}`, []);
-
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/contest-laureates/${faculty}+${field}+${type}`, [], e => e.sort((a,b) => {return a["recruitment__year"] > b["recruitment__year"] ? 1 : -1;}));
     return (
         <Card  >
             <CardHeader

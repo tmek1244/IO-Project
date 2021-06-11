@@ -19,10 +19,6 @@ import CurrentStatusChanges from './Charts/CurrentStatusChanges';
 const SpecificYearFieldAnalysis = () => {
     var classes = useStyles();
     
-    // trochę tricky, bo zamiast przetrzymywać tu nazwę wydziału przetrzymuję tu numer indeksu w tablicy wydziałów,
-    // żeby można było łatwiej przekazywać do potomych komponentów oraz ustawić to jako domyślną wartość w formie
-    // w momencie ustalania tego parametru nie mamy jeszcze pobranej listy wydziałów, ale wiemy, że będzie miała co najmniej
-    // jeden element oraz będziemy się do niej odwoływać dopiero jak będzie pobrana, czyli loading będzie na false
     const [facultyIdx, setFacultyIdx] = useState(0);
     const [yearIdx, setYearIdx] = useState(0);
     const [cycle, setCycle] = useState(1);
@@ -129,13 +125,9 @@ const SpecificYearFieldAnalysis = () => {
                                                     <MenuItem key={2} value="niestacjonarne">Niestacjonarne</MenuItem>
                                                 </Select>
                                             </FormControl>
-                                        </div>
-
+                                    </div>
+                                    <SelectSingleFieldComponent fields={allFields} setField={setField}/> 
                                 </div>
-                            </div>
-
-                            <div>
-                                <SelectSingleFieldComponent fields={allFields} setField={setField}/> 
                             </div>
 
                             <Grid container spacing={2}>

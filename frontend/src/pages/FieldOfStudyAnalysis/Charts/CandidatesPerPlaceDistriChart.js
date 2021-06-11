@@ -35,7 +35,7 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field, t
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}+${type}/`, []);
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}+${type}/`, [], e => e.sort((a,b) => {return a["year"] > b["year"] ? 1 : -1;}));
     let isEmpty = fieldsOfStudyData.length === 0;
 
     return (

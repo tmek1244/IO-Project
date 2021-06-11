@@ -23,6 +23,7 @@ export default makeStyles(theme => ({
   },
   typeSelector: {
     minWidth: "100px",
+    marginRight: "5px"
   },
   text: {
     color: theme.palette.text.hint,
