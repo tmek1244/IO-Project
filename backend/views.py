@@ -204,14 +204,11 @@ class RecruitmentStatusAggregateListView(generics.ListAPIView):
             try:
                 faculty = Faculty.objects.filter(
                     name=self.kwargs.get('faculty'))[0]
-                print(faculty)
                 field_of_study_filters = {'faculty': faculty}
                 if 'cycle' in self.kwargs:
                     field_of_study_filters['degree'] = self.kwargs.get('cycle')
-                    print(field_of_study_filters['degree'])
                 if 'type' in self.kwargs:
                     field_of_study_filters['type'] = self.kwargs.get('type')
-                    print(field_of_study_filters['type'])
                 filters['field_of_study__in'] = FieldOfStudy.objects.filter(
                     **field_of_study_filters)
             except IndexError:

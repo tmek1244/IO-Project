@@ -29,15 +29,15 @@ const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) =
         const rejectedDataset = {
             label: "Odrzuceni",
             data: [],
-            backgroundColor: colors[1],
-            borderColor: borderColors[1],
+            backgroundColor: colors[2],
+            borderColor: borderColors[2],
         }
 
         const signedDataset = {
             label: "Zapisani",
             data: [],
-            backgroundColor: colors[2],
-            borderColor: borderColors[2],
+            backgroundColor: colors[1],
+            borderColor: borderColors[1],
         }
         
         const unregisteredDataset = {

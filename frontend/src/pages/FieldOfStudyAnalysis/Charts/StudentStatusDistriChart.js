@@ -16,6 +16,20 @@ const options = {
 
 export default function StudentStatusDistriChart({ faculty, cycle, field, type }) {
 
+    const statusTranslation = {
+        rejected: "Odrzuceni",
+        unregistered: "Wypisali się",
+        accepted: "Zaakceptowani",
+        signed: "Zapisani"
+    }
+
+    const colorMapping = {
+        rejected: colors[2],
+        unregistered: colors[3],
+        accepted: colors[0],
+        signed: colors[1],
+    }
+
     //converts the result of fetched json to format accepted by chart component
     const convertResult = (json) => {
         if (typeof json[field] !== 'undefined') {
@@ -26,10 +40,9 @@ export default function StudentStatusDistriChart({ faculty, cycle, field, type }
 
             Object.keys(json[field][Object.keys(json[field])[0]]).forEach(key => {
                 result.datasets.push({
-                    label: key,
+                    label: statusTranslation[key],
                     data: [],
-                    backgroundColor: colors[Object.keys(json[field][Object.keys(json[field])[0]]).indexOf(key)],
-                    borderColor: borderColors[Object.keys(json[field][Object.keys(json[field])[0]]).indexOf(key)],
+                    backgroundColor: colorMapping[key],
                 })
             })
 

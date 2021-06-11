@@ -10,6 +10,32 @@ const options = {
             useDisplayedRowsOnly: true
         }
     },
+    textLabels: {
+        body: {
+            noMatch: "Niestety nie znaleziono wyników",
+            toolTip: "Sortuj",
+        },
+        pagination: {
+            next: "Następna strona",
+            previous: "Poprzednia strona",
+            rowsPerPage: "Liczba wierszy na stronie:",
+            displayRows: "z"
+        },
+        toolbar: {
+            search: "Szukaj",
+            downloadCsv: "Pobierz plik CSV",
+            viewColumns: "Dostępne kolumny",
+        },
+        viewColumns: {
+            title: "Pokaż kolumny",
+            titleAria: "Pokaż/Ukryj kolumny"
+        },
+        selectedRows: {
+            text: "Zaznaczone wiersze",
+            delete: "Usuń",
+            deleteAria: "Usuń zaznaczone wiersze"
+        }
+    }
 }
 
 const basicColumns = [
