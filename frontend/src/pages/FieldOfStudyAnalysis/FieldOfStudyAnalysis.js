@@ -80,7 +80,10 @@ const FieldOfStudyAnalysis = () => {
                                             id="faculty-input"
                                             name='faculty'
                                             defaultValue={facultyIdx}
-                                            onChange={e => setFacultyIdx(e.target.value)}
+                                            onChange={e => {
+                                                setField(0)
+                                                setFacultyIdx(e.target.value)
+                                            }}
                                         >
                                             {
                                                 faculties.map((element, idx) => {
