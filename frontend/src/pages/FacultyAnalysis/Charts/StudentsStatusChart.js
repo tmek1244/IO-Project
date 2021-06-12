@@ -60,7 +60,7 @@ export default function StudentsStatusChart({ faculty, cycle, year, allowedField
     let reducedFields = GetReducedFields(fieldsOfStudyData, allowedFields);
 
     return (
-        <Card>
+        <Card variant="outlined" style={{backgroundColor: "#fefefe"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Status studentów dla danego kierunku w cyklach</Typography>}

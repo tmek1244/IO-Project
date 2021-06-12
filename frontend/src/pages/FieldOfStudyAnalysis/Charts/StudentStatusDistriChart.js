@@ -87,7 +87,7 @@ export default function StudentStatusDistriChart({ faculty, cycle, field, type }
     const [fieldsOfStudyData, loading, error] = useFetch(`api/backend/status-distribution-over-the-years/${faculty}/${field}/${cycle}/${type}`, {})
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Rozkład studentów według statusu</Typography>}

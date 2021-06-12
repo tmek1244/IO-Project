@@ -46,7 +46,7 @@ export default function AveragesMediansChart({ faculty, cycle, year, allowedFiel
     let reducedFields = (typeof fieldsOfStudyData[`${faculty} ${year}`] === 'undefined') ? {} : GetReducedFields(fieldsOfStudyData[`${faculty} ${year}`], allowedFields)
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Średnia i mediana kandydatów na kierunek</Typography>}

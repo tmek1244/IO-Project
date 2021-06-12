@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react'
-import PageTitle from '../../components/PageTitle/PageTitle';
 import useFetch from '../../hooks/useFetch';
 import { useState } from 'react';
-import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@material-ui/core';
+import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, Button } from '@material-ui/core';
 
 import useStyles from "./styles";
 
@@ -15,6 +14,7 @@ import Spinner from '../../components/Spinner/Spinner';
 import Error from '../../components/Error/Error';
 import CurrentStatusChanges from './Charts/CurrentStatusChanges';
 
+import Pdf from "react-to-pdf";
 
 const SpecificYearFieldAnalysis = () => {
     var classes = useStyles();
@@ -39,6 +39,24 @@ const SpecificYearFieldAnalysis = () => {
     const shortenFaculty = (name) => {
         return name.split(' ').map(part => part[0])
     }
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    //pdf
+    const [format, setFormat] = useState([0,0]);
+    const getWidthHeight = () => {
+        const container = ref.current;
+        if(container !== null) {
+            setFormat([container.clientHeight * 0.75625, container.clientWidth * 0.75625]); //dont know why this magic number
+        }
+    }
+    const ref = React.createRef();
+    const pdfOptions = {
+        orientation: (format[0] > format[1]) ? "p" : "l", //if height > width then portrait, otherwise landscape
+        format: format,
+        unit: 'pt',
+    };
 
     return (
         <>
@@ -51,11 +69,7 @@ const SpecificYearFieldAnalysis = () => {
                         <Error />
                         :
                         <>
-                            <div className={classes.pageTitleContainer}>
-                                <Typography className={classes.text} variant="h3" size="sm">
-                                {field} {type} {shortenFaculty(faculties[facultyIdx])} stopień {cycle} rekrutacja {availableYears[yearIdx]}
-                                </Typography>
-                                <div className={classes.formContainer}>
+                            <div className={classes.formContainer}>
                                     <div className={classes.facultySelector}>
                                         <FormControl variant="outlined" fullWidth  >
                                             <InputLabel id="faculty-input-label">Wydział</InputLabel>
@@ -128,25 +142,46 @@ const SpecificYearFieldAnalysis = () => {
                                     </div>
                                     <SelectSingleFieldComponent fields={allFields} setField={setField}/> 
                                 </div>
-                            </div>
 
-                            <Grid container spacing={2}>
-                                <Grid item xs={12} md={6}>
-                                    <CycleFlowToChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
+                                <Pdf targetRef={ref} filename={`rekrutacja-${availableYears[yearIdx]}-${field}.pdf`} options={pdfOptions}>
+                                    {({ toPdf }) => (
+                                        <Button 
+                                            className={classes.margin}
+                                            onClick={toPdf} 
+                                            onMouseOver={e => getWidthHeight()}
+                                            variant="contained"
+                                            color="primary"
+                                        >
+                                            Wygeneruj plik Pdf
+                                        </Button>
+                                    )}
+                                </Pdf>
+
+                            <div id="container" ref={ref}>
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} className={classes.pageTitleContainer}>
+                                        <Typography className={classes.text} variant="h3" size="sm">
+                                        Rekrutacja {availableYears[yearIdx]}: {field} {shortenFaculty(faculties[facultyIdx])}, st. {cycle} {capitalizeFirstLetter(type)}
+                                        </Typography>
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <CycleFlowToChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <CycleFlowFromChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        {cycle == 1 ? 
+                                            <Outcomers1DegreeChart faculty={faculties[facultyIdx]} field={field} year={availableYears[yearIdx]} type={type}/> :
+                                            <Incomers2DegreeChart faculty={faculties[facultyIdx]} field={field} year={availableYears[yearIdx]} type={type}/>
+                                        }
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={availableYears[yearIdx]} type={type} />
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <CycleFlowFromChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    {cycle == 1 ? 
-                                        <Outcomers1DegreeChart faculty={faculties[facultyIdx]} field={field} year={availableYears[yearIdx]} type={type}/> :
-                                        <Incomers2DegreeChart faculty={faculties[facultyIdx]} field={field} year={availableYears[yearIdx]} type={type}/>
-                                    }
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={availableYears[yearIdx]} type={type} />
-                                </Grid>
-                            </Grid>
+                            </div>
                         </>
                     )
             }

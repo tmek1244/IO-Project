@@ -11,6 +11,11 @@ import Error from '../../../components/Error/Error';
 const options = {
     ...commonOptions,
     aspectRatio: 4,
+    plugins: {
+        legend: {
+          display: false,
+        },
+      },
 };
 
 
@@ -39,7 +44,7 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field, t
     let isEmpty = fieldsOfStudyData.length === 0;
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}} >
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba kandydatów na jedno miejsce</Typography>}

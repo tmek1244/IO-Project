@@ -3,15 +3,13 @@ import { makeStyles } from "@material-ui/styles";
 export default makeStyles(theme => ({
   pageTitleContainer: {
     display: "flex",
-    justifyContent: "space-between",
-    marginBottom: theme.spacing(4),
-    marginTop: theme.spacing(8),
+    justifyContent: "center",
+    marginBottom: theme.spacing(2),
+    marginTop: theme.spacing(2),
   },
   formContainer: {
+    marginTop: theme.spacing(10),
     display: "flex",
-    justifyContent: "right",
-    marginRight: "3%",
-    marginTop: "10px",
   },
   facultySelector: {
     minWidth: "100px",
@@ -27,5 +25,9 @@ export default makeStyles(theme => ({
   },
   text: {
     color: theme.palette.text.hint,
+  },
+  margin: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
 }));

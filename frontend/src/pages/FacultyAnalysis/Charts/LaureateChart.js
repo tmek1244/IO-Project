@@ -10,6 +10,11 @@ import Error from '../../../components/Error/Error';
 const options = {
     ...commonOptions,
     aspectRatio: 3,
+    plugins: {
+        legend: {
+          display: false,
+        },
+      },
 };
 
 
@@ -32,7 +37,7 @@ export default function LaureateChart({ faculty, allowedFields, type, year }) {
     let reducedFields = GetReducedFields(fieldsOfStudyData, allowedFields);
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba laureatów na kierunek</Typography>}

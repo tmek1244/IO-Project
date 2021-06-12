@@ -42,9 +42,10 @@ export default function Cycle2ndChart({ faculty, year, allowedFields, type}) {
 
     const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/field-conversion/${year}/${faculty}/${type}`, {}) 
     let reducedFields = GetReducedFields(fieldsOfStudyData, allowedFields);
+    console.log(fieldsOfStudyData)
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba studentów kontynuująca kierunek oraz z zewnątrz</Typography>}

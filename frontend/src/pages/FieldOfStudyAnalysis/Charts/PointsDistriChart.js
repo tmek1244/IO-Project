@@ -51,7 +51,7 @@ export default function PointsDistriChart({ faculty, cycle, field, type }) {
     const [fieldsOfStudyData, loading, error] = useFetch(`api/backend/points-distribution-over-the-years/${step}/${faculty}/${field}/${cycle}/${type}`, {})
 
     return (
-        <Card  >
+        <Card  variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Rozkład punktów wśród kandydatów</Typography>}

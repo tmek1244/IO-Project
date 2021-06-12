@@ -8,6 +8,11 @@ import Spinner from '../../../components/Spinner/Spinner';
 const options = {
     ...commonOptions,
     aspectRatio: 3,
+    plugins: {
+        legend: {
+          display: false,
+        },
+      },
 };
 
 function GetReducedArray(fieldsArray, allowedFields) {
@@ -54,7 +59,7 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
     let reducedFields = GetReducedArray(fieldsOfStudyData, allowedFields);
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba kandydatów na jedno miejsce</Typography>}

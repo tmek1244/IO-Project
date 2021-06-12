@@ -1,16 +1,12 @@
 import React from 'react';
-// import useStyles from "./styles";
+import useStyles from "./styles";
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
-
-// import {ToggleButtonGroup, ToggleButton } from '@material-ui/lab'
-// import FormHelperText from '@material-ui/core/FormHelperText';
-
 function SelectFieldsComponent({fields, setFields}) {
-    // const classes = useStyles();
+    const classes = useStyles();
 
     const [chosenFields, setChosenFields] = React.useState([fields]);
 
@@ -31,26 +27,10 @@ function SelectFieldsComponent({fields, setFields}) {
         setFields(arr);
     };
         
-    // const handleFieldsChange = (event, newChosenFields) => {
-        // setChosenFields(newChosenFields);
-        // setFields(newChosenFields);
-    // };
-
     return(
-        <>
-            {/* <ToggleButtonGroup orientation="horizontal" value={chosenFields} onChange={handleFieldsChange}>
-                {fields.map((name) => (
-                    <ToggleButton 
-                        value={name} aria-label={name}
-                        classes={{root: classes.toggleFields, selected: classes.selectedToggleFields}}
-                    >
-                        <p>{name}</p>
-                    </ToggleButton>
-                    ))}
-            </ToggleButtonGroup> */}
-
+        <div className={classes.container}>
             <FormControl component="fieldset">
-                <FormLabel component="legend">Kierunki</FormLabel>
+                <FormLabel component="legend">Kierunki:</FormLabel>
                 <FormGroup row={true}>
                     {fields.map((name) => (
                         <FormControlLabel
@@ -58,11 +38,9 @@ function SelectFieldsComponent({fields, setFields}) {
                             label={name}
                         />
                     ))}
-                    
                 </FormGroup>
             </FormControl>
-        
-        </>
+        </div>
     );
 }
 

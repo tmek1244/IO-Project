@@ -62,10 +62,10 @@ const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) =
         return result;
     }
 
-    const [data, loading, error] = useFetch(`/api/backend/changes_after_cycle/${faculty}/${field_of_study}/${degree}/${year}/${type}`, {}, convertResult);
+    const [data, loading, error] = useFetch(`/api/backend/changes_after_cycle/${faculty}/${field_of_study}/${degree}/${year}/${type}`, {});
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Zmiana rozkładu statusu pomiędzy cyklami w {year} roku</Typography>}
@@ -79,9 +79,12 @@ const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) =
                             error ?
                                 <Error />
                                 :
-                                <div >
-                                    <Line data={data} options={options} />
-                                </div>
+                                (data && Object.keys(data).length === 0) ?
+                                    <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                    :
+                                    <div >
+                                        <Line data={convertResult(data)} options={options} />
+                                    </div>
                         )
                 }
             </CardContent>

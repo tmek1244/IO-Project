@@ -11,6 +11,11 @@ import Error from '../../../components/Error/Error';
 const options = {
     ...commonOptions,
     aspectRatio: 4,
+    plugins: {
+        legend: {
+          display: false,
+        },
+      },
 };
 
 
@@ -37,7 +42,7 @@ export default function ThresholdDistriChart({ faculty, cycle, field, type }) {
 
     const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/threshold/${cycle}/${type}/${faculty}+${field}`, [], e => e.sort((a,b) => {return a["recruitment__year"] > b["recruitment__year"] ? 1 : -1;}));
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}} >
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Próg punktowy</Typography>}
