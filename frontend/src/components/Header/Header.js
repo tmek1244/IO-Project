@@ -7,7 +7,7 @@ import { logoutUser } from '../../context/UserActions.js';
 import { Link, withRouter } from 'react-router-dom'
 import {
     Menu as MenuIcon,
-    ArrowBack as ArrowBackIcon,
+    MenuOpen as MenuOpenIcon,
     ExitToApp as ExitToAppIcon
 } from "@material-ui/icons";
 import {
@@ -39,7 +39,7 @@ const Header = () => {
                         >
                             {
                                 sidebarState ?
-                                    <ArrowBackIcon classes={{
+                                    <MenuOpenIcon classes={{
                                         root: classNames(
                                             classes.headerIcon
                                         )

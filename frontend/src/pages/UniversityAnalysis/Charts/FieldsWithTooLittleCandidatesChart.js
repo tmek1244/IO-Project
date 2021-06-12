@@ -46,7 +46,7 @@ const FieldsWithTooLittleCandidatesChart = ({ year, cycle, type }) => {
                     (error ?
                         <Error />
                         :
-                        <Card  >
+                        <Card variant="outlined" style={{backgroundColor: "#fefefe"}}>
                             <CardHeader
                                 style={{ textAlign: 'center' }}
                                 title={<Typography variant='h5'>Kierunki o zbyt małej liczbie zgłoszeń</Typography>}

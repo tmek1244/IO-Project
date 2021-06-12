@@ -70,92 +70,92 @@ const SpecificYearFieldAnalysis = () => {
                         :
                         <>
                             <div className={classes.formContainer}>
-                                    <div className={classes.facultySelector}>
-                                        <FormControl variant="outlined" fullWidth  >
-                                            <InputLabel id="faculty-input-label">Wydział</InputLabel>
-                                            <Select
-                                                labelId="faculty-input-label"
-                                                label="Wydział"
-                                                id="faculty-input"
-                                                name='faculty'
-                                                defaultValue={facultyIdx}
-                                                onChange={e => setFacultyIdx(e.target.value)}
-                                            >
-                                                {
-                                                    faculties.map((element, idx) => {
-                                                        return <MenuItem key={idx} value={idx}>{element}</MenuItem>
-                                                    })
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                    </div>
-                                    <div className={classes.facultySelector}>
-                                        <FormControl variant="outlined" fullWidth  >
-                                            <InputLabel id="cycle-input-label">Stopień</InputLabel>
-                                            <Select
-                                                labelId="cycle-input-label"
-                                                label="Stopień"
-                                                id="cycle-input"
-                                                name='cycle'
-                                                defaultValue={1}
-                                                onChange={e => { setCycle(e.target.value) }}
-                                            >
-                                                <MenuItem key={1} value={1}>I</MenuItem>
-                                                <MenuItem key={2} value={2}>II</MenuItem>
-                                            </Select>
-                                        </FormControl>
-                                    </div>
-                                    <div className={classes.facultySelector}>
-                                        <FormControl variant="outlined" fullWidth  >
-                                            <InputLabel id="year-input-label">Rok</InputLabel>
-                                            <Select
-                                                labelId="year-input-label"
-                                                label="Rok"
-                                                id="year-input"
-                                                name='year'
-                                                defaultValue={yearIdx}
-                                                onChange={e => setYearIdx(e.target.value)}
-                                            >
-                                                {
-                                                    availableYears.map((element, idx) => {
-                                                        return <MenuItem key={idx} value={idx}>{element}</MenuItem>
-                                                    })
-                                                }
-                                            </Select>
-                                        </FormControl>
-                                    </div>
-                                    <div className={classes.facultySelector} >
-                                            <FormControl variant="outlined" fullWidth  >
-                                                <InputLabel id="type-input-label">Typ</InputLabel>
-                                                <Select
-                                                    labelId="type-input-label"
-                                                    label="Typ"
-                                                    id="type-input"
-                                                    name='type'
-                                                    defaultValue={type}
-                                                    onChange={e => { setType(e.target.value) }}
-                                                >
-                                                    <MenuItem key={1} value="stacjonarne">Stacjonarne</MenuItem>
-                                                    <MenuItem key={2} value="niestacjonarne">Niestacjonarne</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                    </div>
-                                    <SelectSingleFieldComponent fields={allFields} setField={setField}/> 
-                                </div>
-
-                                <Pdf targetRef={ref} filename={`rekrutacja-${availableYears[yearIdx]}-${field}.pdf`} options={pdfOptions}>
-                                    {({ toPdf }) => (
-                                        <Button 
-                                            className={classes.margin}
-                                            onClick={toPdf} 
-                                            onMouseOver={e => getWidthHeight()}
-                                            variant="contained"
-                                            color="primary"
+                                <div className={classes.facultySelector}>
+                                    <FormControl variant="outlined" fullWidth  >
+                                        <InputLabel id="faculty-input-label">Wydział</InputLabel>
+                                        <Select
+                                            labelId="faculty-input-label"
+                                            label="Wydział"
+                                            id="faculty-input"
+                                            name='faculty'
+                                            defaultValue={facultyIdx}
+                                            onChange={e => setFacultyIdx(e.target.value)}
                                         >
-                                            Wygeneruj plik Pdf
-                                        </Button>
-                                    )}
-                                </Pdf>
+                                            {
+                                                faculties.map((element, idx) => {
+                                                    return <MenuItem key={idx} value={idx}>{element}</MenuItem>
+                                                })
+                                            }
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                                <div className={classes.facultySelector}>
+                                    <FormControl variant="outlined" fullWidth  >
+                                        <InputLabel id="cycle-input-label">Stopień</InputLabel>
+                                        <Select
+                                            labelId="cycle-input-label"
+                                            label="Stopień"
+                                            id="cycle-input"
+                                            name='cycle'
+                                            defaultValue={1}
+                                            onChange={e => { setCycle(e.target.value) }}
+                                        >
+                                            <MenuItem key={1} value={1}>I</MenuItem>
+                                            <MenuItem key={2} value={2}>II</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                                <div className={classes.facultySelector}>
+                                    <FormControl variant="outlined" fullWidth  >
+                                        <InputLabel id="year-input-label">Rok</InputLabel>
+                                        <Select
+                                            labelId="year-input-label"
+                                            label="Rok"
+                                            id="year-input"
+                                            name='year'
+                                            defaultValue={yearIdx}
+                                            onChange={e => setYearIdx(e.target.value)}
+                                        >
+                                            {
+                                                availableYears.map((element, idx) => {
+                                                    return <MenuItem key={idx} value={idx}>{element}</MenuItem>
+                                                })
+                                            }
+                                        </Select>
+                                    </FormControl>
+                                </div>
+                                <div className={classes.facultySelector} >
+                                        <FormControl variant="outlined" fullWidth  >
+                                            <InputLabel id="type-input-label">Typ</InputLabel>
+                                            <Select
+                                                labelId="type-input-label"
+                                                label="Typ"
+                                                id="type-input"
+                                                name='type'
+                                                defaultValue={type}
+                                                onChange={e => { setType(e.target.value) }}
+                                            >
+                                                <MenuItem key={1} value="stacjonarne">Stacjonarne</MenuItem>
+                                                <MenuItem key={2} value="niestacjonarne">Niestacjonarne</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                </div>
+                                <SelectSingleFieldComponent fields={allFields} setField={setField}/> 
+                            </div>
+
+                            <Pdf targetRef={ref} filename={`rekrutacja-${availableYears[yearIdx]}-${field}.pdf`} options={pdfOptions}>
+                                {({ toPdf }) => (
+                                    <Button 
+                                        className={classes.margin}
+                                        onClick={toPdf} 
+                                        onMouseOver={e => getWidthHeight()}
+                                        variant="contained"
+                                        color="primary"
+                                    >
+                                        Wygeneruj plik Pdf
+                                    </Button>
+                                )}
+                            </Pdf>
 
                             <div id="container" ref={ref}>
                                 <Grid container spacing={2}>

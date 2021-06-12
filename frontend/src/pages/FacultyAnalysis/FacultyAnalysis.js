@@ -154,7 +154,7 @@ const FacultyAnalysis = () => {
                                     <SelectFieldsComponent fields={allFields} setFields={setAllowedFields} />
                                 </div>
 
-                                <Pdf targetRef={ref} filename={`podsumowanie-wydzialu-${shortenFaculty(faculties[facultyIdx]).join("")}.pdf`} options={pdfOptions}>
+                                <Pdf targetRef={ref} filename={`podsumowanie-${shortenFaculty(faculties[facultyIdx]).join("")}-${availableYears[yearIdx]}.pdf`} options={pdfOptions}>
                                     {({ toPdf }) => (
                                         <Button 
                                             className={classes.margin}
@@ -171,7 +171,7 @@ const FacultyAnalysis = () => {
                                     <Grid container spacing={2}>
                                         <Grid item xs={12} className={classes.pageTitleContainer}>
                                             <Typography className={classes.text} variant="h3" size="sm">
-                                                Podsumowanie wydziału: {shortenFaculty(faculties[facultyIdx])} st. {cycle} {capitalizeFirstLetter(type)}
+                                                Podsumowanie wydziału {availableYears[yearIdx]}: {shortenFaculty(faculties[facultyIdx])} st. {cycle} {capitalizeFirstLetter(type)}
                                             </Typography>
                                         </Grid>
 

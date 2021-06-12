@@ -46,7 +46,7 @@ const LaureateChart = ({ year, number, type }) => {
                     (error ?
                         <Error />
                         :
-                        <Card  >
+                        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
                             <CardHeader
                                 style={{ textAlign: 'center' }}
                                 title={<Typography variant='h5'>Top {number} kierunków o największej liczbie laureatów</Typography>}
