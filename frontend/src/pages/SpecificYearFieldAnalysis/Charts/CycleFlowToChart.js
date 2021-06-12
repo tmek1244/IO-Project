@@ -16,7 +16,7 @@ const options = {
 };
 
 
-export default function CycleFlowToChart({ faculty, cycle, field, year}) {
+export default function CycleFlowToChart({ faculty, cycle, field, year, type}) {
 
     const modifyJsonStructure = (json) => {
         //find max cycle num
@@ -63,7 +63,8 @@ export default function CycleFlowToChart({ faculty, cycle, field, year}) {
     }
 
     
-    // const [fieldsOfStudyData, loading, error ] = useFetch(``, {})
+    const [fieldsOfStudyData2, loading2, error ] = useFetch(`/api/backend/field-of-study-changes-cycle-list/${faculty}/${field}/${cycle}/${year}/${type}/`, {})
+    console.log(fieldsOfStudyData2)
     const loading = undefined
     const fieldsOfStudyData = modifyJsonStructure({
         Informatyka: {

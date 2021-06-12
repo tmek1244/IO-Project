@@ -166,10 +166,10 @@ const SpecificYearFieldAnalysis = () => {
                                     </Grid>
 
                                     <Grid item xs={12} md={6}>
-                                        <CycleFlowToChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
+                                        <CycleFlowToChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]} type={type}/>
                                     </Grid>
                                     <Grid item xs={12} md={6}>
-                                        <CycleFlowFromChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]}/>
+                                        <CycleFlowFromChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]} type={type}/>
                                     </Grid>
                                     <Grid item xs={12} md={6}>
                                         {cycle == 1 ? 
