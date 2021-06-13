@@ -1089,8 +1089,6 @@ class FieldOfStudyChangesListView(APIView):
             field_of_study_second_degree_filters: Dict[str, Any] = {
                 "degree": 2,
             }
-            if type is not None:
-                field_of_study_second_degree_filters["type"] = type
             second_degree_fields_of_study = FieldOfStudy.objects.filter(
                 **field_of_study_second_degree_filters
             ).exclude(name=field_of_study, faculty__in=faculty_obj)
