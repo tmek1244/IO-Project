@@ -46,7 +46,7 @@ class FieldOfStudy:
         self.degree = random.choice(["1"] * 4 + ["2"])
         [self.faculty_name, self.fof_name] = random.choice(
             first_cycle_studies
-            if self.degree == 1
+            if self.degree == "1"
             else second_cycle_studies
         )
         self.mode = random.choice(["stacjonarne"]*2 + ["niestacjonarne"])
@@ -174,5 +174,4 @@ if __name__ == '__main__':
     file = sys.argv[4] if len(sys.argv) > 4 else 'new_generated_data.csv'
 
     process_parameters(parameters_file)
-
     main(persons=records, file_name=file, year=year)
