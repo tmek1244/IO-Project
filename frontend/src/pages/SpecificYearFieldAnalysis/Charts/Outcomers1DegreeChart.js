@@ -41,7 +41,7 @@ export default function Outcomers1DegreeChart({ faculty, field, year, type}) {
 
     
     const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-of-study-changes-list/${faculty}/${field}/${year}/${type}/`, [])
-    //not working
+    console.log(fieldsOfStudyData);
 
     // empty: []
     // const loading = undefined

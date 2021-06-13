@@ -63,7 +63,8 @@ export default function CycleFlowFromChart({ faculty, cycle, field, year, type})
     }
 
     
-    // const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/same-year-field-conversion/${year}/${faculty}/${field}/${type}/${cycle}/`, {})
+    const [fieldsOfStudyData2, loading2, error ] = useFetch(`api/backend/same-year-field-conversion/${year}/${faculty}/${field}/${type}/${cycle}/`, {})
+    console.log(fieldsOfStudyData2)
     const loading = undefined
     const fieldsOfStudyData = modifyJsonStructure({
         Informatyka: {
