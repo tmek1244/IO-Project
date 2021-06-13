@@ -1342,7 +1342,6 @@ class PreciseFieldConversionView(APIView):
             faculty: str = None,
             field_of_study: str = None,
             type: str = None) -> Response:
-
         try:
             year = year or (
                 Recruitment.objects.aggregate(Max('year'))["year__max"])
@@ -1361,7 +1360,6 @@ class PreciseFieldConversionView(APIView):
             if type:
                 rrs = rrs.filter(
                     recruitment__field_of_study__type=type)
-
             result: Dict[Any, Any] = {}
             for rr in rrs:
                 try:
@@ -1380,7 +1378,72 @@ class PreciseFieldConversionView(APIView):
 
                     result[name]["all"] += 1
                     result[name][round] += 1
+                except Exception as e:
+                    print(e)
 
+            return Response(result, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response(
+                {"problem": str(e)},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE
+            )
+
+
+class SameYearFieldConversion(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request: Request,
+            year: int = None,
+            faculty: str = None,
+            field_of_study: str = None,
+            type: str = None,
+            degree: str = None) -> Response:
+        try:
+            year = year or (
+                Recruitment.objects.aggregate(Max('year'))["year__max"])
+
+            rrs = (
+                RecruitmentResult.objects
+                .filter(result__in=["accepted", "signed"])
+                .filter(recruitment__year=year)
+                .filter(
+                    recruitment__field_of_study__faculty__name__iexact=faculty)
+                .filter(
+                    recruitment__field_of_study__name__iexact=field_of_study)
+            )
+
+            if type:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__type=type)
+            if degree:
+                rrs = rrs.filter(
+                    recruitment__field_of_study__degree=degree)
+            result: Dict[Any, Any] = {}
+            for rr in rrs:
+                try:
+                    round = rr.recruitment.round
+                    student = rr.student
+                    other_rrs = (
+                        student.recruitmentresult_set
+                        # nie wiem czy potrzebne
+                        # .filter(result__in=["rejected", "unregistered"])
+                        .filter(recruitment__year=year)
+                        # nie wiem czy ma być mniejsze czy n-1
+                        .filter(recruitment__round__lt=round)
+                    )
+
+                    for other_rr in other_rrs:
+                        other_faculty = (
+                            other_rr.recruitment.field_of_study.faculty.name)
+                        other_fof = other_rr.recruitment.field_of_study.name
+                        name = other_faculty + ";" + other_fof
+                        if round not in result:
+                            result[round] = {}
+                        if name not in result[round]:
+                            result[round][name] = 0
+
+                        result[round][name] += 1
                 except Exception as e:
                     print(e)
 
