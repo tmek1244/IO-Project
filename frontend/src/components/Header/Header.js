@@ -32,7 +32,7 @@ const Header = () => {
         <AppBar position='fixed' className={classes.appBar}>
             <Toolbar >
                 <Grid container spacing={2}>
-                    <Grid item  container xs={4} >
+                    <Grid item  container xs={4} className={classes.container}>
                         <IconButton
                             color="inherit"
                             onClick={() => sidebarToggle(!sidebarState)}
@@ -53,9 +53,9 @@ const Header = () => {
 
                             }
                         </IconButton>
-                        <Link to='/' className={classes.logo}>
+                        {/* <Link to='/' className={classes.logo}>
                             <Logo />
-                        </Link>
+                        </Link> */}
                     </Grid>
 
                     <Grid item container xs={4} alignContent='center' justify='center'>

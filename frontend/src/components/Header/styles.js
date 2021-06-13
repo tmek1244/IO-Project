@@ -11,5 +11,8 @@ export default makeStyles(theme => ({
     },
     headerIcon: {
         fontSize: 35,
+    },
+    container: {
+        height:"100px"
     }
 }));
