@@ -164,13 +164,7 @@ const SpecificYearFieldAnalysis = () => {
                                         Rekrutacja {availableYears[yearIdx]}: {field} {shortenFaculty(faculties[facultyIdx])}, st. {cycle} {capitalizeFirstLetter(type)}
                                         </Typography>
                                     </Grid>
-
-                                    <Grid item xs={12} md={6}>
-                                        <CycleFlowToChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]} type={type}/>
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        <CycleFlowFromChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]} type={type}/>
-                                    </Grid>
+                                    
                                     <Grid item xs={12} md={6}>
                                         {cycle == 1 ? 
                                             <Outcomers1DegreeChart faculty={faculties[facultyIdx]} field={field} year={availableYears[yearIdx]} type={type}/> :
@@ -180,6 +174,13 @@ const SpecificYearFieldAnalysis = () => {
                                     <Grid item xs={12} md={6}>
                                         <CurrentStatusChanges faculty={faculties[facultyIdx]} degree={cycle} field_of_study={field} year={availableYears[yearIdx]} type={type} />
                                     </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <CycleFlowToChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]} type={type}/>
+                                    </Grid>
+                                    <Grid item xs={12} md={6}>
+                                        <CycleFlowFromChart faculty={faculties[facultyIdx]} cycle={cycle} field={field} year={availableYears[yearIdx]} type={type}/>
+                                    </Grid>
+                                    
                                 </Grid>
                             </div>
                         </>

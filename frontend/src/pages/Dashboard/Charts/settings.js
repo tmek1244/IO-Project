@@ -14,4 +14,7 @@ export const commonOptions = {
             },
         ],
     },
+    animation: {
+        duration: 0
+    }
 };

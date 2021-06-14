@@ -1,5 +1,5 @@
 import React from 'react'
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import { colors, borderColors, commonOptions } from './settings'
 import useFetch from '../../../hooks/useFetch';
@@ -83,7 +83,7 @@ const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) =
                                     <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
                                     :
                                     <div >
-                                        <Line data={convertResult(data)} options={options} />
+                                        <Bar data={convertResult(data)} options={options} />
                                     </div>
                         )
                 }

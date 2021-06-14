@@ -151,8 +151,8 @@ const FacultyAnalysis = () => {
                                             </Select>
                                         </FormControl>
                                     </div>
-                                    <SelectFieldsComponent fields={allFields} setFields={setAllowedFields} />
                                 </div>
+                                <SelectFieldsComponent fields={allFields} setFields={setAllowedFields} />
 
                                 <Pdf targetRef={ref} filename={`podsumowanie-${shortenFaculty(faculties[facultyIdx]).join("")}-${availableYears[yearIdx]}.pdf`} options={pdfOptions}>
                                     {({ toPdf }) => (

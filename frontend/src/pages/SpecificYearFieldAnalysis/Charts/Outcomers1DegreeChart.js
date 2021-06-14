@@ -8,12 +8,7 @@ import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
-    aspectRatio: 5,
-    // plugins: {
-    //   legend: {
-    //     display: false,
-    //   },
-    // },
+    aspectRatio: 3,
 };
 
 
@@ -41,27 +36,6 @@ export default function Outcomers1DegreeChart({ faculty, field, year, type}) {
 
     
     const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-of-study-changes-list/${faculty}/${field}/${year}/${type}/`, [])
-    console.log(fieldsOfStudyData);
-
-    // empty: []
-    // const loading = undefined
-    // const fieldsOfStudyData = [
-    //     {
-    //        "field_of_study": "Informatyka",
-    //        "faculty": "WH",
-    //        "count": 3,
-    //     },
-    //     {
-    //         "field_of_study": "Elektronika",
-    //         "faculty": "WH",
-    //         "count": 5,
-    //      },
-    //      {
-    //         "field_of_study": "Teleinfa",
-    //         "faculty": "WH",
-    //         "count": 6,
-    //      },
-    // ]
 
     return (
         <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
