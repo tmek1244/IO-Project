@@ -31,7 +31,6 @@ export default function Cycle2ndChart({ faculty, year, allowedFields, type}) {
 
         Object.keys(reduced).forEach( key => {
             var stats = reduced[key]
-            console.log(stats)
             Object.keys(stats).forEach (statusKey => {
                 var points = stats[statusKey];
                 result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
@@ -40,9 +39,8 @@ export default function Cycle2ndChart({ faculty, year, allowedFields, type}) {
         return result
     }
 
-    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/field-conversion/${year}/${faculty}/${type}`, {}) 
+    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/field-conversion/${faculty}/${type}/${year}`, {}) 
     let reducedFields = GetReducedFields(fieldsOfStudyData, allowedFields);
-    console.log(fieldsOfStudyData)
 
     return (
         <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>

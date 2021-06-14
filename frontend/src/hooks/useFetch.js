@@ -41,7 +41,6 @@ const useFetch = (url, initialState, transformFun = (arg) => arg) => {
             setIsLoading(false)
         })
         .catch(e => {
-            console.log("hihi")
             console.log(e)})
 
     }, [url])
