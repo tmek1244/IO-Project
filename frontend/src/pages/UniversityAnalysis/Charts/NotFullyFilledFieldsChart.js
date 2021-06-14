@@ -45,7 +45,7 @@ const NotFullyFilledFieldsChart = ({ year, cycle, type }) => {
                     (error ?
                         <Error />
                         :
-                        <Card  >
+                        <Card variant="outlined" style={{backgroundColor: "#fefefe"}}>
                             <CardHeader
                                 style={{ textAlign: 'center' }}
                                 title={<Typography variant='h5'>Kierunki, które nie są jeszcze zapełnione</Typography>}

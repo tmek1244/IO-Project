@@ -52,7 +52,7 @@ export default function Students2ndCycleDistriChart({ faculty, field, type }) {
 
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}} >
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba studentów kontynuująca kierunek oraz z zewnątrz</Typography>}
@@ -65,9 +65,12 @@ export default function Students2ndCycleDistriChart({ faculty, field, type }) {
                         error ?
                             <Error />
                             :
-                            <div >
-                                <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                            </div>
+                            fieldsOfStudyData && Object.keys(fieldsOfStudyData).length === 0 ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div>
+                                    <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                                </div>
                 }
             </CardContent>
         </Card>

@@ -11,6 +11,11 @@ import Error from '../../../components/Error/Error';
 const options = {
     ...commonOptions,
     aspectRatio: 4,
+    plugins: {
+        legend: {
+          display: false,
+        },
+      },
 };
 
 
@@ -35,10 +40,11 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field, t
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}+${type}/`, []);
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/candidates-per-place/${faculty}+${field}+${cycle}+${type}/`, [], e => e.sort((a,b) => {return a["year"] > b["year"] ? 1 : -1;}));
+    let isEmpty = fieldsOfStudyData.length === 0;
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}} >
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba kandydatów na jedno miejsce</Typography>}
@@ -51,9 +57,12 @@ export default function CandidatesPerPlaceDistriChart({ faculty, cycle, field, t
                         error && !fieldsOfStudyData.length === 0 ? // nie wiem czemu, ale trzeba zrobić takie obejście na ten warunek 
                             <Error />
                             :
-                            <div >
-                                <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                            </div>
+                            isEmpty ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div>
+                                    <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                                </div>
                 }
             </CardContent>
         </Card>

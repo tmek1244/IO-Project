@@ -1,5 +1,5 @@
 import React from 'react'
-import { Line } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import { colors, borderColors, commonOptions } from './settings'
 import useFetch from '../../../hooks/useFetch';
@@ -14,10 +14,11 @@ const options = {
 const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) => {
 
     const convertResult = (json) => {
-        const result = {
-            labels: Object.keys(json),
-            datasets: []
-        }
+        const result = { labels: [], datasets: [] }
+
+        Object.keys(json).forEach(key => {
+            result.labels.push('Cykl ' + key);
+        })        
         
         const acceptedDataset = {
             label: "Zaakceptowani",
@@ -29,15 +30,15 @@ const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) =
         const rejectedDataset = {
             label: "Odrzuceni",
             data: [],
-            backgroundColor: colors[1],
-            borderColor: borderColors[1],
+            backgroundColor: colors[2],
+            borderColor: borderColors[2],
         }
 
         const signedDataset = {
             label: "Zapisani",
             data: [],
-            backgroundColor: colors[2],
-            borderColor: borderColors[2],
+            backgroundColor: colors[1],
+            borderColor: borderColors[1],
         }
         
         const unregisteredDataset = {
@@ -61,10 +62,10 @@ const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) =
         return result;
     }
 
-    const [data, loading, error] = useFetch(`/api/backend/changes_after_cycle/${faculty}/${field_of_study}/${degree}/${year}/${type}`, {}, convertResult);
+    const [data, loading, error] = useFetch(`/api/backend/changes_after_cycle/${faculty}/${field_of_study}/${degree}/${year}/${type}`, {});
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Zmiana rozkładu statusu pomiędzy cyklami w {year} roku</Typography>}
@@ -78,9 +79,12 @@ const CurrentStatusChanges = ({ faculty, degree, field_of_study, year, type }) =
                             error ?
                                 <Error />
                                 :
-                                <div >
-                                    <Line data={data} options={options} />
-                                </div>
+                                (data && Object.keys(data).length === 0) ?
+                                    <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                    :
+                                    <div >
+                                        <Bar data={convertResult(data)} options={options} />
+                                    </div>
                         )
                 }
             </CardContent>

@@ -182,7 +182,7 @@ export default function AddNewUserPanel() {
                             Dodaj użytkownika
                          </Button>
                         {userCreated && <p style={{ 'color': 'green' }}>Stworzono użytkownika</p>}
-                        {userCreated === false && <p style={{ 'color': 'red' }}>Stworzono użytkownika</p>}
+                        {userCreated === false && <p style={{ 'color': 'red' }}>Nie stworzono użytkownika</p>}
 
                     </Grid>
                 </Grid>

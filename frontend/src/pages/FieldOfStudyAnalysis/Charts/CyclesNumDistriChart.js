@@ -11,6 +11,11 @@ import Error from '../../../components/Error/Error';
 const options = {
     ...commonOptions,
     aspectRatio: 4,
+    plugins: {
+        legend: {
+          display: false,
+        },
+      },
 };
 
 
@@ -33,11 +38,11 @@ export default function CyclesNumDistriChart({ faculty, cycle, field, type }) {
         return null
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/last-rounds/${faculty}/${field}/${cycle}/${type}`, []);
-
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/last-rounds/${faculty}/${field}/${cycle}/${type}`, {});
+    let isEmpty = fieldsOfStudyData && Object.keys(fieldsOfStudyData).length === 0
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba cykli</Typography>}
@@ -50,9 +55,12 @@ export default function CyclesNumDistriChart({ faculty, cycle, field, type }) {
                         error ?
                             <Error />
                             :
-                            <div >
-                                <Line data={convertResult(fieldsOfStudyData)} options={options} />
-                            </div>
+                            isEmpty ?
+                                <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                :
+                                <div>
+                                    <Line data={convertResult(fieldsOfStudyData)} options={options} />
+                                </div>
                 }
             </CardContent>
         </Card>

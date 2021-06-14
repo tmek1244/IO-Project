@@ -1,5 +1,5 @@
 import React from 'react'
-import { Drawer, List } from "@material-ui/core"
+import { Drawer, List, Divider } from "@material-ui/core"
 import {
     useLayoutState,
 } from '../../context/LayoutContext'
@@ -12,7 +12,8 @@ import {
     TableChart as TableChartIcon,
     FormatUnderlined as DragHandleIcon,
     Equalizer as EqualizerIcon,
-    Timeline as TimelineIcon
+    Timeline as TimelineIcon,
+    LinearScale as LinearScaleIcon,
 } from '@material-ui/icons'
 
 import SidebarLink from './components/SidebarLink'
@@ -30,22 +31,22 @@ const Sidebar = ({location}) => {
 
     var links = [
         { id: 0, label: "Dashboard", link: '/', icon: <HomeIcon /> },
-        { id: 1, label: "Dodaj dane", link: '/dodajDane', icon: <AddBoxIcon /> },
-        { id: 2, label: "Podsumowanie", link: '/podsumowanie', icon: <TableChartIcon /> },
-        { id: 3, label: "Wydział", link: '/podsumowanie_wydzial', icon: <EqualizerIcon /> },
-        { id: 4, label: "Kierunek", link: '/podsumowanie_kierunek', icon: <TimelineIcon /> },
+        { id: 1, label: "Podsumowanie", link: '/podsumowanie', icon: <TableChartIcon /> },
+        { id: 2, label: "Wydział", link: '/podsumowanie_wydzial', icon: <EqualizerIcon /> },
+        { id: 3, label: "Kierunek", link: '/podsumowanie_kierunek', icon: <TimelineIcon /> },
+        { id: 4, label: "Rekrutacja", link: '/podsumowanie_roku', icon: <LinearScaleIcon /> },
         { id: 5, label: "Zmień hasło", link: '/haslo', icon: <DragHandleIcon /> },
+        { id: 6, label: "Dodaj dane", link: '/dodajDane', icon: <AddBoxIcon /> },
     ]
 
     const adminLinks = [
-        { id: 6, label: "Administracja", link: '/administracja', icon: <PersonAddIcon /> },
+        { id: 7, label: "Administracja", link: '/administracja', icon: <PersonAddIcon /> },
     ]
     
     if (authState.is_staff){
         links = links.concat(adminLinks)
     }
       
-
     return (
         <Drawer
             variant="permanent"
@@ -65,16 +66,27 @@ const Sidebar = ({location}) => {
 
             <List>
                 {
-                    links.map(link => (
-                        <SidebarLink
-                            id={link.id}
-                            label={link.label}
-                            link={link.link}
-                            icon={link.icon}
-                            isSidebarOpened={sidebarState}
-                            location={location}
-                        />
-                    ))
+                    links.map(link =>  {
+                        let component = 
+                            <SidebarLink
+                                id={link.id}
+                                label={link.label}
+                                link={link.link}
+                                icon={link.icon}
+                                isSidebarOpened={sidebarState}
+                                location={location}
+                            />
+
+                        if(link.id == 5) {
+                            return (
+                                <>
+                                    <Divider />
+                                    {component}
+                                </>
+                            )
+                        }
+                        else return component
+                    })
                 }
             </List>
         </Drawer>

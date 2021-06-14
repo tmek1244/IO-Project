@@ -52,7 +52,7 @@ const ThresholdChart = ({ degree, year, number, mode, type }) => {
                     (error ?
                         <Error />
                         :
-                        <Card  >
+                        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
                             <CardHeader
                                 style={{ textAlign: 'center' }}
                                 title={<Typography variant='h5'>{label}</Typography>}

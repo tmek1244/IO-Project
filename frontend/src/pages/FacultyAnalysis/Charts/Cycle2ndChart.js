@@ -14,9 +14,7 @@ const options = {
 
 export default function Cycle2ndChart({ faculty, year, allowedFields, type}) {
 
-    const convertResult = (json) => {
-        let reduced = GetReducedFields(json, allowedFields)
-        //TODO lepszy opis labeli
+    const convertResult = (reduced) => {
         const result = {
             labels: Object.keys(reduced),
             datasets: [{
@@ -33,7 +31,6 @@ export default function Cycle2ndChart({ faculty, year, allowedFields, type}) {
 
         Object.keys(reduced).forEach( key => {
             var stats = reduced[key]
-            console.log(stats)
             Object.keys(stats).forEach (statusKey => {
                 var points = stats[statusKey];
                 result.datasets[Object.keys(stats).indexOf(statusKey)].data.push(points)
@@ -42,11 +39,11 @@ export default function Cycle2ndChart({ faculty, year, allowedFields, type}) {
         return result
     }
 
-    //TODO backend musi dodać taki endpoint
-    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/field-conversion/${year}/${faculty}/${type}`, {})  
+    const [fieldsOfStudyData, loading, error ] = useFetch(`api/backend/field-conversion/${faculty}/${type}/${year}`, {}) 
+    let reducedFields = GetReducedFields(fieldsOfStudyData, allowedFields);
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba studentów kontynuująca kierunek oraz z zewnątrz</Typography>}
@@ -56,9 +53,12 @@ export default function Cycle2ndChart({ faculty, year, allowedFields, type}) {
                 loading ?
                     <Spinner />
                     :
-                    <div >
-                        <Bar data={convertResult(fieldsOfStudyData)} options={options} />
-                    </div>
+                    reducedFields && Object.keys(reducedFields).length === 0 ?
+                        <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                        :
+                        <div >
+                            <Bar data={convertResult(reducedFields)} options={options} />
+                        </div>
             }
             </CardContent>
         </Card>

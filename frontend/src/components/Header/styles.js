@@ -7,10 +7,12 @@ export default makeStyles(theme => ({
         marginRight: theme.spacing(10),
     },
     appBar: {
-        width: "100vw",
         zIndex: theme.zIndex.drawer + 1,
     },
     headerIcon: {
         fontSize: 35,
+    },
+    container: {
+        height:"100px"
     }
 }));

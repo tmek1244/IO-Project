@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react'
-import PageTitle from '../../components/PageTitle/PageTitle';
+import React from 'react'
 import useFetch from '../../hooks/useFetch';
 import { useState } from 'react';
-import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, } from '@material-ui/core';
+import { MenuItem, Select, FormControl, InputLabel, Grid, Typography, Button } from '@material-ui/core';
 import ThresholdChart from './Charts/ThresholdChart';
 import useStyles from "./styles";
 import LaureateChart from './Charts/LaureateChart';
@@ -16,6 +15,7 @@ import Cycle2ndChart from './Charts/Cycle2ndChart';
 import Spinner from '../../components/Spinner/Spinner';
 import Error from '../../components/Error/Error';
 
+import Pdf from "react-to-pdf";
 
 export function GetReducedFields(fieldsLiteral, allowedFields) {
     return Object.keys(fieldsLiteral)
@@ -24,10 +24,6 @@ export function GetReducedFields(fieldsLiteral, allowedFields) {
             obj[key] = fieldsLiteral[key];
             return obj;
         }, {});
-}
-
-export function GetReducedArray(fieldsArray, allowedFields) {
-    return fieldsArray.filter(arr => allowedFields.includes(arr["name"]));
 }
 
 const FacultyAnalysis = () => {
@@ -54,6 +50,24 @@ const FacultyAnalysis = () => {
     const shortenFaculty = (name) => {
         return name.split(' ').map(part => part[0])
     }
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    //pdf
+    const [format, setFormat] = useState([0,0]);
+    const getWidthHeight = () => {
+        const container = ref.current;
+        if(container !== null) {
+            setFormat([container.clientHeight * 0.75625, container.clientWidth * 0.75625]); //dont know why this magic number
+        }
+    }
+    const ref = React.createRef();
+    const pdfOptions = {
+        orientation: (format[0] > format[1]) ? "p" : "l", //if height > width then portrait, otherwise landscape
+        format: format,
+        unit: 'pt',
+    };
 
     return (
         <>
@@ -66,115 +80,126 @@ const FacultyAnalysis = () => {
                             <Error />
                             :
                             <>
-                                <div className={classes.pageTitleContainer}>
-                                    <Typography className={classes.text} variant="h3" size="sm">
-                                        Podsumowanie: {shortenFaculty(faculties[facultyIdx])} stopień {cycle}
-                                    </Typography>
-                                    <div className={classes.formContainer}>
-                                        <div className={classes.facultySelector}>
-                                            <FormControl variant="outlined" fullWidth  >
-                                                <InputLabel id="faculty-input-label">Wydział</InputLabel>
-                                                <Select
-                                                    labelId="faculty-input-label"
-                                                    label="Wydział"
-                                                    id="faculty-input"
-                                                    name='faculty'
-                                                    defaultValue={facultyIdx}
-                                                    onChange={e => setFacultyIdx(e.target.value)}
-                                                >
-                                                    {
-                                                        faculties.map((element, idx) => {
-                                                            return <MenuItem key={idx} value={idx}>{element}</MenuItem>
-                                                        })
-                                                    }
-                                                </Select>
-                                            </FormControl>
-                                        </div>
-                                        <div className={classes.cycleSelector}>
-                                            <FormControl variant="outlined" fullWidth  >
-                                                <InputLabel id="cycle-input-label">Stopień</InputLabel>
-                                                <Select
-                                                    labelId="cycle-input-label"
-                                                    label="Stopień"
-                                                    id="cycle-input"
-                                                    name='cycle'
-                                                    defaultValue={1}
-                                                    onChange={e => { setCycle(e.target.value) }}
-                                                >
-                                                    <MenuItem key={1} value={1}>I</MenuItem>
-                                                    <MenuItem key={2} value={2}>II</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </div>
-                                        <div className={classes.facultySelector}>
-                                            <FormControl variant="outlined" fullWidth  >
-                                                <InputLabel id="year-input-label">Rok</InputLabel>
-                                                <Select
-                                                    labelId="year-input-label"
-                                                    label="Rok"
-                                                    id="year-input"
-                                                    name='year'
-                                                    defaultValue={yearIdx}
-                                                    onChange={e => setYearIdx(e.target.value)}
-                                                >
-                                                    {
-                                                        availableYears.map((element, idx) => {
-                                                            return <MenuItem key={idx} value={idx}>{element}</MenuItem>
-                                                        })
-                                                    }
-                                                </Select>
-                                            </FormControl>
-                                        </div>
-                                        <div className={classes.typeSelector} >
-                                            <FormControl variant="outlined" fullWidth  >
-                                                <InputLabel id="type-input-label">Typ</InputLabel>
-                                                <Select
-                                                    labelId="type-input-label"
-                                                    label="Typ"
-                                                    id="type-input"
-                                                    name='type'
-                                                    defaultValue={type}
-                                                    onChange={e => { setType(e.target.value) }}
-                                                >
-                                                    <MenuItem key={1} value="stacjonarne">Stacjonarne</MenuItem>
-                                                    <MenuItem key={2} value="niestacjonarne">Niestacjonarne</MenuItem>
-                                                </Select>
-                                            </FormControl>
-                                        </div>
+                                <div className={classes.formContainer}>
+                                    <div className={classes.facultySelector}>
+                                        <FormControl variant="outlined" fullWidth  >
+                                            <InputLabel id="faculty-input-label">Wydział</InputLabel>
+                                            <Select
+                                                labelId="faculty-input-label"
+                                                label="Wydział"
+                                                id="faculty-input"
+                                                name='faculty'
+                                                defaultValue={facultyIdx}
+                                                onChange={e => setFacultyIdx(e.target.value)}
+                                            >
+                                                {
+                                                    faculties.map((element, idx) => {
+                                                        return <MenuItem key={idx} value={idx}>{element}</MenuItem>
+                                                    })
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                    <div className={classes.cycleSelector}>
+                                        <FormControl variant="outlined" fullWidth  >
+                                            <InputLabel id="cycle-input-label">Stopień</InputLabel>
+                                            <Select
+                                                labelId="cycle-input-label"
+                                                label="Stopień"
+                                                id="cycle-input"
+                                                name='cycle'
+                                                defaultValue={1}
+                                                onChange={e => { setCycle(e.target.value) }}
+                                            >
+                                                <MenuItem key={1} value={1}>I</MenuItem>
+                                                <MenuItem key={2} value={2}>II</MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                    <div className={classes.facultySelector}>
+                                        <FormControl variant="outlined" fullWidth  >
+                                            <InputLabel id="year-input-label">Rok</InputLabel>
+                                            <Select
+                                                labelId="year-input-label"
+                                                label="Rok"
+                                                id="year-input"
+                                                name='year'
+                                                defaultValue={yearIdx}
+                                                onChange={e => setYearIdx(e.target.value)}
+                                            >
+                                                {
+                                                    availableYears.map((element, idx) => {
+                                                        return <MenuItem key={idx} value={idx}>{element}</MenuItem>
+                                                    })
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                    </div>
+                                    <div className={classes.typeSelector} >
+                                        <FormControl variant="outlined" fullWidth  >
+                                            <InputLabel id="type-input-label">Typ</InputLabel>
+                                            <Select
+                                                labelId="type-input-label"
+                                                label="Typ"
+                                                id="type-input"
+                                                name='type'
+                                                defaultValue={type}
+                                                onChange={e => { setType(e.target.value) }}
+                                            >
+                                                <MenuItem key={1} value="stacjonarne">Stacjonarne</MenuItem>
+                                                <MenuItem key={2} value="niestacjonarne">Niestacjonarne</MenuItem>
+                                            </Select>
+                                        </FormControl>
                                     </div>
                                 </div>
+                                <SelectFieldsComponent fields={allFields} setFields={setAllowedFields} />
 
-                                <div>
-                                    <SelectFieldsComponent fields={allFields} setFields={setAllowedFields} />
+                                <Pdf targetRef={ref} filename={`podsumowanie-${shortenFaculty(faculties[facultyIdx]).join("")}-${availableYears[yearIdx]}.pdf`} options={pdfOptions}>
+                                    {({ toPdf }) => (
+                                        <Button 
+                                            className={classes.margin}
+                                            onClick={toPdf} 
+                                            onMouseOver={e => getWidthHeight()}
+                                            variant="contained"
+                                            color="primary"
+                                        >
+                                            Wygeneruj plik Pdf
+                                        </Button>
+                                    )}
+                                </Pdf>
+                                <div id="container" ref={ref}>
+                                    <Grid container spacing={2}>
+                                        <Grid item xs={12} className={classes.pageTitleContainer}>
+                                            <Typography className={classes.text} variant="h3" size="sm">
+                                                Podsumowanie wydziału {availableYears[yearIdx]}: {shortenFaculty(faculties[facultyIdx])} st. {cycle} {capitalizeFirstLetter(type)}
+                                            </Typography>
+                                        </Grid>
+
+                                        <Grid item xs={12} md={6}>
+                                            <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
+                                        </Grid>
+                                        <Grid item xs={12} md={6}>
+                                            {cycle == 1 ?
+                                                <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields} type={type} year={availableYears[yearIdx]} /> :
+                                                <Cycle2ndChart faculty={faculties[facultyIdx]} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
+                                            }
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields} type={type} year={availableYears[yearIdx]}/>
+                                        </Grid>
+                                        <Grid item xs={12} >
+                                            <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} type={type} year={availableYears[yearIdx]}/>
+                                        </Grid>
+                                    </Grid>
                                 </div>
-
-                                <Grid container spacing={2}>
-                                    <Grid item xs={12} md={6}>
-                                        <CandidatesNumChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
-                                    </Grid>
-                                    <Grid item xs={12} md={6}>
-                                        {cycle == 1 ?
-                                            <LaureateChart faculty={faculties[facultyIdx]} allowedFields={allowedFields} type={type} year={availableYears[yearIdx]} /> :
-                                            <Cycle2ndChart faculty={faculties[facultyIdx]} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
-                                        }
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <ThresholdChart faculty={faculties[facultyIdx]} cycle={cycle} allowedFields={allowedFields} type={type} year={availableYears[yearIdx]}/>
-                                    </Grid>
-                                    <Grid item xs={12} >
-                                        <AveragesMediansChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <StudentsStatusChart faculty={faculties[facultyIdx]} cycle={cycle} year={availableYears[yearIdx]} allowedFields={allowedFields} type={type} />
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <FacultyAggregation faculty={faculties[facultyIdx]} cycle={cycle} type={type} year={availableYears[yearIdx]}/>
-                                    </Grid>
-                                </Grid>
-
                             </>
                     )
-
             }
         </>
     )

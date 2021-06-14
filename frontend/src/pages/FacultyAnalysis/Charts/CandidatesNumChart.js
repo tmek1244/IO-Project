@@ -2,20 +2,34 @@ import React from 'react'
 import { Bar } from 'react-chartjs-2';
 import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
 import { colors, commonOptions } from './settings'
-import { GetReducedArray } from '../FacultyAnalysis';
 import useFetchPost from '../../../hooks/useFetchPost'
+import Spinner from '../../../components/Spinner/Spinner';
 
 const options = {
     ...commonOptions,
     aspectRatio: 3,
+    plugins: {
+        legend: {
+          display: false,
+        },
+      },
 };
 
+function GetReducedArray(fieldsArray, allowedFields) {
+    return fieldsArray.filter(arr => allowedFields.includes(arr["name"]));
+}
 
 export default function CandidatesNumChart({ faculty, cycle, year, allowedFields, type }) {
 
-    const convertResult = (json) => {
-        
-        const reduced = GetReducedArray(json, allowedFields)
+    const isEmpty = (json) => {
+        var empty = true;
+        json.forEach(lit => {
+            if(lit["candidates_per_place"] > 0) {empty = false;}
+        })
+        return empty;
+    }
+
+    const convertResult = (reduced) => {
         const result = {
             labels: [],
             datasets: [{
@@ -26,8 +40,10 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
         }
 
         reduced.forEach(lit => {
-            result.labels.push(lit["name"]);
-            result.datasets[0].data.push(lit["candidates_per_place"]);
+            if(lit["candidates_per_place"] > 0) {
+                result.labels.push(lit["name"]);
+                result.datasets[0].data.push(lit["candidates_per_place"]);
+            }
         })
 
         return result
@@ -40,9 +56,10 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
         "type": type
     }
     const [fieldsOfStudyData, loading, error] = useFetchPost('/api/backend/fields-of-study-candidates-per-place/', payload, []);
+    let reducedFields = GetReducedArray(fieldsOfStudyData, allowedFields);
 
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba kandydatów na jedno miejsce</Typography>}
@@ -50,11 +67,14 @@ export default function CandidatesNumChart({ faculty, cycle, year, allowedFields
             <CardContent>
                 {
                     loading ?
-                        <p>ładowanko</p> // TODO zrobić spinner
+                        <Spinner />
                         :
-                        <div >
-                            <Bar data={convertResult(fieldsOfStudyData)} options={options} />
-                        </div>
+                        isEmpty(reducedFields) ?
+                            <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                            :
+                            <div >
+                                <Bar data={convertResult(reducedFields)} options={options} />
+                            </div>
                 }
             </CardContent>
         </Card>

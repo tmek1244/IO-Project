@@ -7,7 +7,7 @@ import { logoutUser } from '../../context/UserActions.js';
 import { Link, withRouter } from 'react-router-dom'
 import {
     Menu as MenuIcon,
-    ArrowBack as ArrowBackIcon,
+    MenuOpen as MenuOpenIcon,
     ExitToApp as ExitToAppIcon
 } from "@material-ui/icons";
 import {
@@ -32,14 +32,14 @@ const Header = () => {
         <AppBar position='fixed' className={classes.appBar}>
             <Toolbar >
                 <Grid container spacing={2}>
-                    <Grid item  container xs={4} >
+                    <Grid item  container xs={4} className={classes.container}>
                         <IconButton
                             color="inherit"
                             onClick={() => sidebarToggle(!sidebarState)}
                         >
                             {
                                 sidebarState ?
-                                    <ArrowBackIcon classes={{
+                                    <MenuOpenIcon classes={{
                                         root: classNames(
                                             classes.headerIcon
                                         )
@@ -53,9 +53,9 @@ const Header = () => {
 
                             }
                         </IconButton>
-                        <Link to='/' className={classes.logo}>
+                        {/* <Link to='/' className={classes.logo}>
                             <Logo />
-                        </Link>
+                        </Link> */}
                     </Grid>
 
                     <Grid item container xs={4} alignContent='center' justify='center'>

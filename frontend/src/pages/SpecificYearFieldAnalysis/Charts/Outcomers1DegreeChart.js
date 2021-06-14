@@ -1,60 +1,61 @@
 import React from 'react'
 import { Bar } from 'react-chartjs-2';
-import { Card, CardHeader, CardContent, Typography } from '@material-ui/core'
+import { Card, CardHeader, CardContent, Typography, Grid } from '@material-ui/core'
 import useFetch from '../../../hooks/useFetch';
 import { colors, commonOptions } from './settings'
-import { GetReducedFields } from '../FacultyAnalysis';
 import Spinner from '../../../components/Spinner/Spinner';
 import Error from '../../../components/Error/Error';
 
 const options = {
     ...commonOptions,
     aspectRatio: 3,
-    plugins: {
-        legend: {
-          display: false,
-        },
-      },
 };
 
 
-export default function LaureateChart({ faculty, allowedFields, type, year }) {
+export default function Outcomers1DegreeChart({ faculty, field, year, type}) {
 
-    const convertResult = (reduced) => {
+    
+    const convertResult = (json) => {
+        //sort
+        var sortable = [];
+        json.forEach(element => {
+            sortable.push([element["field_of_study"], element["count"]]);
+        })
+        sortable.sort(function(a,b) {return b[1]-a[1]});
+
         const result = {
-            labels: Object.keys(reduced),
+            labels: sortable.map(function (value,index) { return value[0]; }),
             datasets: [{
-                label: "Liczba laureatów kandydujących na kierunek",
-                data: Object.values(reduced),
+                label: "Liczba studentów",
+                data: sortable.map(function (value,index) { return value[1]; }),
                 backgroundColor: colors,
             }]
         }
-
-        return result
+        return result;
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/laureates-on-fofs/${faculty}/${year}/${type}`, {})
-    let reducedFields = GetReducedFields(fieldsOfStudyData, allowedFields);
+    
+    const [fieldsOfStudyData, loading, error ] = useFetch(`/api/backend/field-of-study-changes-list/${faculty}/${field}/${year}/${type}/`, [])
 
     return (
         <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}}>
             <CardHeader
                 style={{ textAlign: 'center' }}
-                title={<Typography variant='h5'>Liczba laureatów na kierunek</Typography>}
+                title={<Typography variant='h5'>Kierunki drugiego stopnia na które idą studenci po ukończeniu {field} </Typography>}
             />
             <CardContent>
                 {
                     loading ?
                         <Spinner />
                         :
-                        error ?
+                        error  ?
                             <Error />
                             :
-                            reducedFields && Object.keys(reducedFields).length === 0 ?
+                            fieldsOfStudyData.length === 0 ?
                                 <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
                                 :
                                 <div >
-                                    <Bar data={convertResult(reducedFields)} options={options} />
+                                    <Bar data={convertResult(fieldsOfStudyData)} options={options} />
                                 </div>
                 }
             </CardContent>

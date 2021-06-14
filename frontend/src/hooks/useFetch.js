@@ -27,7 +27,10 @@ const useFetch = (url, initialState, transformFun = (arg) => arg) => {
                 'Authorization': `Bearer ${authState.access}`,
             }
         }).then(response => {
-            if (response.ok) return response.json()
+            if (response.ok) {
+                setHasError(false)
+                return response.json()
+            }
             else {
                 setIsLoading(false)
                 setHasError(true)
@@ -37,7 +40,8 @@ const useFetch = (url, initialState, transformFun = (arg) => arg) => {
             setData(transformFun(json))
             setIsLoading(false)
         })
-        .catch(e => console.log(e))
+        .catch(e => {
+            console.log(e)})
 
     }, [url])
 

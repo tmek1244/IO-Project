@@ -11,6 +11,11 @@ import Error from '../../../components/Error/Error';
 const options = {
     ...commonOptions,
     aspectRatio: 4,
+    plugins: {
+        legend: {
+          display: false,
+        },
+      },
 };
 
 
@@ -35,10 +40,9 @@ export default function LaureatesDistriChart({ faculty, field, type }) {
         return result
     }
 
-    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/contest-laureates/${faculty}+${field}+${type}`, []);
-
+    const [fieldsOfStudyData, loading, error] = useFetch(`/api/backend/contest-laureates/${faculty}+${field}+${type}`, [], e => e.sort((a,b) => {return a["recruitment__year"] > b["recruitment__year"] ? 1 : -1;}));
     return (
-        <Card  >
+        <Card variant="outlined" style={{backgroundColor: "#fcfcfc"}} >
             <CardHeader
                 style={{ textAlign: 'center' }}
                 title={<Typography variant='h5'>Liczba laureatów</Typography>}
@@ -52,11 +56,12 @@ export default function LaureatesDistriChart({ faculty, field, type }) {
                             error && !fieldsOfStudyData.length === 0 ? // tu tak samo potrzeba tego dziwnego obejścia
                                 <Error />
                                 :
-                                <>
-                                    < div >
+                                fieldsOfStudyData.length === 0 ?
+                                    <CardHeader  style={{ textAlign: 'center' }} title={<Typography variant='h6' color='error'> Brak danych do wyświetlenia. </Typography>} />
+                                    :
+                                    <div>
                                         <Line data={convertResult(fieldsOfStudyData)} options={options} />
                                     </div>
-                                </>
                         )
 
                 }
